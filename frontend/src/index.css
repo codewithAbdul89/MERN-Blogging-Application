@@ -1,0 +1,321 @@
+@import "tailwindcss";
+
+/* =========================================================
+   DEV BLOG — LIGHT THEME
+   ========================================================= */
+
+@theme {
+   
+  --font-heading: "DM Serif Display", serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-code: "DM Mono", monospace;
+  /* -----------------------------------------------------
+       BRAND / PRIMARY
+       -----------------------------------------------------
+
+       Used for:
+       - Main buttons
+       - Login / Register buttons
+       - Create Blog
+       - Publish Blog
+       - Active navigation
+       - Links
+       - Selected filters
+       - Primary actions
+    */
+
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-primary-light: #ccfbf1;
+
+  /* -----------------------------------------------------
+       BACKGROUND
+       -----------------------------------------------------
+
+       Used for:
+       - Main application background
+       - Page background
+    */
+
+  --color-background: #ffffff;
+  --color-background-secondary: #f8fafc;
+
+  /* -----------------------------------------------------
+       SURFACE / CARD
+       -----------------------------------------------------
+
+       Used for:
+       - Blog cards
+       - Login/Register cards
+       - Profile cards
+       - Modals
+       - Dropdowns
+       - Sidebars
+       - Forms
+    */
+
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f8fafc;
+
+  /* -----------------------------------------------------
+       TEXT
+       -----------------------------------------------------
+
+       Used for:
+       - Page headings
+       - Blog titles
+       - Important text
+    */
+
+  --color-text-primary: #0f172a;
+
+  /* Used for:
+       - Descriptions
+       - Author information
+       - Secondary headings
+    */
+
+  --color-text-secondary: #475569;
+
+  /* Used for:
+       - Dates
+       - Read time
+       - Views
+       - Less important information
+    */
+
+  --color-text-muted: #64748b;
+
+  /* Used for:
+       - Input placeholders
+    */
+
+  --color-text-placeholder: #94a3b8;
+
+  /* -----------------------------------------------------
+       BORDER
+       -----------------------------------------------------
+
+       Used for:
+       - Input borders
+       - Card borders
+       - Navbar borders
+       - Dividers
+       - Modal borders
+    */
+
+  --color-border: #e2e8f0;
+
+  /* -----------------------------------------------------
+       SUCCESS
+       -----------------------------------------------------
+
+       Used for:
+       - Successful operations
+       - Blog published
+       - Email verified
+       - Profile updated
+       - Success toast
+    */
+
+  --color-success: #16a34a;
+  --color-success-light: #f0fdf4;
+
+  /* -----------------------------------------------------
+       ERROR / DANGER
+       -----------------------------------------------------
+
+       Used for:
+       - Delete buttons
+       - Delete account
+       - Validation errors
+       - API errors
+       - Error toast
+    */
+
+  --color-danger: #dc2626;
+  --color-danger-light: #fef2f2;
+
+  /* -----------------------------------------------------
+       WARNING
+       -----------------------------------------------------
+
+       Used for:
+       - Draft status
+       - Pending actions
+       - Warning messages
+    */
+
+  --color-warning: #d97706;
+  --color-warning-light: #fffbeb;
+
+  /* -----------------------------------------------------
+       INFO
+       -----------------------------------------------------
+
+       Used for:
+       - Informational messages
+       - Email verification information
+       - General notices
+    */
+
+  --color-info: #2563eb;
+  --color-info-light: #eff6ff;
+}
+
+/* =========================================================
+   DARK THEME
+   ========================================================= */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  /* -----------------------------------------------------
+       BRAND / PRIMARY
+       -----------------------------------------------------
+
+       Used for:
+       - Main buttons
+       - Login / Register
+       - Create / Publish
+       - Active navigation
+       - Primary links
+    */
+
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #5eead4;
+  --color-primary-light: #134e4a;
+
+  /* -----------------------------------------------------
+       BACKGROUND
+       -----------------------------------------------------
+
+       Used for:
+       - Main application background
+       - Page background
+    */
+
+  --color-background: #020617;
+  --color-background-secondary: #0f172a;
+
+  /* -----------------------------------------------------
+       SURFACE / CARD
+       -----------------------------------------------------
+
+       Used for:
+       - Blog cards
+       - Login/Register cards
+       - Profile cards
+       - Modals
+       - Dropdowns
+       - Sidebars
+       - Forms
+    */
+
+  --color-surface: #0f172a;
+  --color-surface-secondary: #1e293b;
+
+  /* -----------------------------------------------------
+       TEXT
+       -----------------------------------------------------
+
+       Used for:
+       - Page headings
+       - Blog titles
+       - Important text
+    */
+
+  --color-text-primary: #f1f5f9;
+
+  /* Used for:
+       - Descriptions
+       - Author information
+       - Secondary headings
+    */
+
+  --color-text-secondary: #cbd5e1;
+
+  /* Used for:
+       - Dates
+       - Read time
+       - Views
+       - Less important information
+    */
+
+  --color-text-muted: #94a3b8;
+
+  /* Used for:
+       - Input placeholders
+    */
+
+  --color-text-placeholder: #64748b;
+
+  /* -----------------------------------------------------
+       BORDER
+       -----------------------------------------------------
+
+       Used for:
+       - Input borders
+       - Card borders
+       - Navbar borders
+       - Dividers
+       - Modal borders
+    */
+
+  --color-border: #334155;
+
+  /* -----------------------------------------------------
+       SUCCESS
+       ----------------------------------------------------- */
+
+  --color-success: #4ade80;
+  --color-success-light: #052e16;
+
+  /* -----------------------------------------------------
+       ERROR / DANGER
+       ----------------------------------------------------- */
+
+  --color-danger: #f87171;
+  --color-danger-light: #450a0a;
+
+  /* -----------------------------------------------------
+       WARNING
+       ----------------------------------------------------- */
+
+  --color-warning: #fbbf24;
+  --color-warning-light: #451a03;
+
+  /* -----------------------------------------------------
+       INFO
+       ----------------------------------------------------- */
+
+  --color-info: #60a5fa;
+  --color-info-light: #172554;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+@keyframes dots {
+  0% {
+    content: ".";
+  }
+
+  33% {
+    content: "..";
+  }
+
+  66% {
+    content: "...";
+  }
+
+  100% {
+    content: ".";
+  }
+}
+
+.animate-dots::after {
+  content: ".";
+  animation: dots 1.2s steps(1, end) infinite;
+}
