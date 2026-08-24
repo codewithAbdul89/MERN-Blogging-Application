@@ -9,13 +9,8 @@ export const showError = (message) => {
 };
 
 export const showInfo = (message) => {
-    toast(message);
+    toast(message,{
+        icon: 'ℹ️'   
+    });
 };
 
-// import { Toaster } from "react-hot-toast";
-// <Toaster
-//     position="top-right"
-//     toastOptions={{
-//         duration: 3000,
-//     }}
-// />

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 
 
-import { handleMutationError } from "../../utils/errorHandler.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 import {
     deleteAccount,
     removeProfilePicture,
@@ -22,7 +22,7 @@ export const useUpdateProfile = () => {
 
         mutationFn: updateProfile,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -38,7 +38,7 @@ export const useUpdateProfilePicture = () => {
 
         mutationFn: updateProfilePicture,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             queryClient.invalidateQueries({
@@ -58,7 +58,7 @@ export const useRemoveProfilePicture = () => {
 
         mutationFn: removeProfilePicture,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -74,7 +74,7 @@ export const useSendDeleteAccountOtp = () => {
 
         mutationFn: sendDeleteAccountOtp,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -90,7 +90,7 @@ export const useVerifyDeleteAccountOtp = () => {
 
         mutationFn: verifyDeleteAccountOtp,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -110,7 +110,7 @@ export const useDeleteAccount = () => {
 
         mutationFn: deleteAccount,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
 

@@ -2,30 +2,35 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import { useCurrentUser } from "../user/userQueries.js";
-import { setCredentials, logOut } from "./authSlice.js";
+import { setUser, logOut, setAuthError } from "./authSlice.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 
-function AuthInitializer() {
+function AuthInitializer({ children }) {
+  const dispatch = useDispatch();
+  const { data, isError, error } = useCurrentUser();
 
-    const dispatch = useDispatch();
+  useEffect(() => {
+    if (data?.data?.user) {
+      dispatch(setUser(data.data.user));
+    } else if (isError) {
+      const statusCode = error?.response?.status;
 
-    const {
-        data,
-        isError
-    } = useCurrentUser();
+      const hadSession = localStorage.getItem("hasSession") === "1";
 
-    useEffect(() => {
-
-        if (data?.user) {
-            dispatch(setCredentials(data));
+      if (statusCode === 401) {
+        if (hadSession) {
+          errorHandler(error);
         }
+        dispatch(logOut());
+        localStorage.removeItem("hasSession");
+        return;
+      }
 
-        if (isError) {
-            dispatch(logOut());
-        }
+      errorHandler(error);
+      dispatch(setAuthError());
+    }
+  }, [data, isError, dispatch]);
 
-    }, [data, isError, dispatch]);
-
-    return null;
+  return children;
 }
-
 export default AuthInitializer;

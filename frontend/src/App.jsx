@@ -1,25 +1,20 @@
+import { Toaster } from "react-hot-toast";
 import AppRoutes from "./routes/AppRoutes.jsx";
+import AuthInitializer from "./features/auth/AuthInitializer.jsx";
 
 function App() {
-  return <AppRoutes />
+  return (
+    <AuthInitializer>
+      <AppRoutes />
+
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+        }}
+      />
+    </AuthInitializer>
+  );
 }
 
 export default App;
-
-
-//   import AuthLayout from "./components/layout/AuthLayout.jsx";
-
-
-// function App() {
-
-
-//   return (
-
-//     <>
-//       <AuthLayout />
-//     </>
-
-//   )
-// }
-
-// export default App;

@@ -19,8 +19,7 @@ const userSchema = new Schema({
 
     password: {
         type: String,
-        minlength: 6,
-        maxlength: 12,
+        select:false,
         required: function () {
             return this.authProviders.includes("local");
         }

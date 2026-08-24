@@ -6,9 +6,11 @@ import {
     resendVerificationEmail,
     forgotPassword,
     verifyEmail,
-    resetPassword
+    resetPassword,
+    sendLoginEmailOtp,
+    verifyLoginEmailtOtp
 } from '../controllers/auth.controller.js'
-import { signupValidation, loginValidation, changePasswordValidator, resendVerificationEmailValidator, forgotPasswordValidator, resetPasswordValidator } from "../validators/auth.validator.js"
+import { signupValidation, loginValidation, changePasswordValidator, EmailValidator, forgotPasswordValidator, resetPasswordValidator, loginAccountOtpVelidaton } from "../validators/auth.validator.js"
 import validate from "../middlewares/validate.middleware.js"
 import { protectedRoute } from '../middlewares/auth.middleware.js'
 import otpLimiter from "../middlewares/rateLimit.middleware.js"
@@ -31,7 +33,7 @@ router.post(
 router.post(
     "/resend-verification-email",
     otpLimiter,
-    resendVerificationEmailValidator,
+    EmailValidator,
     validate, 
     resendVerificationEmail
 );
@@ -42,6 +44,21 @@ router.post(
     forgotPasswordValidator,
     validate,
     forgotPassword
+);
+
+router.post(
+    "/send-email-login-otp",
+    otpLimiter,
+    EmailValidator,
+    validate,
+    sendLoginEmailOtp
+)
+
+router.post(
+    "/verify-email-login-otp",
+    loginAccountOtpVelidaton,
+    validate,  
+    verifyLoginEmailtOtp
 );
 
 

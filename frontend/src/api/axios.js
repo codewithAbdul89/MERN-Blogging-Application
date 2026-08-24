@@ -1,63 +1,68 @@
 import axios from "axios";
 import { axiosContext } from "./axiosContext.js";
 import { updateAccessToken, logOut } from "../features/auth/authSlice.js";
+import { refreshToken } from "../features/auth/authService.js";
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-    withCredentials: true,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
 });
 
 // Dependency Injection
 
 api.interceptors.request.use(
-    (config) => {//config mean baseURL,Credentials,headers which we can modify in the request interceptor
-        const token = axiosContext.getAccessToken();
+  (config) => {
+    //config mean baseURL,Credentials,headers which we can modify in the request interceptor
+    const token = axiosContext.getAccessToken();
 
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        console.log(config);
-
-        return config;
-    },
-
-    (error) => {
-        return Promise.reject(error)
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+
+    return config;
+  },
+
+  (error) => {
+    return Promise.reject(error);
+  },
 );
 
 api.interceptors.response.use(
-    (response) => response,
+  (response) => response,
 
-    async (error) => {
+  async (error) => {
+    const originalRequest = error.config;
 
-        const originalRequest = error.config;
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh-token")
+    ) {
+      try {
+        originalRequest._retry = true;
+        
+        const response = await refreshToken();
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        const newAccessToken = response.data.accessToken;
 
-            try {
+        axiosContext.dispatch(
+          updateAccessToken({
+            accessToken: newAccessToken,
+          }),
+        );
 
-                originalRequest._retry = true;
+        //  Retry with new token by setting the Authorization header of the original request
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-                const response = await api.post("/auth/refresh-token");
-
-                axiosContext.dispatch(updateAccessToken(response.data.accessToken));
-
-                originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`
-                return api(originalRequest);
-
-            } catch (error) {
-
-                axiosContext.dispatch(logOut());
-
-                return Promise.reject(error);
-            }
-
-        }
-
-        return Promise.reject(error)
+        return api(originalRequest);
+      } catch (error) {
+        axiosContext.dispatch(logOut());
+        return Promise.reject(error);
+      }
     }
+
+    return Promise.reject(error);
+  },
 );
 
 export default api;

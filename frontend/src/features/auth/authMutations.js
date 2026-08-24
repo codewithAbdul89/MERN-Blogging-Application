@@ -1,141 +1,155 @@
 import { useMutation } from "@tanstack/react-query";
 
-import { handleMutationError } from "../../utils/errorHandler.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 import {
-    changePassword,
-    forgotPassword,
-    login,
-    logout,
-    resendVerificationEmail,
-    resetPassword,
-    signup,
-    verifyEmail
+  changePassword,
+  emailLogin,
+  forgotPassword,
+  login,
+  logout,
+  resendVerificationEmail,
+  resetPassword,
+  signup,
+  verifyEmail,
+  verifyEmailOtp,
 } from "./authService.js";
-import { useDispatch } from "react-redux"
-import { setCredentials } from "./authSlice.js";
+import { useDispatch } from "react-redux";
+import { logOut, setCredentials } from "./authSlice.js";
 import { showSuccess } from "../../utils/toast.js";
 
 export const useLogin = () => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  return useMutation({
+    mutationFn: login,
 
-    return useMutation({
-        mutationFn: login,
+    onError: errorHandler,
 
-        onError: handleMutationError,
+    onSuccess: (response) => {
+      sessionStorage.setItem("justLoggedIn", "1");
+      localStorage.setItem("hasSession", "1");
+      dispatch(setCredentials(response.data));
+      showSuccess(response.message);
+    },
+  });
+};
 
-        onSuccess: (data) => {
-            dispatch(
-                setCredentials(data)
-            )
+export const useEmailLogin = () => {
+ 
+  return useMutation({
+    mutationFn: emailLogin,
 
-            onSuccess: (data) => {
-                showSuccess(data.message)
-            }
+    onError: errorHandler,
 
-        }
+    onSuccess: (response) => {
+      showSuccess(response.message);
+    },
+  });
+};
 
-    });
+export const useVerifyEmailOTp = () => {
+  const dispatch = useDispatch();
+
+  return useMutation({
+    mutationFn: verifyEmailOtp,
+
+    onError: errorHandler,
+
+    onSuccess: (response) => {
+      sessionStorage.setItem("justLoggedIn", "1");
+      localStorage.setItem("hasSession", "1");
+      dispatch(setCredentials(response.data));
+      showSuccess(response.message);
+    },
+  });
 };
 
 export const useSignup = () => {
+  return useMutation({
+    mutationFn: signup,
 
-    return useMutation({
-        mutationFn: signup,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (response) => {
+      dispatch(setCredentials(response.data));
+      localStorage.setItem("hasSession", "1");
+      showSuccess(response.message);
+    },
+  });
 };
 
 export const useLogout = () => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
+  return useMutation({
+    mutationFn: logout,
 
-    return useMutation({
-        mutationFn: logout,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            dispatch(logOut());
-
-            showSuccess(data.message);
-        }
-
-    });
+    onSuccess: (data) => {
+      dispatch(logOut());
+      localStorage.setItem("hasSession", "1");
+      showSuccess(data.message);
+    },
+  });
 };
 
 export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: changePassword,
 
-    return useMutation({
-        mutationFn: changePassword,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (data) => {
+      data.message;
+    },
+  });
 };
 
 export const useResendVerificationEmail = () => {
+  return useMutation({
+    mutationFn: resendVerificationEmail,
 
-    return useMutation({
-        mutationFn: resendVerificationEmail,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (data) => {
+      data.message;
+    },
+  });
 };
 
 export const useVerifyEmail = () => {
+  return useMutation({
+    mutationFn: verifyEmail,
 
-    return useMutation({
-        mutationFn: verifyEmail,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (data) => {
+      data.message;
+    },
+  });
 };
 
 export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: forgotPassword,
 
-    return useMutation({
-        mutationFn: forgotPassword,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (data) => {
+      data.message;
+    },
+  });
 };
 // token, passwordData
 export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: resetPassword,
 
-    return useMutation({
-        mutationFn: resetPassword,
+    onError: errorHandler,
 
-        onError: handleMutationError,
-
-        onSuccess: (data) => {
-            data.message
-        }
-
-    });
+    onSuccess: (data) => {
+      data.message;
+    },
+  });
 };

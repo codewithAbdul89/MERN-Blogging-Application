@@ -1,6 +1,6 @@
 import { useTheme } from "../../hooks/useTheme.js";
 
-const Logo = ({ className = "" }) => {
+const Logo = ({ className = "", loading = "eager" }) => {
 
     // const lightLogo = "https://i.ibb.co/YFVYcf3T/Screenshot-2026-08-14-183432.png";
     // const darkLogo = "https://i.ibb.co/fzM1gGSc/image.png";

@@ -8,6 +8,6 @@ export const getErrorMessage = (error) => {
     );
 };
 
-export const handleMutationError = (error) => {
+export const errorHandler = (error) => {
     toast.error(getErrorMessage(error));
 };

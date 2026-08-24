@@ -5,7 +5,7 @@ import {
     deleteCategory,
     updateCategory
 } from "./categoryService.js";
-import { handleMutationError } from "../../utils/errorHandler.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
 import { showSuccess } from "../../utils/toast.js";
 
@@ -17,7 +17,7 @@ export const useCreateCategory = () => {
 
         mutationFn: createCategory,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
 
@@ -39,7 +39,7 @@ export const useUpdateCategory = () => {
 
         mutationFn: updateCategory,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
 
@@ -62,7 +62,7 @@ export const useDeleteCategory = () => {
 
         mutationFn: deleteCategory,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
 

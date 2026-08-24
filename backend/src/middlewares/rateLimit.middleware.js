@@ -1,13 +1,15 @@
 import rateLimit from "express-rate-limit";
+import ApiError from "../utils/ApiError.js";
 
 const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
 
-    windowMs: 15 * 60 * 1000,
+  max: 3,
 
-    max: 3,
-
-    message: "Too many  requests. Please try again later."
-
+  handler: () => {
+    throw new ApiError(429,
+         "Too many requests. Please try again later.");
+  },
 });
 
 export default otpLimiter;

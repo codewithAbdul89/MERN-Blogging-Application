@@ -66,7 +66,7 @@ export const changePasswordValidator = [
         .withMessage("Password must be between 6 and 12 characters")
 ];
 
-export const resendVerificationEmailValidator = [
+export const EmailValidator = [
 
     body("email")
         .trim()
@@ -98,3 +98,13 @@ export const resetPasswordValidator = [
         .isLength({ min: 6, max: 12 })
         .withMessage("Password must be between 6 and 12 characters")
 ];
+
+export const loginAccountOtpVelidaton = [
+    body("otp")
+        .trim()
+        .notEmpty()
+        .withMessage("OTP is required.")
+        .bail()
+        .isLength({ min: 6, max: 6 })
+        .withMessage("Otp should be exact sx digits.")
+]

@@ -3,9 +3,9 @@ import "../../index.css";
 
 export const ButtonLoader = ({ text = "Loading" }) => {
     return (
-        <span>
+        <span className="flex items-center justify-center">
             {text}
-            <span className="inline-block w-6 text-left">
+            <span className="inline-block w-6 text-left text-xl">
                 <span className="animate-dots" />
             </span>
         </span>
@@ -13,14 +13,3 @@ export const ButtonLoader = ({ text = "Loading" }) => {
 };
 
 export default ButtonLoader;
-
-{/* <Button
-    type="submit"
-    disabled={isPending}
->
-    {isPending ? (
-        <ButtonLoader text="Creating" />
-    ) : (
-        "Create Blog"
-    )}
-</Button> */}

@@ -1,133 +1,423 @@
 const brandColor = "#2563eb";
 const lightColor = "#f8fafc";
 
-export const verificationEmailTemplate = ({
-    userName,
-    verificationLink
-}) => `<!DOCTYPE html>
+export const loginOtpTemplate = ({ userName, otp }) => `<!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Email Verification</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Verification Code</title>
 </head>
 
-<body style="margin:0;padding:40px;background:${lightColor};font-family:Arial,sans-serif;">
+<body
+    style="
+        margin:0;
+        padding:20px 10px;
+        background:${lightColor};
+        font-family:Arial,sans-serif;
+        width:100%;
+        box-sizing:border-box;
+    "
+>
 
-<div style="max-width:600px;margin:auto;background:white;border-radius:12px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,.1);">
+    <div
+        style="
+            width:100%;
+            max-width:600px;
+            margin:0 auto;
+            background:white;
+            border-radius:12px;
+            overflow:hidden;
+            box-sizing:border-box;
+        "
+    >
 
-<div style="background:${brandColor};padding:30px;text-align:center;">
-<h1 style="color:white;margin:0;">
- Blogging Application
-</h1>
-</div>
+        <!-- Header -->
+        <div
+            style="
+                background:${brandColor};
+                padding:30px 20px;
+                text-align:center;
+                box-sizing:border-box;
+            "
+        >
+            <h1 style="color:white;margin:0;font-size:28px;">
+                Blogging Application
+            </h1>
+        </div>
 
-<div style="padding:35px;">
+        <!-- Content -->
+        <div
+            style="
+                padding:30px 20px;
+                box-sizing:border-box;
+            "
+        >
 
-<h2 style="margin-top:0;color:#222;">
-Hello ${userName} 👋🏻
-</h2>
+            <h2 style="margin-top:0;color:#222;">
+                Hello ${userName} 👋🏻
+            </h2>
 
-<p style="font-size:16px;line-height:1.7;color:#555;">
-Thank you for joining our Blogging Application.
-Please verify your email address to activate your account.
-</p>
+            <p style="font-size:16px;line-height:1.7;color:#555;">
+                We received a request to sign in to your
+                <strong>Blogging Application</strong> account.
+            </p>
 
-<div style="text-align:center;margin:40px 0;">
+            <p style="font-size:16px;line-height:1.7;color:#555;">
+                Use the One-Time Password (OTP) below to
+                complete your login.
+            </p>
 
-<a
-href="${verificationLink}"
-style="
-background:${brandColor};
-color:white;
-padding:15px 30px;
-text-decoration:none;
-border-radius:8px;
-display:inline-block;
-font-weight:bold;
-">
-Verify Email
-</a>
+            <!-- OTP -->
+            <div style="text-align:center;margin:35px 0;">
 
-</div>
+                <p
+                    style="
+                        font-size:15px;
+                        color:#6b7280;
+                        margin-bottom:10px;
+                    "
+                >
+                    Your Login Verification Code
+                </p>
 
-<p style="color:#777;">
-This verification link will expire in
-<b>24 hours</b>.
-</p>
+                <div
+                    style="
+                        display:inline-block;
+                        max-width:100%;
+                        box-sizing:border-box;
+                        background:${brandColor};
+                        color:white;
+                        padding:15px 25px;
+                        border-radius:8px;
+                        font-size:28px;
+                        font-weight:bold;
+                        letter-spacing:8px;
+                    "
+                >
+                    ${otp}
+                </div>
 
-<p style="color:#999;font-size:13px;">
-If you didn't create this account, you can safely ignore this email.
-</p>
+            </div>
 
-</div>
+            <p style="font-size:15px;color:#555;">
+                This OTP will expire in
+                <strong>5 minutes</strong>.
+            </p>
 
-</div>
+            <p style="font-size:14px;color:#777;line-height:1.6;">
+                For your security, never share this code with anyone.
+                Our team will never ask you for your OTP.
+            </p>
+
+            <p style="font-size:14px;color:#999;line-height:1.6;">
+                If you didn't request this login, you can safely ignore
+                this email. Your account will remain secure.
+            </p>
+
+            <hr style="margin:35px 0;">
+
+            <p
+                style="
+                    font-size:13px;
+                    color:#6b7280;
+                    text-align:center;
+                "
+            >
+                © ${new Date().getFullYear()} Abdul's Blogging Application
+            </p>
+
+        </div>
+
+    </div>
 
 </body>
 </html>
 `;
 
+export const verificationEmailTemplate = ({
+    userName,
+    verificationLink,
+}) => `<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Email Verification</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: ${lightColor};
+        font-family: Arial, sans-serif;
+    }
+
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        background: ${brandColor};
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .content {
+        padding: 35px;
+    }
+
+    .button {
+        background: ${brandColor};
+        color: white;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 8px;
+        display: inline-block;
+        font-weight: bold;
+    }
+
+    @media only screen and (max-width: 600px) {
+
+        body {
+            padding: 15px 0;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
+
+        .header {
+            padding: 25px 15px;
+        }
+
+        .content {
+            padding: 25px 20px;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="header">
+
+        <h1 style="color:white;margin:0;">
+            Blogging Application
+        </h1>
+
+    </div>
+
+    <div class="content">
+
+        <h2 style="margin-top:0;color:#222;">
+            Hello ${userName} 👋🏻
+        </h2>
+
+        <p style="font-size:16px;line-height:1.7;color:#555;">
+            Thank you for joining our Blogging Application.
+            Please verify your email address to activate your account.
+        </p>
+
+        <div style="text-align:center;margin:40px 0;">
+
+            <a
+                href="${verificationLink}"
+                class="button"
+            >
+                Verify Email
+            </a>
+
+        </div>
+
+        <p style="color:#777;">
+            This verification link will expire in
+            <b>24 hours</b>.
+        </p>
+
+        <p style="color:#999;font-size:13px;">
+            If you didn't create this account, you can safely ignore this email.
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+`;
 
 
 export const resetPasswordTemplate = ({
     userName,
-    resetLink
+    resetLink,
 }) => `
 <!DOCTYPE html>
 
 <html>
 
-<body style="margin:0;padding:40px;background:#f8fafc;font-family:Arial;">
+<head>
 
-<div style="max-width:600px;margin:auto;background:white;border-radius:12px;overflow:hidden;">
+<meta charset="UTF-8">
 
-<div style="background:#dc2626;padding:25px;text-align:center;">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<h1 style="margin:0;color:white;">
-Reset Password
-</h1>
+<title>Reset Password</title>
 
-</div>
+<style>
 
-<div style="padding:35px;">
+    * {
+        box-sizing: border-box;
+    }
 
-<h2>Hello ${userName} </h2>
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8fafc;
+        font-family: Arial, sans-serif;
+    }
 
-<p>
-We received a request to reset your password.
-</p>
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-<div style="text-align:center;margin:35px 0;">
+    .header {
+        background: #dc2626;
+        padding: 25px 20px;
+        text-align: center;
+    }
 
-<a
-href="${resetLink}"
-style="
-background:#dc2626;
-padding:15px 28px;
-color:white;
-text-decoration:none;
-border-radius:8px;
-display:inline-block;
-font-weight:bold;
-">
+    .content {
+        padding: 35px;
+    }
 
-Reset Password
+    .button {
+        background: #dc2626;
+        padding: 15px 28px;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        display: inline-block;
+        font-weight: bold;
+    }
 
-</a>
+    @media only screen and (max-width: 600px) {
 
-</div>
+        body {
+            padding: 15px 0;
+        }
 
-<p>
-This link expires in
-<b>15 minutes</b>.
-</p>
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
 
-<p style="color:#777;">
-If you didn't request this password reset,
-please ignore this email.
-</p>
+        .header {
+            padding: 25px 15px;
+        }
 
-</div>
+        .content {
+            padding: 25px 20px;
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="header">
+
+        <h1 style="margin:0;color:white;">
+            Reset Password
+        </h1>
+
+    </div>
+
+    <div class="content">
+
+        <h2>
+            Hello ${userName} 👋🏻
+        </h2>
+
+        <p>
+            We received a request to reset your password.
+        </p>
+
+        <div style="text-align:center;margin:35px 0;">
+
+            <a
+                href="${resetLink}"
+                class="button"
+            >
+                Reset Password
+            </a>
+
+        </div>
+
+        <p>
+            This link expires in
+            <b>15 minutes</b>.
+        </p>
+
+        <p style="color:#777;">
+            If you didn't request this password reset,
+            please ignore this email.
+        </p>
+
+    </div>
 
 </div>
 
@@ -135,41 +425,117 @@ please ignore this email.
 
 </html>
 `;
-
 
 
 export const welcomeEmailTemplate = ({
-    userName
+    userName,
 }) => `
 <!DOCTYPE html>
 
 <html>
 
-<body style="background:#f8fafc;padding:40px;font-family:Arial;">
+<head>
 
-<div style="max-width:600px;margin:auto;background:white;padding:40px;border-radius:12px;">
+<meta charset="UTF-8">
 
-<h1 style="color:#2563eb;">
-🎉 Welcome ${userName}
-</h1>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<p>
-Your account has been successfully verified.
-</p>
+<title>Welcome</title>
 
-<p>
-You can now start writing blogs,
-sharing your knowledge,
-and connecting with readers around the world.
-</p>
+<style>
 
-<div style="margin-top:40px;text-align:center;">
+    * {
+        box-sizing: border-box;
+    }
 
-<h2 style="color:#2563eb;">
-Happy Blogging 🚀
-</h2>
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8fafc;
+        font-family: Arial, sans-serif;
+    }
 
-</div>
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .header {
+        background: ${brandColor};
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .content {
+        padding: 40px;
+    }
+
+    @media only screen and (max-width: 600px) {
+
+        body {
+            padding: 15px 0;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
+
+        .header {
+            padding: 25px 15px;
+        }
+
+        .content {
+            padding: 25px 20px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="header">
+
+        <h1 style="color:white;margin:0;">
+            🎉 Welcome ${userName}
+        </h1>
+
+    </div>
+
+    <div class="content">
+
+        <p>
+            Your account has been successfully verified.
+        </p>
+
+        <p>
+            You can now start writing blogs,
+            sharing your knowledge,
+            and connecting with readers around the world.
+        </p>
+
+        <div style="margin-top:40px;text-align:center;">
+
+            <h2 style="color:${brandColor};">
+                Happy Blogging 🚀
+            </h2>
+
+        </div>
+
+    </div>
 
 </div>
 
@@ -177,75 +543,170 @@ Happy Blogging 🚀
 
 </html>
 `;
-
 
 
 export const deleteBlogOtpTemplate = ({
     userName,
     blogTitle,
     category,
-    otp
+    otp,
 }) => `
 <!DOCTYPE html>
 
 <html>
 
-<body style="background:#f8fafc;padding:40px;font-family:Arial;">
+<head>
 
-<div style="max-width:600px;margin:auto;background:white;padding:40px;border-radius:12px;">
+<meta charset="UTF-8">
 
-<h1 style="color:#dc2626;">
-🗑️ Delete Blog Confirmation
-</h1>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<p>
-Hello<strong> ${userName}</strong>,
-</p>
+<title>Delete Blog Confirmation</title>
 
-<p>
-We received a request to permanently delete one of your blogs.
-To continue, please use the One-Time Password (OTP) below.
-</p>
+<style>
 
-<div style="background:#fef2f2;border:1px solid #fecaca;padding:20px;border-radius:10px;margin:30px 0;">
+    * {
+        box-sizing: border-box;
+    }
 
-<p style="margin:0;">
-<strong>Blog Title:</strong>
-${blogTitle}
-</p>
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8fafc;
+        font-family: Arial, sans-serif;
+    }
 
-<p style="margin:10px 0 0 0;">
-<strong>Category:</strong>
-${category}
-</p>
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-</div>
+    .content {
+        padding: 40px;
+    }
 
-<div style="text-align:center;margin:35px 0;">
+    .info-box {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        padding: 20px;
+        border-radius: 10px;
+        margin: 30px 0;
+        overflow-wrap: anywhere;
+    }
 
-<p style="font-size:15px;color:#6b7280;margin-bottom:10px;">
-Your Verification OTP
-</p>
+    .otp {
+        display: block;
+        width: 100%;
+        max-width: 320px;
+        margin: auto;
+        background: ${brandColor};
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 8px;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
 
-<div style="display:inline-block;background:#2563eb;color:white;padding:15px 35px;border-radius:8px;font-size:28px;font-weight:bold;letter-spacing:8px;">
-${otp}
-</div>
+    @media only screen and (max-width: 600px) {
 
-</div>
+        body {
+            padding: 15px 0;
+        }
 
-<p>
-This OTP will expire in <strong>5 minutes</strong>.
-</p>
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
 
-<p>
-If you did not request this action, please ignore this email. Your blog will remain safe.
-</p>
+        .content {
+            padding: 25px 20px;
+        }
 
-<hr style="margin:40px 0;">
+        .otp {
+            max-width: 100%;
+            font-size: 24px;
+            letter-spacing: 6px;
+        }
 
-<p style="font-size:13px;color:#6b7280;text-align:center;">
-© ${new Date().getFullYear()} Abdul's Blogging Application
-</p>
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="content">
+
+        <h1 style="color:#dc2626;">
+            🗑️ Delete Blog Confirmation
+        </h1>
+
+        <p>
+            Hello <strong>${userName}</strong>,
+        </p>
+
+        <p>
+            We received a request to permanently delete one of your blogs.
+            To continue, please use the One-Time Password (OTP) below.
+        </p>
+
+        <div class="info-box">
+
+            <p style="margin:0;">
+                <strong>Blog Title:</strong>
+                ${blogTitle}
+            </p>
+
+            <p style="margin:10px 0 0 0;">
+                <strong>Category:</strong>
+                ${category}
+            </p>
+
+        </div>
+
+        <div style="text-align:center;margin:35px 0;">
+
+            <p style="font-size:15px;color:#6b7280;margin-bottom:10px;">
+                Your Verification OTP
+            </p>
+
+            <div class="otp">
+                ${otp}
+            </div>
+
+        </div>
+
+        <p>
+            This OTP will expire in
+            <strong>5 minutes</strong>.
+        </p>
+
+        <p>
+            If you did not request this action, please ignore this email.
+            Your blog will remain safe.
+        </p>
+
+        <hr style="margin:40px 0;">
+
+        <p style="font-size:13px;color:#6b7280;text-align:center;">
+            © ${new Date().getFullYear()} Abdul's Blogging Application
+        </p>
+
+    </div>
 
 </div>
 
@@ -257,58 +718,146 @@ If you did not request this action, please ignore this email. Your blog will rem
 
 export const deleteAccountOtpTemplate = ({
     userName,
-    otp
+    otp,
 }) => `
 <!DOCTYPE html>
 
 <html>
 
-<body style="background:#f8fafc;padding:40px;font-family:Arial;">
+<head>
 
-<div style="max-width:600px;margin:auto;background:white;padding:40px;border-radius:12px;">
+<meta charset="UTF-8">
 
-<h1 style="color:#dc2626;">
-⚠️ Delete Account Confirmation
-</h1>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-<p>
-Hello<strong> ${userName}</strong>,
-</p>
+<title>Delete Account Confirmation</title>
 
-<p>
-We received a request to permanently delete your account from
-<strong>Abdul's Blogging Application</strong>.
-</p>
+<style>
 
-<p>
-This action is irreversible. All your blogs, comments, profile information, and account data will be permanently removed.
-</p>
+    * {
+        box-sizing: border-box;
+    }
 
-<div style="text-align:center;margin:40px 0;">
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: #f8fafc;
+        font-family: Arial, sans-serif;
+    }
 
-<p style="font-size:15px;color:#6b7280;margin-bottom:10px;">
-Your Verification OTP
-</p>
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: auto;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
 
-<div style="display:inline-block;background:#dc2626;color:white;padding:15px 35px;border-radius:8px;font-size:28px;font-weight:bold;letter-spacing:8px;">
-${otp}
-</div>
+    .content {
+        padding: 40px;
+    }
 
-</div>
+    .otp {
+        display: block;
+        width: 100%;
+        max-width: 320px;
+        margin: auto;
+        background: #dc2626;
+        color: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 8px;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
 
-<p>
-This OTP will expire in <strong>5 minutes</strong>.
-</p>
+    @media only screen and (max-width: 600px) {
 
-<p>
-If you did not request this action, simply ignore this email. Your account will remain secure.
-</p>
+        body {
+            padding: 15px 0;
+        }
 
-<hr style="margin:40px 0;">
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
 
-<p style="font-size:13px;color:#6b7280;text-align:center;">
-© ${new Date().getFullYear()} Abdul's Blogging Application
-</p>
+        .content {
+            padding: 25px 20px;
+        }
+
+        .otp {
+            max-width: 100%;
+            font-size: 24px;
+            letter-spacing: 6px;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="content">
+
+        <h1 style="color:#dc2626;">
+            ⚠️ Delete Account Confirmation
+        </h1>
+
+        <p>
+            Hello <strong>${userName}</strong>,
+        </p>
+
+        <p>
+            We received a request to permanently delete your account from
+            <strong>Abdul's Blogging Application</strong>.
+        </p>
+
+        <p>
+            This action is irreversible. All your blogs, comments,
+            profile information, and account data will be permanently removed.
+        </p>
+
+        <div style="text-align:center;margin:40px 0;">
+
+            <p style="font-size:15px;color:#6b7280;margin-bottom:10px;">
+                Your Verification OTP
+            </p>
+
+            <div class="otp">
+                ${otp}
+            </div>
+
+        </div>
+
+        <p>
+            This OTP will expire in
+            <strong>5 minutes</strong>.
+        </p>
+
+        <p>
+            If you did not request this action, simply ignore this email.
+            Your account will remain secure.
+        </p>
+
+        <hr style="margin:40px 0;">
+
+        <p style="font-size:13px;color:#6b7280;text-align:center;">
+            © ${new Date().getFullYear()} Abdul's Blogging Application
+        </p>
+
+    </div>
 
 </div>
 
@@ -316,4 +865,3 @@ If you did not request this action, simply ignore this email. Your account will 
 
 </html>
 `;
-

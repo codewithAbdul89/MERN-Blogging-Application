@@ -9,12 +9,11 @@ import App from './App.jsx';
 import { store } from './app/store.js';
 import { setAxiosContext } from './api/axiosContext.js';
 import { ThemeProvider } from './context/ThemeContext.jsx';
-import ThemeToggle from './components/ui/ThemeToggle.jsx';
 import queryClient from './api/queryClient.js';
 
 
 setAxiosContext({
-    
+    dispatch: store.dispatch,                                  
     getAccessToken: () => store.getState().auth.accessToken,
 });
 

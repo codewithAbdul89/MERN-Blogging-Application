@@ -13,7 +13,7 @@ import {
     toggleLike,
     toggleBookmark
 } from "./blogService.js";
-import { handleMutationError } from "../../utils/errorHandler.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 import { showSuccess } from "../../utils/toast.js";
 
 
@@ -37,7 +37,7 @@ export const useCreateBlog = () => {
             showSuccess(data.message)
         },
 
-        onError: handleMutationError
+        onError: errorHandler
 
     });
 
@@ -69,7 +69,7 @@ export const useUpdateBlog = () => {
             showSuccess(data.message)
         },
 
-        onError: handleMutationError
+        onError: errorHandler
 
     });
 };
@@ -95,7 +95,7 @@ export const usePublishBlog = () => {
 
         },
 
-        onError: handleMutationError
+        onError: errorHandler
 
     });
 };
@@ -120,7 +120,7 @@ export const useUnpublishBlog = () => {
             showSuccess(data.message)
         },
 
-        onError: handleMutationError
+        onError: errorHandler
 
     });
 };
@@ -176,7 +176,7 @@ export const usePinBlog = () => {
 
             }
 
-            handleMutationError(error);
+            errorHandler(error);
 
         },
 
@@ -200,7 +200,7 @@ export const useSendDeleteBlogOtp = () => {
     return useMutation({
         mutationFn: sendDeleteBlogOtp,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -213,7 +213,7 @@ export const useVerifyDeleteBlogOtp = () => {
     return useMutation({
         mutationFn: verifyDeleteBlogOtp,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data) => {
             data.message
@@ -330,7 +330,7 @@ export const useDeleteBlog = () => {
                 )
             };
 
-            handleMutationError(error);
+            errorHandler(error);
 
         },
 
@@ -498,7 +498,7 @@ export const useToggleLike = () => {
                 )
             };
 
-            handleMutationError(error);
+            errorHandler(error);
 
         },
 
@@ -655,7 +655,7 @@ export const useToggleBookmark = () => {
                 )
             };
 
-            handleMutationError(error);
+            errorHandler(error);
 
         },
 

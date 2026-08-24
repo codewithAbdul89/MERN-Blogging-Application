@@ -9,7 +9,7 @@ import {
 } from "./commentService.js";
 
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
-import { handleMutationError } from "../../utils/errorHandler.js";
+import { errorHandler } from "../../utils/errorHandler.js";
 import { showSuccess } from "../../utils/toast.js";
 
 
@@ -22,7 +22,7 @@ export const useCreateComment = () => {
 
         mutationFn: createComment,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data, variables) => {
             //It invalidate all the comments whose blogId are same
@@ -50,7 +50,7 @@ export const useUpdateComment = () => {
 
         mutationFn: updateComment,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data, variables) => {
 
@@ -96,7 +96,7 @@ export const useDeleteComment = () => {
 
         mutationFn: deleteComment,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data, variables) => {
 
@@ -142,7 +142,7 @@ export const usePinComment = () => {
 
         mutationFn: pinComment,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data, variables) => {
 
@@ -188,7 +188,7 @@ export const useHideComment = () => {
 
         mutationFn: hideComment,
 
-        onError: handleMutationError,
+        onError: errorHandler,
 
         onSuccess: (data, variables) => {
 

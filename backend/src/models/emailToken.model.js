@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import { type } from "os";
+
 
 const emailSchema = new Schema({
     userId: {
@@ -16,6 +16,7 @@ const emailSchema = new Schema({
     type: {
         type: String,
         enum: [
+            "LOGIN_EMAIL",
             "VERIFY_EMAIL",
             "RESET_PASSWORD",
             "DELETE_BLOG_OTP",
