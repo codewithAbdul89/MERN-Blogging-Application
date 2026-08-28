@@ -15,7 +15,7 @@ const validate = (req, res, next) => {
         return next(
             new ApiError(
                 400,
-                "Validation Failed",
+                `Validation Failed ${formattedErrors[0].message}`,
                 formattedErrors
             )
         );

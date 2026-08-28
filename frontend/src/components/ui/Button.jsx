@@ -19,7 +19,7 @@ const Button = ({
                 transition-colors
                 duration-200
                 disabled:cursor-not-allowed
-                disabled:opacity-50
+                disabled:opacity-70
                 cursor-pointer  
             `}
             {...props}

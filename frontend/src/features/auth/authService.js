@@ -40,11 +40,11 @@ export const forgotPassword = async (passwordData) => {
   return response.data;
 };
 
-export const resetPassword = async ({ token, passwordData }) => {
-  const response = await api.post(
-    `/auth/reset-password/${token}`,
-    passwordData,
-  );
+export const resetPassword = async ({ token, newPassword }) => {
+  console.log("token, newPassword : ", token, newPassword);
+  const response = await api.post(`/auth/reset-password/${token}`, {
+    newPassword,
+  });
   return response.data;
 };
 
@@ -82,17 +82,11 @@ export const githubLogin = () => {
 };
 
 export const emailLogin = async (credentials) => {
-  const response = await api.post(
-    `/auth/send-email-login-otp`,
-    credentials,
-  );
+  const response = await api.post(`/auth/send-email-login-otp`, credentials);
   return response.data;
 };
 
-export const verifyEmailOtp = async (otp) => {
-  const response = await api.post(
-    `/auth/verify-email-login-otp`,
-    otp,
-  );
+export const verifyEmailOtp = async ({ otp }) => {
+  const response = await api.post(`/auth/verify-email-login-otp`, otp);
   return response.data;
 };

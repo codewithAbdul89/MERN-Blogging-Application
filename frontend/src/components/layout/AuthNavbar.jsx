@@ -10,7 +10,7 @@ const AuthNavbar = () => {
   const isSignupPage = location.pathname === "/register";
 
   return (
-    <nav className="bg-primary-light flex justify-between items-center px-1  duration-400 transition-all rounded sm:px-8 ">
+    <nav className="bg-primary-light flex justify-between items-center pl-2  pr-3 duration-400 transition-all rounded sm:px-8 ">
       <div>
         <Logo className="h-18 rounded-lg p-1 sm:h-16" loading="eager" />
       </div>

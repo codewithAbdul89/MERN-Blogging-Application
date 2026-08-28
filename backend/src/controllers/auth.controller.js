@@ -87,7 +87,7 @@ export const signup = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password,rememberMe =false } = req.body;
 
   const user = await User.findOne({ email }).select("+password");
 
@@ -108,10 +108,10 @@ export const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid Email or password");
   }
 
-  const refreshToken = generateRefreshToken(user);
+  const refreshToken = generateRefreshToken(user,rememberMe);
   const accessToken = generateAccessToken(user);
 
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+  res.cookie("refreshToken", refreshToken, refreshTokenOptions(rememberMe));
 
   return res.status(200).json(
     new ApiResponse(200, `Welcome ${user.userName}`, {
@@ -126,14 +126,16 @@ export const sendLoginEmailOtp = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
 
- if (!user) {
-    return res.status(200).json(
+  if (!user) {
+    return res
+      .status(200)
+      .json(
         new ApiResponse(
-            200,
-            "If an account with this email exists, a verification email has been sent"
-        )
-    );
-}
+          200,
+          "If an account with this email exists, a verification email has been sent.Please also check your spam email folder.",
+        ),
+      );
+  }
 
   await EmailToken.deleteMany({
     userId: user._id,
@@ -155,7 +157,12 @@ export const sendLoginEmailOtp = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "If an account with this email exists, a verification email has been sent."));
+    .json(
+      new ApiResponse(
+        200,
+        "If an account with this email exists, a verification email has been sent.Please also check your spam email folder.",
+      ),
+    );
 });
 
 export const verifyLoginEmailtOtp = asyncHandler(async (req, res) => {
@@ -345,9 +352,16 @@ export const forgotPassword = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          "If an account exists, a password reset email has been sent.",
+          "If an account with this email exists, a verification email has been sent.Please also check your spam email folder.",
         ),
       );
+  }
+
+  if (!user.password) {
+    throw new ApiError(
+      400,
+      "This account does not have a password. Please use email login or your social login.",
+    );
   }
 
   if (!user.isEmailVerified) {
@@ -377,7 +391,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        "If an account exists, a password reset email has been sent.",
+        "If an account with this email exists, a verification email has been sent.Please also check your spam email folder.",
       ),
     );
 });
@@ -399,7 +413,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   });
 
   if (!matchedToken) {
-    throw new ApiError(400, "Invalid or expired password reset token.");
+    throw new ApiError(400, "Invalid or expired password reset Link.");
   }
 
   if (matchedToken.expiresAt < new Date()) {
@@ -408,7 +422,8 @@ export const resetPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Reset link has expired.");
   }
 
-  const user = await User.findById(matchedToken.userId);
+  const user = await User.findById(matchedToken.userId).select("+password");
+
 
   if (!user) {
     await EmailToken.findByIdAndDelete(matchedToken._id);
@@ -426,7 +441,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Password updated Successfully."));
+    .json(new ApiResponse(200, "Password reset successful. Please log in with your new password."));
 });
 
 export const googleLogin = asyncHandler(async (req, res) => {
@@ -585,11 +600,13 @@ export const refreshToken = asyncHandler(async (req, res) => {
   const user = await User.findById(decoded.id);
 
   if (!user) throw new ApiError(404, "User not found. Please sign in again.");
+  const rememberMe = decoded.rememberMe;
 
-  const newRefreshToken = generateRefreshToken(user);
+
+  const newRefreshToken = generateRefreshToken(user,rememberMe);
   const newAccessToken = generateAccessToken(user);
 
-  res.cookie("refreshToken", newRefreshToken, refreshTokenOptions);
+  res.cookie("refreshToken", newRefreshToken, refreshTokenOptions(rememberMe));
 
   return res.status(200).json(
     new ApiResponse(200, "Token refresh successfully", {

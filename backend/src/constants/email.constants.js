@@ -3,7 +3,7 @@ export const EMAIL_EXPIRY = {
   RESET_PASSWORD: 15 * 60 * 1000,
   DELETE_BLOG_OTP: 5 * 60 * 1000,
   DELETE_ACCOUNT_OTP: 5 * 60 * 1000,
-  LOGIN_EMAIL: 5 * 60 * 1000,
+  LOGIN_EMAIL: 1 * 60 * 1000,
 };
 
 export const EMAIL_TOKEN_TYPES = {

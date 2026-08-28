@@ -13,6 +13,8 @@ export const loginSchema = z.object({
     .min(1, "Password is required.")
     .min(6, "Password must be at least 6 characters.")
     .max(12, "Password cannot exceed 12 characters."),
+
+  rememberMe: z.boolean(),
 });
 
 export const signupSchema = loginSchema.extend({
@@ -23,7 +25,7 @@ export const signupSchema = loginSchema.extend({
     .max(30, "Username cannot exceed 30 characters."),
 });
 
-export const emailLoginSchema = z.object({
+export const emailSchema = z.object({
   email: z
     .string()
     .trim()
@@ -36,7 +38,7 @@ export const emailLoginOtpSchema = z.object({
     .string()
     .trim()
     .length(6, "OTP must be 6 digits.")
-    .regex(/^\d+$/, "OTP must contain only numbers")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
 });
 
 export const changePasswordSchema = z.object({
@@ -53,21 +55,20 @@ export const changePasswordSchema = z.object({
     .max(12, "New password cannot exceed 12 characters."),
 });
 
-export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Invalid email address."),
-});
+export const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .trim()
+      .min(6, "Password must be at least 6 characters.")
+      .max(12, "Password cannot exceed 12 characters."),
 
-export const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .trim()
-    .min(6, "Password must be at least 6 characters.")
-    .max(12, "Password cannot exceed 12 characters."),
-});
+    confirmPassword: z.string().trim().min(1, "Please confirm your password."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export const updateProfileSchema = z
   .object({

@@ -7,7 +7,7 @@ import blogRouter from "./Routes/blog.routes.js";
 import userRouter from "./Routes/user.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import commentRouter from "./routes/comment.routes.js";
-import errorHandler from "./middlewares/error.middleware.js";
+import errorHandler from "./middlewares/error.middleware.js"
 
 const app = express();
 

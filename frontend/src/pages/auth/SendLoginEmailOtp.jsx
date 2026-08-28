@@ -4,15 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { emailLoginSchema } from "../../features/auth/authValidation";
+import { emailSchema } from "../../features/auth/authValidation";
 import { useEffect } from "react";
 import { useEmailLogin } from "../../features/auth/authMutations";
 import ButtonLoader from "../../components/ui/ButtonLoader";
 import Loader from "../../components/ui/Loader";
 import { Link, useNavigate } from "react-router-dom";
 
-function EmailLogin() {
+function SendLoginEmailOtp() {
   const navigate = useNavigate();
+
+  const emailData = JSON.parse(sessionStorage.getItem("email") || "null");
 
   const {
     register,
@@ -20,24 +22,24 @@ function EmailLogin() {
     setFocus,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(emailLoginSchema),
+    resolver: zodResolver(emailSchema),
+    defaultValues: {
+      email: emailData?.email || "",
+    },
   });
 
   useEffect(() => {
     setFocus("email");
   }, [setFocus]);
 
-  const { mutateAsync: emailLogin, isPending, isSuccess } = useEmailLogin();
+  const { mutateAsync: emailLogin, isPending } = useEmailLogin();
 
   const onSubmit = async (data) => {
     try {
-     await emailLogin(data);
-      sessionStorage.setItem("email", JSON.stringify(data));
-        navigate("/verify-login-otp");
-      
-      // console.log(JSON.parse(sessionStorage.getItem("email")));
+      await emailLogin(data);
+      navigate("/verify-login-otp");
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Send Login Email error:", error);
     }
   };
 
@@ -49,16 +51,15 @@ function EmailLogin() {
           {/* Starting from here */}
           <div className="bg-primary-light m-1 px-4 py-5 rounded-2xl shadow-xl ">
             {/* Icon */}
-            <div className="flex justify-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/70 dark:bg-[#1b2431]/50">
-                <MdOutlineEmail
-                  className="text-primary-light dark:text-white/80"
-                  size={50}
-                />
+
+            <div className="mb-4 flex justify-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                <MdOutlineEmail size={32} className="text-primary" />
               </div>
             </div>
+
             {/* Main Heading */}
-            <h1 className="text-text-primary  text-4xl font-bold font-heading text-center pt-3">
+            <h1 className="text-primary  text-4xl font-bold font-heading text-center pt-3">
               Login With Email
             </h1>
 
@@ -74,6 +75,7 @@ function EmailLogin() {
                 label="Email"
                 id="email"
                 placeholder="abc@gmail.com"
+                autoComplete="emial"
                 type="email"
                 labelClassName="text-lg"
                 {...register("email")}
@@ -104,4 +106,4 @@ function EmailLogin() {
   );
 }
 
-export default EmailLogin;
+export default SendLoginEmailOtp;

@@ -28,14 +28,16 @@ function LoginForm() {
 
   useEffect(() => {
     setFocus("email");
+    sessionStorage.removeItem("email");
   }, [setFocus]);
 
   const { mutateAsync: login, isPending } = useLogin();
 
   const onSubmit = async (data) => {
     try {
+      console.log("Login data", data);
       await login(data);
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -61,7 +63,7 @@ function LoginForm() {
 
   return (
     <div className="bg-primary-light m-1 px-4 py-5 rounded-3xl shadow-xl">
-      <h1 className="text-text-primary text-4xl font-bold font-heading text-center">
+      <h1 className="text-primary text-4xl font-bold font-heading text-center">
         Welcome Back
       </h1>
 
@@ -83,11 +85,31 @@ function LoginForm() {
           label="Password"
           id="password"
           type="password"
-          placeholder="abcde123"
+          placeholder="abc$@123"
           className="mb-2"
           {...register("password")}
           error={errors.password?.message}
+          // value="abdul4"
         />
+
+        {/* Remember me & Forgot Password */}
+
+        <div className="flex justify-between items-center px-1 sm:px-3 pt-0.5">
+          <div className="flex gap-2 justify-center items-center text-primary/80">
+            <Input
+              type="checkbox"
+              {...register("rememberMe")}
+              className=" w-4 h-4 sm:w-3.5 sm:h-3.5 accent-primary hover:opacity-60"
+            />
+            Remember me
+          </div>
+          <Link
+            to="/forgot-password"
+            className="block text-sm hover:underline hover:text-primary-hover text-primary/80 "
+          >
+            Forgot Password?
+          </Link>
+        </div>
 
         <div className="flex justify-center mb-2">
           <Button
@@ -122,12 +144,12 @@ function LoginForm() {
       {/* OAuth */}
       <div className="flex  gap-x-5 justify-center items-center">
         <Button
-         className="bg-primary w-full text-white/80 cursor-pointer flex items-center gap-x-3 justify-center hover:bg-primary-hover"
+          className="bg-primary w-full text-white/80 cursor-pointer flex items-center gap-x-3 justify-center hover:bg-primary-hover"
           onClick={googleLogin}
           text={
             <>
               <FcGoogle size={28} />
-               Google
+              Google
             </>
           }
         />
@@ -138,7 +160,7 @@ function LoginForm() {
           text={
             <>
               <FaGithub size={28} />
-               Github
+              Github
             </>
           }
         />
@@ -148,9 +170,8 @@ function LoginForm() {
         Don't have an account?
         <Link
           to="/register"
-          className="text-lg font-semibold text-primary underline hover:text-primary-hover"
+          className="text font-semibold text-primary hover:underline hover:text-primary-hover"
         >
-          {" "}
           Sign Up!
         </Link>
       </p>

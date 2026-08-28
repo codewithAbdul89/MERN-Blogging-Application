@@ -136,8 +136,8 @@ export const loginOtpTemplate = ({ userName, otp }) => `<!DOCTYPE html>
 `;
 
 export const verificationEmailTemplate = ({
-    userName,
-    verificationLink,
+  userName,
+  verificationLink,
 }) => `<!DOCTYPE html>
 
 <html>
@@ -280,11 +280,7 @@ export const verificationEmailTemplate = ({
 </html>
 `;
 
-
-export const resetPasswordTemplate = ({
-    userName,
-    resetLink,
-}) => `
+export const resetPasswordTemplate = ({ userName, resetLink }) => `
 <!DOCTYPE html>
 
 <html>
@@ -395,17 +391,25 @@ export const resetPasswordTemplate = ({
         <p>
             We received a request to reset your password.
         </p>
+        
+<div style="text-align:center;margin:35px 0;">
 
-        <div style="text-align:center;margin:35px 0;">
+    <a
+        href="${resetLink}"
+        style="
+            background:#dc2626;
+            padding:15px 28px;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+            display:inline-block;
+            font-weight:bold;
+        "
+    >
+        Reset Password
+    </a>
 
-            <a
-                href="${resetLink}"
-                class="button"
-            >
-                Reset Password
-            </a>
-
-        </div>
+</div>
 
         <p>
             This link expires in
@@ -426,10 +430,7 @@ export const resetPasswordTemplate = ({
 </html>
 `;
 
-
-export const welcomeEmailTemplate = ({
-    userName,
-}) => `
+export const welcomeEmailTemplate = ({ userName }) => `
 <!DOCTYPE html>
 
 <html>
@@ -544,12 +545,11 @@ export const welcomeEmailTemplate = ({
 </html>
 `;
 
-
 export const deleteBlogOtpTemplate = ({
-    userName,
-    blogTitle,
-    category,
-    otp,
+  userName,
+  blogTitle,
+  category,
+  otp,
 }) => `
 <!DOCTYPE html>
 
@@ -715,11 +715,7 @@ export const deleteBlogOtpTemplate = ({
 </html>
 `;
 
-
-export const deleteAccountOtpTemplate = ({
-    userName,
-    otp,
-}) => `
+export const deleteAccountOtpTemplate = ({ userName, otp }) => `
 <!DOCTYPE html>
 
 <html>

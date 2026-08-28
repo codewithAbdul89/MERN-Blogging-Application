@@ -7,8 +7,10 @@ import AuthLayout from "../layouts/AuthLayout.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import PublicRoute from "./PublicRoute.jsx";
 import OAuthSuccess from "../pages/auth/OAuthSuccess.jsx";
-import EmailLogin from "../pages/auth/EmailLogin.jsx";
-import LoginOtp from "../pages/auth/LoginOTP.jsx";
+import SendLoginEmailOtp from "../pages/auth/SendLoginEmailOtp.jsx";
+import VerifyLoginEmailOtp from "../pages/auth/VerifyLoginEmailOtp.jsx";
+import ForgotPassword from "../pages/auth/ForgotPassword.jsx";
+import ResetPassword from "../pages/auth/ResetPassword.jsx";
 
 function AppRoutes() {
   return (
@@ -19,11 +21,13 @@ function AppRoutes() {
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/email-login" element={<EmailLogin />} />
-          <Route path="/verify-login-otp" element={<LoginOtp />} />
+          <Route path="/email-login" element={<SendLoginEmailOtp />} />
+          <Route path="/verify-login-otp" element={<VerifyLoginEmailOtp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword/>} />
         </Route>
       </Route>
-
+ 
       {/* Oauth Success */}
       <Route path="/oauth/success" element={<OAuthSuccess />} />
 

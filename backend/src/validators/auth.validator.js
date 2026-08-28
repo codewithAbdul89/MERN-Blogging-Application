@@ -90,10 +90,10 @@ export const forgotPasswordValidator = [
 
 export const resetPasswordValidator = [
 
-    body("password")
+    body("newPassword")
         .trim()
         .notEmpty()
-        .withMessage("Password is required.")
+        .withMessage(" New Password is required.")
         .bail()
         .isLength({ min: 6, max: 12 })
         .withMessage("Password must be between 6 and 12 characters")

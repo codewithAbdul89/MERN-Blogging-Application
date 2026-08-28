@@ -39,7 +39,7 @@ import { showInfo } from "../utils/toast.js";
 function PublicRoute() {
   const { authStatus } = useSelector((state) => state.auth);
   const [redirect, setRedirect] = useState(false);
-
+ 
   useEffect(() => {
     if (authStatus === "authenticated") {
 

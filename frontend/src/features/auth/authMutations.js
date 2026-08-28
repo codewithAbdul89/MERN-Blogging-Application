@@ -35,19 +35,19 @@ export const useLogin = () => {
 };
 
 export const useEmailLogin = () => {
- 
   return useMutation({
     mutationFn: emailLogin,
 
     onError: errorHandler,
 
-    onSuccess: (response) => {
+    onSuccess: (response,variable) => {
+      sessionStorage.setItem("email", JSON.stringify(variable));
       showSuccess(response.message);
     },
   });
 };
 
-export const useVerifyEmailOTp = () => {
+export const useVerifyEmailOtp = () => {
   const dispatch = useDispatch();
 
   return useMutation({
@@ -58,6 +58,7 @@ export const useVerifyEmailOTp = () => {
     onSuccess: (response) => {
       sessionStorage.setItem("justLoggedIn", "1");
       localStorage.setItem("hasSession", "1");
+      sessionStorage.removeItem("email");
       dispatch(setCredentials(response.data));
       showSuccess(response.message);
     },
@@ -71,6 +72,7 @@ export const useSignup = () => {
     onError: errorHandler,
 
     onSuccess: (response) => {
+      // TODO: keep thing remove form it and add in teh signup form
       dispatch(setCredentials(response.data));
       localStorage.setItem("hasSession", "1");
       showSuccess(response.message);
@@ -86,10 +88,12 @@ export const useLogout = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
+    onSuccess: (response) => {
       dispatch(logOut());
-      localStorage.setItem("hasSession", "1");
-      showSuccess(data.message);
+      // TODO: also keep thing remove form it and add in teh signup form
+      localStorage.removeItem("hasSession");
+      sessionStorage.clear();
+      showSuccess(response.message);
     },
   });
 };
@@ -100,8 +104,8 @@ export const useChangePassword = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
-      data.message;
+    onSuccess: (response) => {
+      showSuccess(response.message);
     },
   });
 };
@@ -112,8 +116,8 @@ export const useResendVerificationEmail = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
-      data.message;
+    onSuccess: (response) => {
+      showSuccess(response.message);
     },
   });
 };
@@ -124,8 +128,8 @@ export const useVerifyEmail = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
-      data.message;
+     onSuccess: (response) => {
+      showSuccess(response.message);
     },
   });
 };
@@ -136,8 +140,8 @@ export const useForgotPassword = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
-      data.message;
+    onSuccess: (response) => {
+      showSuccess(response.message);
     },
   });
 };
@@ -148,8 +152,8 @@ export const useResetPassword = () => {
 
     onError: errorHandler,
 
-    onSuccess: (data) => {
-      data.message;
+    onSuccess: (response) => {
+      showSuccess(response.message);
     },
   });
 };
