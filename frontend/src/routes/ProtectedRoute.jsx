@@ -14,7 +14,7 @@ function ProtectedRoute() {
 
     return (
         <>
-            <Outlet />
+            <Outlet /> 
 
             {authStatus === "loading" && <Loader />}
         </>

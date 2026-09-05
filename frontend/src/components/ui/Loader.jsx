@@ -30,7 +30,7 @@ export const Loader = () => {
             flex
             items-center
             justify-center
-            bg-black/80
+            bg-black/50
         "
     >
       <motion.div

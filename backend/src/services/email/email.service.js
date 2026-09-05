@@ -30,7 +30,7 @@ export const sendWelcomeEmail = async (user) => {
 };
 
 export const sendVerificationEmail = async (user, rawToken) => {
-  const verificationLink = `${process.env.FRONTEND_URL}/verify-email/${rawToken}`;
+  const verificationLink = `${process.env.FRONTEND_URL}/register/verify-email/${rawToken}`;
 
   const html = verificationEmailTemplate({
     userName: user.userName,

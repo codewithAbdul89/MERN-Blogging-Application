@@ -1,17 +1,18 @@
+import { twMerge } from "tailwind-merge";
 const Button = ({
-    ref,
-    text,
-    type = "button",
-    disabled = false,
-    className = "",
-    ...props
+  ref,
+  text,
+  type = "button",
+  disabled = false,
+  className = "",
+  ...props
 }) => {
-    return (
-        <button
-            type={type}
-            disabled={disabled}
-            className={`
-                ${className}
+  return (
+    <button
+      type={type}
+      disabled={disabled}
+      className={twMerge(
+        `
                 rounded-lg
                 px-4
                 py-2
@@ -21,12 +22,14 @@ const Button = ({
                 disabled:cursor-not-allowed
                 disabled:opacity-70
                 cursor-pointer  
-            `}
-            {...props}
-        >
-            {text}
-        </button>
-    );
+            `,
+        className,
+      )}
+      {...props}
+    >
+      {text}
+    </button>
+  );
 };
 
 export default Button;

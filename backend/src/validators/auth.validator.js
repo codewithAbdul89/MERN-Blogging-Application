@@ -50,20 +50,20 @@ export const loginValidation = [
 
 export const changePasswordValidator = [
 
-    body("oldPassword")
+    body("previousPassword")
         .trim()
         .notEmpty()
-        .withMessage("Password is required")
+        .withMessage("Previous password is required.")
         .isLength({ min: 1, max: 12 })
         .withMessage("Password must be between 1 and 12 characters."),
 
-    body("password")
+    body("newPassword")
         .trim()
         .notEmpty()
-        .withMessage("New password is required")
+        .withMessage("New password is required.")
         .bail()
         .isLength({ min: 6, max: 12 })
-        .withMessage("Password must be between 6 and 12 characters")
+        .withMessage("Password must be between 6 and 12 characters.")
 ];
 
 export const EmailValidator = [

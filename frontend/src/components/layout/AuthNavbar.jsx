@@ -19,7 +19,7 @@ const AuthNavbar = () => {
         {isLoginPage && (
           <Link
             to="/register"
-            className="bg-background px-4 py-2 rounded-full text-primary font-semibold hover:text-primary-hover hover:opacity-60 duration-200  transition-all"
+            className="bg-background px-4 py-2 rounded-full text-primary font-semibold hover:text-white/80 hover:opacity-60 duration-300  transition-all hover:bg-primary"
           >
             SignUp
           </Link>
@@ -28,7 +28,7 @@ const AuthNavbar = () => {
         {isSignupPage && (
           <Link
             to="/login"
-            className="bg-background px-4 py-2 rounded-full text-primary font-semibold hover:text-primary-hover hover:opacity-60 duration-200  transition-all"
+            className="bg-background px-4 py-2 rounded-full text-primary font-semibold hover:text-white/80 hover:opacity-60 duration-300  transition-all hover:bg-primary"
           >
             Login
           </Link>

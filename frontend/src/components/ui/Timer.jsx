@@ -4,22 +4,23 @@ const Timer = ({
   initialTime = 60,
   resetKey = 0,
   onTimeChange,
-  onComplete,
 }) => {
   const [timeLeft, setTimeLeft] = useState(0);
 
-  // Start/reset timer whenever resetKey changes
+  // Start / reset timer
   useEffect(() => {
-    // Intially when no request is sending
     if (resetKey === 0) {
       setTimeLeft(0);
-      onTimeChange?.(0);
       return;
     }
 
     setTimeLeft(initialTime);
-    onTimeChange?.(initialTime);
-  }, [resetKey, initialTime, onTimeChange]);
+  }, [resetKey, initialTime]);
+
+  // Send current time to parent
+  useEffect(() => {
+    onTimeChange?.(timeLeft);
+  }, [timeLeft, onTimeChange]);
 
   // Countdown
   useEffect(() => {
@@ -28,24 +29,12 @@ const Timer = ({
     }
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        const nextTime = prev - 1;
-
-        if (nextTime <= 0) {
-          onTimeChange?.(0);
-          onComplete?.();
-        } else {
-          onTimeChange?.(nextTime);
-        }
-
-        return nextTime;
-      });
+      setTimeLeft((prev) => prev - 1);
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, onTimeChange, onComplete]);
+  }, [timeLeft]);
 
-  // Timer has no UI
   return null;
 };
 

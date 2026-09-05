@@ -3,7 +3,7 @@ import { protectedRoute, authorizeRole } from '../middlewares/auth.middleware.js
 import { imageUploader } from "../middlewares/upload.middleware.js";
 import { createBlogValidator, singleBlogValidator, updateBlogValidator, verifyDeleteBlogOtpVelidation } from "../validators/blog.validator.js";
 import validate from "../middlewares/validate.middleware.js";
-import { createBlog, getAllBlogs, getSingleBlog, updateBlog, deleteBlog, publishBlog, unpublishBlog, pinBlog, getMyBlogs, sendDeleteBlogOtp, verifyDeleteBlogOtp } from "../controllers/blog.controller.js";
+import { createBlog, getAllBlogs, getSingleBlog, updateBlog, deleteBlog, publishBlog, unpublishBlog, pinBlog, getMyBlogs, sendDeleteBlogOtp, verifyDeleteBlogOtp, blogStats } from "../controllers/blog.controller.js";
 import { handleUploadErrors } from "../middlewares/fileValidation.middleware.js";
 import { getLikedBlogs, toggleLike } from "../controllers/like.controller.js";
 import { toggleLikeValidator } from "../validators/like.validator.js";
@@ -46,6 +46,12 @@ router.get(
     '/bookmarks',
     protectedRoute,
     getBookmarkedBlogs
+)
+
+router.get(
+    '/my-blogs/stats',
+    protectedRoute,
+    blogStats
 )
 
 router.patch(

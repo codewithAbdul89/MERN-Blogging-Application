@@ -7,10 +7,10 @@ import {
   forgotPassword,
   login,
   logout,
+  register,
   resendVerificationEmail,
   resetPassword,
-  signup,
-  verifyEmail,
+  verifyRegisterEmail,
   verifyEmailOtp,
 } from "./authService.js";
 import { useDispatch } from "react-redux";
@@ -28,6 +28,7 @@ export const useLogin = () => {
     onSuccess: (response) => {
       sessionStorage.setItem("justLoggedIn", "1");
       localStorage.setItem("hasSession", "1");
+      localStorage.removeItem("email")
       dispatch(setCredentials(response.data));
       showSuccess(response.message);
     },
@@ -40,7 +41,7 @@ export const useEmailLogin = () => {
 
     onError: errorHandler,
 
-    onSuccess: (response,variable) => {
+    onSuccess: (response, variable) => {
       sessionStorage.setItem("email", JSON.stringify(variable));
       showSuccess(response.message);
     },
@@ -65,46 +66,14 @@ export const useVerifyEmailOtp = () => {
   });
 };
 
-export const useSignup = () => {
+export const useRegister = () => {
   return useMutation({
-    mutationFn: signup,
+    mutationFn: register,
 
     onError: errorHandler,
 
-    onSuccess: (response) => {
-      // TODO: keep thing remove form it and add in teh signup form
-      dispatch(setCredentials(response.data));
-      localStorage.setItem("hasSession", "1");
-      showSuccess(response.message);
-    },
-  });
-};
-
-export const useLogout = () => {
-  const dispatch = useDispatch();
-
-  return useMutation({
-    mutationFn: logout,
-
-    onError: errorHandler,
-
-    onSuccess: (response) => {
-      dispatch(logOut());
-      // TODO: also keep thing remove form it and add in teh signup form
-      localStorage.removeItem("hasSession");
-      sessionStorage.clear();
-      showSuccess(response.message);
-    },
-  });
-};
-
-export const useChangePassword = () => {
-  return useMutation({
-    mutationFn: changePassword,
-
-    onError: errorHandler,
-
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
+      localStorage.setItem("email", variables.email);
       showSuccess(response.message);
     },
   });
@@ -122,13 +91,43 @@ export const useResendVerificationEmail = () => {
   });
 };
 
-export const useVerifyEmail = () => {
+export const useVerifyRegisterEmail = () => {
+
   return useMutation({
-    mutationFn: verifyEmail,
+    mutationFn: verifyRegisterEmail,
 
     onError: errorHandler,
 
-     onSuccess: (response) => {
+    onSuccess: (response) => {
+      localStorage.removeItem("email");
+      showSuccess(response.message);
+    },
+  });
+};
+
+export const useLogout = () => {
+  const dispatch = useDispatch();
+
+  return useMutation({
+    mutationFn: logout,
+
+    onError: errorHandler,
+
+    onSuccess: (response) => {
+      dispatch(logOut());
+      localStorage.removeItem("hasSession");
+      sessionStorage.clear();
+    },
+  });
+};
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: changePassword,
+
+    onError: errorHandler,
+
+    onSuccess: (response) => {
       showSuccess(response.message);
     },
   });

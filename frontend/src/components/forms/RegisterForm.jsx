@@ -2,24 +2,21 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MdEmail } from "react-icons/md";
-
 
 import Button from "../ui/Button.jsx";
 import ButtonLoader from "../ui/ButtonLoader.jsx";
 import Input from "../ui/Input.jsx";
 
-import { loginSchema } from "../../features/auth/authValidation.js";
-import { useLogin } from "../../features/auth/authMutations.js";
+import {  registerSchema } from "../../features/auth/authValidation.js";
+import { useRegister } from "../../features/auth/authMutations.js";
 import { googleLogin, githubLogin } from "../../features/auth/authService.js";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
+import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
-import { setUser } from "../../features/auth/authSlice.js";
 
-function LoginForm() {
+function RegisterForm() {
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -32,31 +29,21 @@ function LoginForm() {
     setFocus,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(registerSchema),
   });
 
   useEffect(() => {
-    setFocus("email");
-    sessionStorage.removeItem("email");
+    setFocus("userName");
   }, [setFocus]);
 
-  const { mutateAsync: login, isPending } = useLogin();
+  const { mutateAsync: registerAccount, isPending } = useRegister();
 
   const onSubmit = async (data) => {
     try {
-      await login(data);
-
-      navigate("/", { replace: true });
+      await registerAccount(data);
+      navigate("/register/verify-email", { replace: true });
     } catch (error) {
-      const errorCode = error.response?.data?.errorCode;
-
-      if (errorCode === "EMAIL_NOT_VERIFIED") {
-        localStorage.setItem("email", data.email);
-        navigate("/register/verify-email");
-        return;
-      }
-
-      console.error("Login error:", error);
+      console.error("Register error:", error);
     }
   };
   // OAUTH success handler
@@ -101,81 +88,69 @@ function LoginForm() {
   }, [navigate, queryClient, dispatch]);
 
   return (
-    <div className="bg-primary-light m-1 px-4 py-5 rounded-3xl shadow-xl">
-      <h1 className="text-primary text-4xl font-bold font-heading text-center">
-        Welcome Back
+    <div className="bg-primary-light m-1 px-3 py-5 rounded-3xl shadow-xl ">
+      <h1 className="text-primary text-3xl font-bold font-heading text-center sm:text-4xl">
+        Create Your Account
       </h1>
 
       <h2 className="mt-1 text-text-secondary text-center">
-        Login to your account to continue.
+        Join Abdul's Blog and start sharing your ideas.
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          label="User Name"
+          id="userName"
+          placeholder="abc@gmail.com"
+          {...register("userName")}
+          labelClassName="my-1"
+          error={errors.userName?.message}
+        />
+
         <Input
           label="Email"
           id="email"
           placeholder="abc@gmail.com"
           type="email"
-          autoComplete="emial"
           {...register("email")}
+          labelClassName="my-1"
           error={errors.email?.message}
         />
 
-        
         <Input
           label="Password"
           id="password"
           type="password"
           placeholder="abc$@123"
-          className="mb-2"
           {...register("password")}
+          labelClassName="my-1"
           error={errors.password?.message}
-          passwordIcon
         />
 
-        {/* Remember me & Forgot Password */}
-
-        <div className="flex justify-between items-center px-1 sm:px-3 pt-0.5">
-          <div className="flex gap-2 justify-center items-center text-primary/80">
-            <Input
-              type="checkbox"
-              {...register("rememberMe")}
-              className=" w-4 h-4 sm:w-3.5 sm:h-3.5 accent-primary hover:opacity-60"
-            />
-            Remember me
-          </div>
-          <Link
-            to="/forgot-password"
-            className="block text-sm hover:underline hover:text-primary-hover text-primary/80 "
-          >
-            Forgot Password?
-          </Link>
-        </div>
+        <Input
+          label="Confirm Password"
+          id="confirmPassword"
+          type="password"
+          placeholder="abc$@123"
+          className="mb-2"
+          {...register("confirmPassword")}
+          labelClassName="my-1"
+          error={errors.confirmPassword?.message}
+        />
 
         <div className="flex justify-center mb-2">
           <Button
             type="submit"
-            text={isPending ? <ButtonLoader text="Logging in" /> : "Login"}
+            text={isPending ? <ButtonLoader text="Registering" /> : "Register"}
             disabled={isPending}
             className="bg-primary w-full text-white/80 mt-2 hover:bg-primary-hover text-lg"
           />
         </div>
       </form>
 
-      {/* Continue with Email */}
-      <Link className="w-full" to="/email-login">
-        <Button
-          className="bg-primary w-full text-white/80 cursor-pointer flex items-center gap-x-3 justify-center hover:bg-primary-hover"
-          text={
-            <>
-              <MdEmail size={30} />
-              Continue with Email
-            </>
-          }
-        />
-      </Link>
+      {/* Continue With */}
 
-      <div className="flex items-center gap-3 py-2">
+      <div className="flex items-center gap-3 py-1">
         <div className="h-px flex-1 bg-gray-200" />
 
         <span className="text-sm text-gray-500">or continue with</span>
@@ -208,16 +183,16 @@ function LoginForm() {
       </div>
 
       <p className="text-text-secondary mt-2 py-1 text-center">
-        Don't have an account?
+        Already have an account?
         <Link
-          to="/register"
+          to="/login"
           className="text font-semibold text-primary hover:underline hover:text-primary-hover"
         >
-          Sign Up!
+          Login!
         </Link>
       </p>
     </div>
   );
 }
 
-export default LoginForm;
+export default RegisterForm;

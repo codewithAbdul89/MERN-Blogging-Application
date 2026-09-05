@@ -14,8 +14,6 @@ const startServer = async () => {
     await User.syncIndexes();
 
     app.listen(PORT, () => {
-      // TODO:Remove the port 0,0,0,0
-      // app.listen(PORT,"0.0.0.0",  () => {
       console.log(`Production server running on port ${PORT}.`);
     });
   } catch (error) {

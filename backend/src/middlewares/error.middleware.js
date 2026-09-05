@@ -1,21 +1,23 @@
 const errorHandler = (err, req, res, next) => {
-    let message = err.message || "Internal Server Error"
-    let statusCode = err.statusCode || 500
+  let message = err.message || "Internal Server Error";
+  let statusCode = err.statusCode || 500;
+  let errorCode = err.errorCode || "";
 
-    if (process.env.NODE_ENV === "production") {
-        if (err.statusCode === 500) {
-            message = "Somethings went wrong!"
-        }
+  if (process.env.NODE_ENV === "production") {
+    if (err.statusCode === 500) {
+      message = "Somethings went wrong!";
     }
+  }
 
-    console.error(" [Error Handler]:", err);
+  console.error(" [Error Handler]:", err);
 
-    return res.status(statusCode).json({
-        success: false,
-        message: message,
-        errors: err.errors || [],
-        stack: process.env.NODE_ENV === "development" ? err.stack : err.stack,
-    })
-}
+  return res.status(statusCode).json({
+    success: false,
+    message: message,
+    errorCode,
+    errors: err.errors || [],
+    stack: process.env.NODE_ENV === "development" ? err.stack : err.stack,
+  });
+};
 
 export default errorHandler;

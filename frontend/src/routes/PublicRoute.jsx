@@ -52,7 +52,7 @@ function PublicRoute() {
       setRedirect(true);
     }
   }, [authStatus]);
-
+ 
   if (redirect) {
     return <Navigate to="/" replace />;
   }

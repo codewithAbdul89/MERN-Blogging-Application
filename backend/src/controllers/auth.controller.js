@@ -29,7 +29,7 @@ import {
 } from "../utils/generateEmailToken.js";
 import EmailToken from "../models/emailToken.model.js";
 
-export const signup = asyncHandler(async (req, res) => {
+export const register = asyncHandler(async (req, res) => {
   const { userName, email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
@@ -40,10 +40,15 @@ export const signup = asyncHandler(async (req, res) => {
 
       return res
         .status(200)
-        .json(new ApiResponse(200, "Verification Email sent successfuly."));
+        .json(
+          new ApiResponse(
+            200,
+            "Acoount already registered with this email.Please verify this email only. Verification Email has been sent successfuly on email.",
+          ),
+        );
     }
 
-    throw new ApiError(400, "User already registered!");
+    throw new ApiError(400, "User already registered with this email.");
   }
 
   const user = await User.create({
@@ -54,11 +59,6 @@ export const signup = asyncHandler(async (req, res) => {
 
   const createdUser = user.toObject();
   delete createdUser.password;
-
-  const refreshToken = generateRefreshToken(createdUser);
-  const accessToken = generateAccessToken(createdUser);
-
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
 
   const { rawToken, hashedToken } = generateEmailToken();
 
@@ -78,16 +78,139 @@ export const signup = asyncHandler(async (req, res) => {
 
   await sendVerificationEmail(user, rawToken);
 
-  return res.status(201).json(
-    new ApiResponse(201, "User Created Successfully", {
-      user: createdUser,
-      accessToken,
-    }),
-  );
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        "A verification email has been sent to your email address. Please verify your email first. Also, check your spam folder if you don't see it in your inbox.",
+      ),
+    );
+});
+
+export const resendVerificationEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(404, "User not found.");
+  }
+
+  if (user.isEmailVerified) {
+    throw new ApiError(400, "Email is already verified.So login.");
+  }
+
+  // Prevent requesting a new email too frequently (1 minute cooldown)
+  const existingToken = await EmailToken.findOne({
+    userId: user._id,
+    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+  });
+
+  if (
+    existingToken &&
+    existingToken.createdAt > new Date(Date.now() - 60 * 1000)
+  ) {
+    throw new ApiError(
+      429,
+      "Please wait 1 minute before requesting another verification email.",
+    );
+  }
+
+  // Remove previous verification tokens
+  await EmailToken.deleteMany({
+    userId: user._id,
+    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+  });
+
+  const { rawToken, hashedToken } = generateEmailToken();
+
+  const expiresAt = new Date(Date.now() + EMAIL_EXPIRY.VERIFY_EMAIL);
+
+  await EmailToken.create({
+    userId: user._id,
+    token: hashedToken,
+    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+    expiresAt,
+  });
+
+  await sendVerificationEmail(user, rawToken);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Verification email sent successfully."));
+});
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    throw new ApiError(400, "Verification token is required.");
+  }
+
+  // Hash the incoming token
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  // Find the verification token
+  const matchedToken = await EmailToken.findOne({
+    token: hashedToken,
+    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+  });
+
+  if (!matchedToken) {
+    throw new ApiError(400, "Verification failed because link does not match.");
+  }
+
+  if (matchedToken.expiresAt < new Date()) {
+    await EmailToken.findByIdAndDelete(matchedToken._id);
+    throw new ApiError(400, "Verification token expired");
+  }
+
+  // Verify email in a single database query
+  const updatedUser = await User.findOneAndUpdate(
+    {
+      _id: matchedToken.userId,
+      isEmailVerified: false,
+    },
+    {
+      $set: {
+        isEmailVerified: true,
+      },
+    },
+    {
+      returnDocument: "after",
+      runValidators: true,
+    },
+  ).select("-password");
+
+  // If  document was not updated
+  if (!updatedUser) {
+    const user = await User.findById(matchedToken.userId);
+
+    if (!user) {
+      throw new ApiError(404, "User not found.");
+    }
+
+    // User is already verified
+    if (user.isVerified) {
+      await EmailToken.findByIdAndDelete(matchedToken._id);
+
+      throw new ApiError(400, "Email is already verified.So login.");
+    }
+  }
+
+  // Remove verification token after successful verification
+  await EmailToken.findByIdAndDelete(matchedToken._id);
+
+  await sendWelcomeEmail(updatedUser);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Email verified successfully."));
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password,rememberMe =false } = req.body;
+  const { email, password, rememberMe = false } = req.body;
 
   const user = await User.findOne({ email }).select("+password");
 
@@ -108,7 +231,16 @@ export const login = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid Email or password");
   }
 
-  const refreshToken = generateRefreshToken(user,rememberMe);
+  if (!user.isEmailVerified) {
+    await sendVerificationEmail(user);
+    throw new ApiError(
+      400,
+      "Please verify this email first. Verification email has been sent successfully.",
+      "EMAIL_NOT_VERIFIED",
+    );
+  }
+
+  const refreshToken = generateRefreshToken(user, rememberMe);
   const accessToken = generateAccessToken(user);
 
   res.cookie("refreshToken", refreshToken, refreshTokenOptions(rememberMe));
@@ -212,135 +344,6 @@ export const verifyLoginEmailtOtp = asyncHandler(async (req, res) => {
   );
 });
 
-export const resendVerificationEmail = asyncHandler(async (req, res) => {
-  const { email } = req.body;
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new ApiError(404, "User not found.");
-  }
-
-  if (user.isEmailVerified) {
-    throw new ApiError(400, "Email is already verified.");
-  }
-
-  // Prevent requesting a new email too frequently (1 minute cooldown)
-  const existingToken = await EmailToken.findOne({
-    userId: user._id,
-    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
-  });
-
-  if (
-    existingToken &&
-    existingToken.createdAt > new Date(Date.now() - 60 * 1000)
-  ) {
-    throw new ApiError(
-      429,
-      "Please wait 1 minute before requesting another verification email.",
-    );
-  }
-
-  // Remove previous verification tokens
-  await EmailToken.deleteMany({
-    userId: user._id,
-    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
-  });
-
-  const { rawToken, hashedToken } = generateEmailToken();
-
-  const expiresAt = new Date(Date.now() + EMAIL_EXPIRY.VERIFY_EMAIL);
-
-  await EmailToken.create({
-    userId: user._id,
-    token: hashedToken,
-    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
-    expiresAt,
-  });
-
-  await sendVerificationEmail(user, rawToken);
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Verification email sent successfully."));
-});
-
-export const verifyEmail = asyncHandler(async (req, res) => {
-  const { token } = req.params;
-
-  if (!token) {
-    throw new ApiError(400, "Verification token is required.");
-  }
-
-  // Hash the incoming token
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-  // Find the verification token
-  const matchedToken = await EmailToken.findOne({
-    token: hashedToken,
-    type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
-  });
-
-  if (!matchedToken) {
-    throw new ApiError(
-      400,
-      "Verification failed because token does not match.",
-    );
-  }
-
-  if (matchedToken.expiresAt < new Date()) {
-    await EmailToken.findByIdAndDelete(matchedToken._id);
-
-    throw new ApiError(400, "Verification token expired");
-  }
-
-  // Verify email in a single database query
-  const updatedUser = await User.findOneAndUpdate(
-    {
-      _id: matchedToken.userId,
-      isEmailVerified: false,
-    },
-    {
-      $set: {
-        isEmailVerified: true,
-      },
-    },
-    {
-      returnDocument: "after",
-      runValidators: true,
-    },
-  ).select("-password");
-
-  // If  document was not updated
-  if (!updatedUser) {
-    const user = await User.findById(matchedToken.userId);
-
-    if (!user) {
-      throw new ApiError(404, "User not found.");
-    }
-
-    // User is already verified
-    if (user.isVerified) {
-      await EmailToken.findByIdAndDelete(matchedToken._id);
-
-      throw new ApiError(400, "Email is already verified.");
-    }
-  }
-
-  // Remove verification token after successful verification
-  await EmailToken.findByIdAndDelete(matchedToken._id);
-
-  console.log(updatedUser);
-
-  await sendWelcomeEmail(updatedUser);
-
-  return res.status(200).json(
-    new ApiResponse(200, "Email verified successfully.", {
-      user: updatedUser,
-    }),
-  );
-});
-
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
 
@@ -424,7 +427,6 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   const user = await User.findById(matchedToken.userId).select("+password");
 
-
   if (!user) {
     await EmailToken.findByIdAndDelete(matchedToken._id);
 
@@ -441,7 +443,12 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Password reset successful. Please log in with your new password."));
+    .json(
+      new ApiResponse(
+        200,
+        "Password reset successful. Please log in with your new password.",
+      ),
+    );
 });
 
 export const googleLogin = asyncHandler(async (req, res) => {
@@ -602,8 +609,7 @@ export const refreshToken = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(404, "User not found. Please sign in again.");
   const rememberMe = decoded.rememberMe;
 
-
-  const newRefreshToken = generateRefreshToken(user,rememberMe);
+  const newRefreshToken = generateRefreshToken(user, rememberMe);
   const newAccessToken = generateAccessToken(user);
 
   res.cookie("refreshToken", newRefreshToken, refreshTokenOptions(rememberMe));
@@ -616,9 +622,9 @@ export const refreshToken = asyncHandler(async (req, res) => {
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-  const { oldPassword, newPassword } = req.body;
+  const { previousPassword, newPassword } = req.body;
 
-  if (newPassword === oldPassword)
+  if (newPassword === previousPassword)
     throw new ApiError(
       400,
       "New password should be different from old password.",
@@ -628,14 +634,14 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   if (!user) throw new ApiError(404, "User not found");
 
-  const matchedPassword = await bcrypt.compare(oldPassword, user.password);
+  const matchedPassword = await bcrypt.compare(previousPassword, user.password);
 
-  if (!matchedPassword) throw new ApiError(400, "Old password is incorrect");
+  if (!matchedPassword) throw new ApiError(400, "Your previous  password is incorrect.");
 
   user.password = newPassword;
   await user.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Password change successfully."));
+    .json(new ApiResponse(200, "Password change successfully.Please login again."));
 });

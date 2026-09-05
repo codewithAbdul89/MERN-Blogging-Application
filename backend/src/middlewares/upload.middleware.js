@@ -3,32 +3,30 @@ import multer from "multer";
 const storage = multer.memoryStorage();
 
 export const createUploader = ({
-    fileSize,
-    allowedMimeTypes,
-    allowedFileNames
+  fileSize,
+  allowedMimeTypes,
+  allowedFileNames, //we does not validate this we only pass this in the fileValidation middleware to show proper error
 }) => {
+  const upload = multer({
+    storage,
 
-    const upload = multer({
-        storage,
+    limits: { fileSize },
 
-        limits: { fileSize },
+    fileFilter(req, file, cb) {
+      req.uploadConfig = {
+        fileSize,
+        allowedFileNames,
+      };
 
-        fileFilter(req, file, cb) {
+      if (!allowedMimeTypes.includes(file.mimetype)) {
+        return cb(new Error("INVALID_FILE_TYPE"));
+      }
 
-            req.uploadConfig = {
-                fileSize,
-                allowedFileNames
-            };
+      cb(null, true);
+    },
+  });
 
-            if (!allowedMimeTypes.includes(file.mimetype)) {
-                return cb(new Error("INVALID_FILE_TYPE"));
-            }
-
-            cb(null, true);
-        }
-    });
-
-    return upload;
+  return upload;
 };
 
 // imageUploader.array("images", 10),
@@ -38,21 +36,13 @@ export const createUploader = ({
 // ])
 // imageUploader.single("FeaturedImage")
 
-
 export const imageUploader = createUploader({
+  fileSize: 2 * 1024 * 1024,
 
-    fileSize: 2 * 1024 * 1024,
+  allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"],
 
-    allowedMimeTypes: [
-        "image/jpeg",
-        "image/png",
-        "image/webp"
-    ],
-
-    allowedFileNames: "JPG, PNG or WEBP"
-
+  allowedFileNames: "JPG, PNG or WEBP",
 });
-
 
 // export const mediaUploader = createUploader({
 
@@ -72,11 +62,7 @@ export const imageUploader = createUploader({
 
 // allowedFileName: "JPG, PNG , WEBP ,MP4,PDF"
 
-
 // });
-
-
-
 
 // export const pdfUploader = createUploader({
 
@@ -89,7 +75,6 @@ export const imageUploader = createUploader({
 //     allowedFileNames: "PDF"
 
 // });
-
 
 // export const videoUploader= createUploader({
 

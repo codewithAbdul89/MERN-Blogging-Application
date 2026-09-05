@@ -18,7 +18,6 @@ const OtpVerification = ({
   initialTime,
   linkNavigate,
 }) => {
-
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
 
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -202,8 +201,10 @@ const OtpVerification = ({
       </div>
 
       {/* Resend */}
-      <div className="mt-5 flex items-center justify-center gap-1 text-sm">
-        <span className="text-text-secondary">Didn't receive the code with in given time?</span>
+      <div className="mt-5 flex items-center flex-col justify-center gap-1 text-sm sm:flex-row">
+        <span className="text-text-secondary">
+          Didn't receive the code with in given time?
+        </span>
 
         <button
           type="button"
@@ -225,7 +226,7 @@ const OtpVerification = ({
 
       {/* error */}
       {(otpError || error) && (
-        <p className="text-center text-sm text-danger">{otpError || error}</p>
+        <p className="text-center text-sm text-danger py-1">{otpError || error}</p>
       )}
 
       {/* Timer */}

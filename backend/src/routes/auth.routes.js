@@ -1,6 +1,6 @@
 import express from "express"
 import {
-    login, signup, refreshToken, changePassword,
+    login, register, refreshToken, changePassword,
     githubCallback, githubLogin, googleCallback, googleLogin,
     logout,
     resendVerificationEmail,
@@ -19,10 +19,10 @@ import otpLimiter from "../middlewares/rateLimit.middleware.js"
 const router = express.Router()
 
 router.post(
-    "/signup",
+    "/register",
     signupValidation,
     validate,
-    signup
+    register
 );
 
 router.post( 

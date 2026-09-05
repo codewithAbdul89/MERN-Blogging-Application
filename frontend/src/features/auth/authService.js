@@ -5,8 +5,8 @@ export const login = async (credentials) => {
   return response.data;
 };
 
-export const signup = async (userData) => {
-  const response = await api.post("/auth/signup", userData);
+export const register = async (userData) => {
+  const response = await api.post("/auth/register", userData);
   return response.data;
 };
 
@@ -30,7 +30,7 @@ export const resendVerificationEmail = async (emailData) => {
   return response.data;
 };
 
-export const verifyEmail = async (token) => {
+export const verifyRegisterEmail = async (token) => {
   const response = await api.post(`/auth/verify-email/${token}`);
   return response.data;
 };

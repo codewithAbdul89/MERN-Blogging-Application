@@ -1,65 +1,36 @@
 // src/constants/queryKeys.js
 
 export const QUERY_KEYS = {
+  // Home page infinite feed
+  HOME_BLOGS: ["homeBlogs"],
 
-    // Home page infinite feed
-    HOME_BLOGS: [
-        "homeBlogs"
-    ],
+  SEARCH_BLOGS: (params) => ["searchBlogs", params],
 
-    SEARCH_BLOGS: (params) => [
-        "searchBlogs",
-        params
-    ],
+  // Single blog
+  BLOG: (slug) => ["blog", slug],
 
+  // My blogs
+  MY_HOME_BLOGS: ["myBlogs"],
 
-    // Single blog
-    BLOG: (slug) => [
-        "blog",
-        slug
-    ],
+  MY_BLOGS: (status) => ["myBlogs", status],
 
+  // User interactions
+  LIKED_BLOGS: ["likedBlogs"],
 
-    // My blogs
-    MY_HOME_BLOGS: [
-        "myBlogs"
-    ],
+  BOOKMARKED_BLOGS: ["bookmarkedBlogs"],
 
-    MY_BLOGS: (status) => [
-        "myBlogs",
-        status
-    ],
+  blogStats: ["blogStats"],
 
+  // Comments
+  COMMENTS: (blogId) => ["comments", blogId],
+  //REPLIES
 
-    // User interactions
-    LIKED_BLOGS: [
-        "likedBlogs"
-    ],
+  REPLIES: (parentCommentId) => ["replies", parentCommentId],
 
-    BOOKMARKED_BLOGS: [
-        "bookmarkedBlogs"
-    ],
+  // Categories
+  CATEGORIES: ["categories"],
 
+  // User
 
-    // Comments
-    COMMENTS: (blogId) => [
-        "comments",
-        blogId
-    ],
-    //REPLIES
-
-    REPLIES: (parentCommentId) => [
-        "replies",
-        parentCommentId
-    ],
-
-    // Categories
-    CATEGORIES: [
-        "categories" 
-    ],
-
-    // User
-
-    CURRENT_USER: ["currentUser"],
-
+  CURRENT_USER: ["currentUser"],
 };
