@@ -148,7 +148,7 @@ function DashboardSidebar({ mobile = false, onClose }) {
               onClick={handleNavigation}
             >
               <FiBookmark size={18} />
-              <span>Bookmarked</span>
+              <span>Saved Blogs</span>
             </NavLink>
 
             <NavLink

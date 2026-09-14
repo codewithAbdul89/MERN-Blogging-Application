@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 
 const containerVariants = {
   animate: {
@@ -21,7 +22,7 @@ const dotVariants = {
 };
 
 export const Loader = () => {
-  return (
+  return createPortal(
     <div
       className="
             fixed
@@ -30,7 +31,7 @@ export const Loader = () => {
             flex
             items-center
             justify-center
-            bg-black/50
+            bg-black/70
         "
     >
       <motion.div
@@ -54,7 +55,8 @@ export const Loader = () => {
           variants={dotVariants}
         />
       </motion.div>
-    </div>
+    </div>,
+    document.body,
   );
 };
 

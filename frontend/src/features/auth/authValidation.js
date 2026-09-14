@@ -40,7 +40,7 @@ export const emailSchema = z.object({
     .email("Invalid email address"),
 });
 
-export const emailLoginOtpSchema = z.object({
+export const OtpSchema = z.object({
   otp: z
     .string()
     .trim()

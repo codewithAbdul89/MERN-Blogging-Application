@@ -8,7 +8,6 @@ import Comment from "../models/comment.model.js";
 import Like from "../models/like.model.js";
 import Bookmark from "../models/bookmark.model.js";
 import Category from "../models/category.model.js";
-import expressAsyncHandler from "express-async-handler";
 import { slugify } from "../utils/slugify.js";
 import View from "../models/blogView.model.js";
 import EmailToken from "../models/emailToken.model.js";
@@ -19,8 +18,6 @@ import {
 import { sendDeleteBlogOtpEmail } from "../services/email/email.service.js";
 import User from "../Models/user.model.js";
 import { generateEmailOtp } from "../utils/generateEmailToken.js";
-import { Aggregate } from "mongoose";
-import { title } from "process";
 
 export const createBlog = asyncHandler(async (req, res) => {
   const { title, tags, content, category, status = "DRAFT" } = req.body;
@@ -82,76 +79,316 @@ export const createBlog = asyncHandler(async (req, res) => {
 });
 
 export const getAllBlogs = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 6 } = req.query;
 
-  const skip = (Number(page) - 1) * Number(limit);
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
 
-  const blogs = await Blog.aggregate([
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const userId = req.user?._id;
+
+  const pipeline = [
+    // Only published blogs
     {
       $match: {
         status: "PUBLISHED",
       },
     },
 
-    // To add the field score for trending  and latest blog
+    // Get total likes
+    {
+      $lookup: {
+        from: "likes",
+        let: {
+          blogId: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$blog", "$$blogId"],
+              },
+            },
+          },
+          {
+            $count: "count",
+          },
+        ],
+        as: "likesData",
+      },
+    },
+
+    // Get total comments
+    {
+      $lookup: {
+        from: "comments",
+        let: {
+          blogId: "$_id",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: ["$blog", "$$blogId"],
+              },
+            },
+          },
+          {
+            $count: "count",
+          },
+        ],
+        as: "commentsData",
+      },
+    },
+
+    // Convert lookup results into numbers
     {
       $addFields: {
-        score: {
-          $add: [
+        likesCount: {
+          $ifNull: [
             {
-              $multiply: ["$likesCount", 0.5],
+              $arrayElemAt: ["$likesData.count", 0],
             },
+            0,
+          ],
+        },
 
+        commentsCount: {
+          $ifNull: [
             {
-              $multiply: ["$blogViews", 0.3],
+              $arrayElemAt: ["$commentsData.count", 0],
             },
+            0,
+          ],
+        },
+      },
+    },
 
+    // Remove temporary arrays
+    {
+      $project: {
+        likesData: 0,
+        commentsData: 0,
+      },
+    },
+  ];
+
+  // ==========================================
+  // Check whether logged-in user liked each blog
+  // ==========================================
+
+  if (userId) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: "likes",
+
+          let: {
+            blogId: "$_id",
+          },
+
+          pipeline: [
             {
-              $multiply: [
-                {
-                  $divide: [
+              $match: {
+                $expr: {
+                  $and: [
                     {
-                      $subtract: [new Date(), "$createdAt"],
+                      $eq: ["$blog", "$$blogId"],
                     },
-
-                    1000 * 60 * 60, //To convert data into hours
+                    {
+                      $eq: ["$user", userId],
+                    },
                   ],
                 },
-                0.2,
-              ],
+              },
             },
-          ],
-        },
-      },
-    },
 
-    //Espically random this by adding the field finallScore in the database
-
-    {
-      $addFields: {
-        finalScore: {
-          $add: [
-            "$score",
             {
-              $multiply: [{ $rand: {} }, 1000],
+              $limit: 1,
             },
           ],
+
+          as: "userLike",
         },
       },
-    },
 
-    {
-      $sort: {
-        finalScore: -1,
+      {
+        $addFields: {
+          isLiked: {
+            $gt: [
+              {
+                $size: "$userLike",
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      {
+        $project: {
+          userLike: 0,
+        },
+      },
+    );
+  } else {
+    pipeline.push({
+      $addFields: {
+        isLiked: false,
+      },
+    });
+  }
+
+  // ==========================================
+  // Check whether logged-in user bookmarked each blog
+  // ==========================================
+
+  if (userId) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: "bookmarks",
+
+          let: {
+            blogId: "$_id",
+          },
+
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ["$blog", "$$blogId"],
+                    },
+                    {
+                      $eq: ["$user", userId],
+                    },
+                  ],
+                },
+              },
+            },
+
+            {
+              $limit: 1,
+            },
+          ],
+
+          as: "userBookmark",
+        },
+      },
+
+      {
+        $addFields: {
+          isBookmarked: {
+            $gt: [
+              {
+                $size: "$userBookmark",
+              },
+              0,
+            ],
+          },
+        },
+      },
+
+      {
+        $project: {
+          userBookmark: 0,
+        },
+      },
+    );
+  } else {
+    pipeline.push({
+      $addFields: {
+        isBookmarked: false,
+      },
+    });
+  }
+
+  // ==========================================
+  // Calculate stable discovery score
+  // ==========================================
+
+  pipeline.push({
+    $addFields: {
+      score: {
+        $add: [
+          // Likes
+          {
+            $multiply: ["$likesCount", 5],
+          },
+
+          // Views
+          {
+            $multiply: ["$blogViews", 2],
+          },
+
+          // Comments
+          {
+            $multiply: ["$commentsCount", 3],
+          },
+
+          // Recency
+          {
+            $multiply: [
+              {
+                $divide: [
+                  {
+                    $subtract: [new Date(), "$createdAt"],
+                  },
+                  1000 * 60 * 60 * 24,
+                ],
+              },
+              -0.2,
+            ],
+          },
+        ],
       },
     },
+  });
 
+  // ==========================================
+  // Stable sorting
+  // ==========================================
+
+  pipeline.push({
+    $sort: {
+      score: -1,
+      createdAt: -1,
+      _id: -1,
+    },
+  });
+
+  // ==========================================
+  // Pagination
+  // ==========================================
+
+  pipeline.push(
     {
       $skip: skip,
     },
 
     {
-      $limit: Number(limit),
+      $limit: limitNumber,
+    },
+  );
+
+  const blogs = await Blog.aggregate(pipeline);
+
+  // ==========================================
+  // Populate author and category
+  // ==========================================
+
+  await Blog.populate(blogs, [
+    {
+      path: "author",
+      select: "userName profilePic.url",
+    },
+
+    {
+      path: "category",
+      select: "name",
     },
   ]);
 
@@ -162,9 +399,9 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   return res.status(200).json(
     new ApiResponse(200, "Blogs fetched successfully", {
       blogs,
-      page: Number(page),
-      totalBlogs: totalBlogs,
-      hasMore: page * limit < totalBlogs,
+      page: pageNumber,
+      totalBlogs,
+      hasMore: pageNumber * limitNumber < totalBlogs,
     }),
   );
 });
@@ -294,6 +531,7 @@ export const updateBlog = asyncHandler(async (req, res) => {
   }
 
   updateData.isUpdated = true;
+  updateData.contentUpdatedAt = new Date();
 
   const updatedBlog = await Blog.findByIdAndUpdate(
     blogId,
@@ -374,7 +612,6 @@ export const unpublishBlog = asyncHandler(async (req, res) => {
   }
 
   blog.status = "DRAFT";
-  blog.publishedAt = null;
 
   await blog.save();
 
@@ -386,7 +623,12 @@ export const unpublishBlog = asyncHandler(async (req, res) => {
 });
 
 export const getMyBlogs = asyncHandler(async (req, res) => {
-  const { status } = req.query;
+  const { status, page = 1, limit = 6 } = req.query;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
 
   const allowedStatus = ["DRAFT", "PUBLISHED", "REMOVED"];
 
@@ -398,34 +640,51 @@ export const getMyBlogs = asyncHandler(async (req, res) => {
     author: req.user._id,
   };
 
-  if (status) filter.status = status;
+  if (status) {
+    filter.status = status;
+  }
 
   const blogs = await Blog.find(filter)
-    .populate("author", "userName")
+    .populate("author", "userName profilePic.url")
     .populate("category", "name")
     .sort({
       isPinned: -1,
       updatedAt: -1,
-    });
+    })
+    .skip(skip)
+    .limit(limitNumber);
 
-  if (blogs.length === 0) {
-    throw new ApiError(
-      404,
-      `You have not any ${status?.toLowerCase() ?? ""} blogs.`,
-    );
-  }
+  // Check which blogs are liked by the logged-in user
+  const blogsWithLikeStatus = await Promise.all(
+    blogs.map(async (blog) => {
+      const isLiked = await Like.exists({
+        user: req.user._id,
+        blog: blog._id,
+      });
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Blogs fetched successfully.", blogs));
+      return {
+        ...blog.toObject(),
+        isLiked: !!isLiked,
+      };
+    }),
+  );
+
+  const totalBlogs = await Blog.countDocuments(filter);
+
+  return res.status(200).json(
+    new ApiResponse(200, "Blogs fetched successfully", {
+      blogs: blogsWithLikeStatus,
+      page: pageNumber,
+      totalBlogs,
+      hasMore: pageNumber * limitNumber < totalBlogs,
+    }),
+  );
 });
 
 export const pinBlog = asyncHandler(async (req, res) => {
   const { blogId } = req.params;
 
-  const blog = await Blog.findById(blogId)
-    .populate("author", "userName")
-    .populate("category", "name");
+  const blog = await Blog.findById(blogId);
 
   if (!blog) {
     throw new ApiError(404, "Blog does not exists.");
@@ -502,7 +761,12 @@ export const sendDeleteBlogOtp = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    .json(new ApiResponse(200, "Blog reset OTP has been sent to your email."));
+    .json(
+      new ApiResponse(
+        200,
+        "Blog reset OTP has been sent to your email successfully.Please also check your spam.",
+      ),
+    );
 });
 
 export const verifyDeleteBlogOtp = asyncHandler(async (req, res) => {

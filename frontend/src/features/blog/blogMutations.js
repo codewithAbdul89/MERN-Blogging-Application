@@ -15,7 +15,10 @@ import {
 } from "./blogService.js";
 import { errorHandler } from "../../utils/errorHandler.js";
 import { showSuccess } from "../../utils/toast.js";
-
+import {
+  likeBlogInInfiniteQuery,
+  bookmarkInfinteQuery,
+} from "../../utils/infiniteQueryHelper.js";
 export const useCreateBlog = () => {
   const queryClient = useQueryClient();
 
@@ -92,7 +95,7 @@ export const usePublishBlog = () => {
       showSuccess(data.message);
     },
 
-    onError: errorHandler,
+    onError: (error) => errorHandler(error),
   });
 };
 //blogId
@@ -118,65 +121,76 @@ export const useUnpublishBlog = () => {
       showSuccess(data.message);
     },
 
-    onError: errorHandler,
+    onError: (error) => errorHandler(error),
   });
 };
-//blogId+status Optimistic
-export const usePinBlog = () => {
+//blogId Optimistic
+export const useTogglePin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: pinBlog,
 
     onMutate: async (variables) => {
-      const { blogId, status } = variables;
+      const { blogId } = variables;
 
       await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.MY_BLOGS(status),
+        queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
       });
 
-      const previousBlogs = queryClient.getQueryData(
-        QUERY_KEYS.MY_BLOGS(status),
-      );
+      const previousMyBlogs = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+      });
 
-      queryClient.setQueryData(
-        QUERY_KEYS.MY_BLOGS(status),
-
+      queryClient.setQueriesData(
+        {
+          queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+        },
         (oldData) => {
           if (!oldData) return oldData;
 
-          return oldData.map((blog) =>
-            blog._id === blogId
-              ? {
-                  ...blog,
-                  isPinned: !blog.isPinned,
-                }
-              : blog,
-          );
+          return {
+            ...oldData,
+
+            pages: oldData.pages.map((page) => ({
+              ...page,
+
+              data: {
+                ...page.data,
+
+                blogs: page.data.blogs.map((blog) =>
+                  blog._id === blogId
+                    ? {
+                        ...blog,
+
+                        isPinned: !blog.isPinned,
+                      }
+                    : blog,
+                ),
+              },
+            })),
+          };
         },
       );
 
-      return { previousBlogs };
+      return { previousMyBlogs };
     },
 
     onError: (error, variables, context) => {
-      if (context?.previousBlogs) {
-        queryClient.setQueryData(
-          QUERY_KEYS.MY_BLOGS(variables.status),
-          context.previousBlogs,
-        );
-      }
+      context?.previousMyBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
 
       errorHandler(error);
     },
 
     onSuccess: (data) => {
-      data.message;
+      showSuccess(data.message);
     },
 
     onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.MY_BLOGS(variables.status),
+        queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
       });
     },
   });
@@ -189,7 +203,7 @@ export const useSendDeleteBlogOtp = () => {
     onError: errorHandler,
 
     onSuccess: (data) => {
-      data.message;
+      showSuccess(data.message);
     },
   });
 };
@@ -220,7 +234,7 @@ export const useDeleteBlog = () => {
       });
 
       await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       if (slug) {
@@ -234,7 +248,7 @@ export const useDeleteBlog = () => {
       );
 
       const previousBlogs = queryClient.getQueriesData({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       const singleBlog = slug
@@ -248,21 +262,45 @@ export const useDeleteBlog = () => {
       });
 
       //update my blog list
-      queryClient.setQueryData(QUERY_KEYS.MY_BLOGS(status), (oldData) => {
-        if (!oldData) return oldData;
 
-        return oldData.filter((blog) => blog._id !== blogId);
-      });
+      queryClient.setQueriesData(
+        {
+          queryKey: QUERY_KEYS.MY_BLOGS(status),
+        },
+
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                blogs: page.data.blogs.filter((blog) => blog._id !== blogId),
+              },
+            })),
+          };
+        },
+      );
 
       //update the home blog list
       queryClient.setQueriesData(
         {
-          queryKey: QUERY_KEYS.BLOGS_ROOT,
+          queryKey: QUERY_KEYS.HOME_BLOGS,
         },
+
         (oldData) => {
           if (!oldData) return oldData;
-
-          return oldData.filter((blog) => blog._id !== blogId);
+          return {
+            ...oldData,
+            pages: oldData.pages.map((page) => ({
+              ...page,
+              data: {
+                ...page.data,
+                blogs: page.data.blogs.filter((blog) => blog._id !== blogId),
+              },
+            })),
+          };
         },
       );
 
@@ -278,12 +316,9 @@ export const useDeleteBlog = () => {
         queryClient.setQueryData(key, data);
       });
 
-      if (context?.previousMyBlogs) {
-        queryClient.setQueryData(
-          QUERY_KEYS.MY_BLOGS(variables.status),
-          context.previousMyBlogs,
-        );
-      }
+      context?.previousMyBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
 
       if (context?.singleBlog) {
         queryClient.setQueryData(
@@ -293,6 +328,10 @@ export const useDeleteBlog = () => {
       }
 
       errorHandler(error);
+    },
+
+    onSuccess: (data) => {
+      showSuccess(data.message);
     },
 
     onSettled: (data, error, variables, context) => {
@@ -313,8 +352,6 @@ export const useDeleteBlog = () => {
           queryKey: QUERY_KEYS.BLOG(variables.slug),
         });
       }
-
-      showSuccess(data.message);
     },
   });
 };
@@ -326,10 +363,16 @@ export const useToggleLike = () => {
     mutationFn: toggleLike,
 
     onMutate: async (variables) => {
-      const { blogId, slug } = variables;
+      const { blogId, slug, status = "all" } = variables;
+
+      const myBlogsKey = QUERY_KEYS.MY_BLOGS(status);
 
       await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: myBlogsKey,
+      });
+
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       await queryClient.cancelQueries({
@@ -343,63 +386,35 @@ export const useToggleLike = () => {
       }
 
       const previousBlogs = queryClient.getQueriesData({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
-      const previousLiked = queryClient.getQueryData(QUERY_KEYS.LIKED_BLOGS);
+      const previousMyBlogs = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+      });
+
+      const previousLikedBlogs = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.LIKED_BLOGS,
+      });
+
+      const previousBookmarkedBlogs = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.BOOKMARKED_BLOGS,
+      });
 
       const singleBlog = queryClient.getQueryData(QUERY_KEYS.BLOG(slug));
+      // update the my bogs
+      likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.MY_BLOGS(status), blogId);
 
-      // update the whole root blogs
-
-      queryClient.setQueriesData(
-        {
-          queryKey: QUERY_KEYS.BLOGS_ROOT,
-        },
-
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return oldData.map((blog) => {
-            return blog._id === blogId
-              ? {
-                  ...blog,
-                  isLiked: !blog.isLiked,
-                  likesCount: blog.isLiked
-                    ? blog.likesCount - 1
-                    : blog.likesCount + 1,
-                }
-              : blog;
-          });
-        },
-      );
+      // update home blogs
+      likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.HOME_BLOGS, blogId);
 
       // update the liked blog list
+      likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.LIKED_BLOGS, blogId);
 
-      if (previousLiked) {
-        queryClient.setQueryData(
-          QUERY_KEYS.LIKED_BLOGS,
-
-          (oldData) => {
-            if (!oldData) return oldData;
-
-            return oldData.map((blog) => {
-              return blog._id === blogId
-                ? {
-                    ...blog,
-                    isLiked: !blog.isLiked,
-                    likesCount: blog.isLiked
-                      ? blog.likesCount - 1
-                      : blog.likesCount + 1,
-                  }
-                : blog;
-            });
-          },
-        );
-      }
+      // update the bookmark list
+      likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.BOOKMARKED_BLOGS, blogId);
 
       //update the single blog
-
       if (singleBlog) {
         queryClient.setQueryData(
           QUERY_KEYS.BLOG(slug),
@@ -415,19 +430,33 @@ export const useToggleLike = () => {
           },
         );
       }
-
-      return { previousBlogs, singleBlog, previousLiked };
+      return {
+        previousBlogs,
+        singleBlog,
+        previousLikedBlogs,
+        previousMyBlogs,
+        previousBookmarkedBlogs,
+      };
     },
 
     onError: (error, variables, context) => {
+      // set previous data to home_blogs
       context?.previousBlogs?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
-
-      if (context?.previousLiked) {
-        queryClient.setQueryData(QUERY_KEYS.LIKED_BLOGS, context.previousLiked);
+      // set previous data to My_blogs
+      if (context?.previousMyBlogs !== undefined) {
+        queryClient.setQueryData(context.myBlogsKey, context.previousMyBlogs);
       }
-
+      // set previous liked blogs
+      context?.previousLikedBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+      // set previous liked blogs
+      context?.previousBookmarkedBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+      // set single blog
       if (context?.singleBlog) {
         queryClient.setQueryData(
           QUERY_KEYS.BLOG(variables.slug),
@@ -438,10 +467,13 @@ export const useToggleLike = () => {
       errorHandler(error);
     },
 
-
     onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.blogStats,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       queryClient.invalidateQueries({
@@ -449,7 +481,7 @@ export const useToggleLike = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
       });
 
       if (variables.slug) {
@@ -457,8 +489,6 @@ export const useToggleLike = () => {
           queryKey: QUERY_KEYS.BLOG(variables.slug),
         });
       }
-
-      showSuccess(data.message)
     },
   });
 };
@@ -473,7 +503,7 @@ export const useToggleBookmark = () => {
       const { blogId, slug } = variables;
 
       await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       await queryClient.cancelQueries({
@@ -485,37 +515,23 @@ export const useToggleBookmark = () => {
           queryKey: QUERY_KEYS.BLOG(slug),
         });
       }
-
-      const previousBookmarked = queryClient.getQueryData(
-        QUERY_KEYS.BOOKMARKED_BLOGS,
-      );
-
+      // previous Bookmarked
+      const previousBookmarked = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.BOOKMARKED_BLOGS,
+      });
+      // previous Home blogs
       const previousBlogs = queryClient.getQueriesData({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       const singleBlog = queryClient.getQueryData(QUERY_KEYS.BLOG(slug));
 
       // Update all blog lists
 
-      queryClient.setQueriesData(
-        {
-          queryKey: QUERY_KEYS.BLOGS_ROOT,
-        },
+      bookmarkInfinteQuery(queryClient, QUERY_KEYS.HOME_BLOGS, blogId);
 
-        (oldData) => {
-          if (!oldData) return oldData;
-
-          return oldData.map((blog) => {
-            return blog._id === blogId
-              ? {
-                  ...blog,
-                  isBookmarked: !blog.isBookmarked,
-                }
-              : blog;
-          });
-        },
-      );
+      // update the bookmarked blogs
+      bookmarkInfinteQuery(queryClient, QUERY_KEYS.BOOKMARKED_BLOGS, blogId);
 
       if (singleBlog) {
         queryClient.setQueryData(
@@ -532,25 +548,6 @@ export const useToggleBookmark = () => {
         );
       }
 
-      if (previousBookmarked) {
-        queryClient.setQueryData(
-          QUERY_KEYS.BOOKMARKED_BLOGS,
-
-          (oldData) => {
-            if (!oldData) return oldData;
-
-            return oldData.map((blog) => {
-              return blog._id === blogId
-                ? {
-                    ...blog,
-                    isBookmarked: !blog.isBookmarked,
-                  }
-                : blog;
-            });
-          },
-        );
-      }
-
       return { singleBlog, previousBlogs, previousBookmarked };
     },
 
@@ -559,12 +556,9 @@ export const useToggleBookmark = () => {
         queryClient.setQueryData(key, data);
       });
 
-      if (context?.previousBookmarked) {
-        queryClient.setQueryData(
-          QUERY_KEYS.BOOKMARKED_BLOGS,
-          context.previousBookmarked,
-        );
-      }
+      context?.previousBookmarked?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
 
       if (context?.singleBlog) {
         queryClient.setQueryData(
@@ -586,7 +580,7 @@ export const useToggleBookmark = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.BLOGS_ROOT,
+        queryKey: QUERY_KEYS.HOME_BLOGS,
       });
 
       if (variables.slug) {

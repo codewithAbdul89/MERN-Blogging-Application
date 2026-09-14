@@ -9,14 +9,14 @@ function Footer() {
 
   return (
     <footer className="border-t border-border bg-surface">
-      <div className="mx-auto max-w-7xl px-4 py-4 md:py-10">
+      <div className="mx-auto max-w-7xl px-6 py-4 md:py-6">
         {/* Main Footer */}
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid md:grid-cols-2 md:px-2">
           {/* Logo */}
-          <div>
+          <div className="mb-5">
             <Link to="/" className="text-2xl font-bold text-text-primary">
               <Logo
-                className="h-24 w-45 rounded-lg p-1 sm:h-20"
+                className="h-18 w-45 rounded-lg p-1 sm:h-20"
                 loading="eager"
               />
             </Link>
@@ -27,95 +27,97 @@ function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-text-primary">Quick Links</h3>
-            <div className="mt-4 flex flex-col gap-3">
-              <Link
-                to="/"
-                className="text-sm text-text-secondary transition hover:text-primary"
-              >
-                Home
-              </Link>
+          <div className="flex  justify-between w-full">
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold text-text-primary">Quick Links</h3>
+              <div className="mt-4 flex flex-col gap-3">
+                <Link
+                  to="/"
+                  className="text-sm text-text-secondary transition hover:text-primary"
+                >
+                  Home
+                </Link>
 
-              <Link
-                to="/category"
-                className="text-sm text-text-secondary transition hover:text-primary"
-              >
-                Categories
-              </Link>
+                <Link
+                  to="/category"
+                  className="text-sm text-text-secondary transition hover:text-primary"
+                >
+                  Categories
+                </Link>
 
-              <Link
-                to="/search"
-                className="text-sm text-text-secondary transition hover:text-primary"
-              >
-                Search
-              </Link>
+                <Link
+                  to="/search"
+                  className="text-sm text-text-secondary transition hover:text-primary"
+                >
+                  Search
+                </Link>
 
-              <Link
-                to="/contact"
-                className="text-sm text-text-secondary transition hover:text-primary"
-              >
-                Contact
-              </Link>
+                <Link
+                  to="/contact"
+                  className="text-sm text-text-secondary transition hover:text-primary"
+                >
+                  Contact
+                </Link>
+              </div>
             </div>
-          </div>
 
-          {/* Account */}
-          <div>
-            <h3 className="font-semibold text-text-primary">Account</h3>
+            {/* Account */}
+            <div>
+              <h3 className="font-semibold text-text-primary">Account</h3>
 
-            <div className="mt-4 flex flex-col gap-3">
-              {!isAuthenticated ? (
-                <>
-                  <Link
-                    to="/login"
-                    className="text-sm text-text-secondary transition hover:text-primary"
-                  >
-                    Login
-                  </Link>
+              <div className="mt-4 flex flex-col gap-3">
+                {!isAuthenticated ? (
+                  <>
+                    <Link
+                      to="/login"
+                      className="text-sm text-text-secondary transition hover:text-primary"
+                    >
+                      Login
+                    </Link>
 
-                  <Link
-                    to="/register"
-                    className="text-sm text-text-secondary transition hover:text-primary"
-                  >
-                    Register
-                  </Link>
-                </>
-              ) : (
-                <Logout className="p-0 text-sm text-text-secondary transition hover:text-primary " />
-              )}
+                    <Link
+                      to="/register"
+                      className="text-sm text-text-secondary transition hover:text-primary"
+                    >
+                      Register
+                    </Link>
+                  </>
+                ) : (
+                  <Logout className="p-0 text-sm text-text-secondary transition hover:text-primary " />
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Social */}
-          <div>
-            <h3 className="font-semibold text-text-primary">Follow Us</h3>
+            {/* Social */}
+            <div>
+              <h3 className="font-semibold text-text-primary">Follow Us</h3>
 
-            <div className="mt-4 flex items-center gap-4">
-              <a
-                href="https://github.com/codewithAbdul89/MERN-Blogging-Application"
-                aria-label="GitHub"
-                target="blank"
-                className="text-text-secondary transition hover:text-primary"
-              >
-                <FaGithub size={20} />
-              </a>
+              <div className="mt-4 flex items-center gap-4">
+                <a
+                  href="https://github.com/codewithAbdul89/MERN-Blogging-Application"
+                  aria-label="GitHub"
+                  target="blank"
+                  className="text-text-secondary transition hover:text-primary"
+                >
+                  <FaGithub size={20} />
+                </a>
 
-              <a
-                href="https://www.linkedin.com/in/abdul-rehman-826136353/"
-                aria-label="LinkedIn"
-                target="blank"
-                className="text-text-secondary transition hover:text-primary"
-              >
-                <FaLinkedin size={20} />
-              </a>
+                <a
+                  href="https://www.linkedin.com/in/abdul-rehman-826136353/"
+                  aria-label="LinkedIn"
+                  target="blank"
+                  className="text-text-secondary transition hover:text-primary"
+                >
+                  <FaLinkedin size={20} />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col gap-3 border-t border-border pt-6 text-sm text-text-secondary sm:flex-row sm:items-center sm:justify-between">
+        <div className=" mt-8 flex flex-col gap-3 border-t border-border pt-6 text-sm text-text-secondary sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} Abdul's BlogSpace. All rights reserved.
           </p>

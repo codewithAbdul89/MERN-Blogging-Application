@@ -1,4 +1,4 @@
-import React from 'react'
+import ErrorState from "../../components/ui/ErrorState";
 
 function Category() {
   return (
@@ -6,4 +6,4 @@ function Category() {
   )
 }
 
-export default Category
+export default Category;

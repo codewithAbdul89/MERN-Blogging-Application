@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 
-function AnimatedText({ text }) {
+function AnimatedText({ text,time="0.12" }) {
   const containerVariants = {
     hidden: {},
 
     visible: {
       transition: {
-        staggerChildren: 0.12,
+        staggerChildren: Number(time),
       },
     },
   };

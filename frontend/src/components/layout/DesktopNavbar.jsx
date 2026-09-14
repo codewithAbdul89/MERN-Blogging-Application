@@ -158,7 +158,7 @@ function DesktopNavbar() {
                   </div>
                 }
               >
-                <div className="bg-primary/80 dark:bg-primary/60 p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal">
+                <div className="bg-primary/90  p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal">
                   <span className="block w-full px-3 py-1 text-left">
                     {user?.userName}
                     <p className="text-xs wrap-break-word">{user?.email}</p>
@@ -167,18 +167,19 @@ function DesktopNavbar() {
 
                   <Link
                     to="/profile"
-                    className="px-3 py-1 text-left font-normal flex items-center gap-2 hover:text-primary transition-colors duration-200"
+                    className="px-3 py-1 text-left font-normal flex items-center gap-2 hover:opacity-50 transition-colors duration-200"
                   >
                     <RxAvatar />
                     Profile
                   </Link>
 
-                  <Link className="pl-3 py-1 text-left font-normal flex items-center gap-2 whitespace-nowrap hover:text-primary transition-colors duration-200">
+                  <Link className="pl-3 py-1 text-left font-normal flex items-center gap-2 whitespace-nowrap hover:opacity-50 transition-colors duration-200">
                     <CiImageOn />
                     Update Image
                   </Link>
 
                   <hr />
+                  
                   <Logout />
                 </div>
               </Dropdown>

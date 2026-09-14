@@ -7,7 +7,7 @@ import {
 } from "../../features/auth/authMutations";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { emailLoginOtpSchema } from "../../features/auth/authValidation";
+import { OtpSchema } from "../../features/auth/authValidation";
 import { showError } from "../../utils/toast";
 
 const VerifyLoginEmailOtp = () => {
@@ -18,7 +18,7 @@ const VerifyLoginEmailOtp = () => {
     setValue,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(emailLoginOtpSchema),
+    resolver: zodResolver(OtpSchema),
     defaultValues: {
       otp: "",
     },

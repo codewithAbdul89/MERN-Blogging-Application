@@ -26,31 +26,3 @@ export const useOutsideClick = (ref, callback) => {
 };
 
 export default useOutsideClick;
-
-
-
-// const {
-//     isOpen,
-//     openModal,
-//     closeModal
-// } = useModal();
-
-// const dropdownRef = useRef(null);
-
-// useOutsideClick(dropdownRef, closeModal);
-
-// return (
-//     <>
-//         <button onClick={openModal}>
-//             Profile
-//         </button>
-
-//         {isOpen && (
-//             <div ref={dropdownRef}>
-//                 <p>Profile</p>
-//                 <p>Settings</p>
-//                 <p>Logout</p>
-//             </div>
-//         )}
-//     </>
-// );

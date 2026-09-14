@@ -9,33 +9,61 @@ import {
   getSearchedBlogs,
   blogStats,
 } from "../blog/blogService.js";
-import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export const useBlogs = () => {
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.HOME_BLOGS,
 
     queryFn: ({ pageParam = 1 }) =>
       getBlogs({
         page: pageParam,
-        limit: 10,
+        limit: 6,
       }),
 
-    //here last page is the previuos api response
+    initialPageParam: 1,
 
     getNextPageParam: (lastPage) => {
-      return lastPage.hasMore ? lastPage.page + 1 : undefined;
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
     },
-
-    refetchOnMount: true,
   });
+
+  const blogs = query?.data?.pages.flatMap((page) => page.data.blogs) ?? [];
+
+  return {
+    ...query,
+    blogs,
+  };
 };
 
 export const useMyBlogs = (status) => {
-  return useQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.MY_BLOGS(status),
-    queryFn: () => getMyBlogs(status),
+
+    queryFn: ({ pageParam = 1 }) =>
+      getMyBlogs({
+        page: pageParam,
+        limit: 6,
+        status,
+      }),
+
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
+    },
   });
+
+  const blogs = query?.data?.pages.flatMap((page) => page.data.blogs) ?? [];
+
+  return {
+    ...query,
+    blogs,
+  };
 };
 
 export const useSearchedblogs = (params) => {
@@ -75,17 +103,54 @@ export const usePrefetchSingleBlog = () => {
 };
 
 export const useLikedBlogs = () => {
-  return useQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.LIKED_BLOGS,
-    queryFn: getLikedBlogs,
+
+    queryFn: ({ pageParam = 1 }) =>
+      getLikedBlogs({
+        page: pageParam,
+        limit: 6,
+      }),
+
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
+    },
   });
+
+  const blogs = query?.data?.pages.flatMap((page) => page.data.blogs) ?? [];
+
+  return {
+    ...query,
+    blogs,
+  };
 };
 
+
 export const useBookmarkedBlogs = () => {
-  return useQuery({
+  const query = useInfiniteQuery({
     queryKey: QUERY_KEYS.BOOKMARKED_BLOGS,
-    queryFn: getBookmarkedBlogs,
+
+    queryFn: ({ pageParam = 1 }) =>
+      getBookmarkedBlogs({
+        page: pageParam,
+        limit: 6,
+      }),
+
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
+    },
   });
+
+  const blogs = query?.data?.pages.flatMap((page) => page.data.blogs) ?? [];
+
+  return {
+    ...query,
+    blogs,
+  };
 };
 
 export const useBlogStats = () => {

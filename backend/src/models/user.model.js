@@ -36,7 +36,7 @@ const userSchema = new Schema({
     profilePic: {
         url: {
             type: String,
-            default: '/images/default.jpeg'
+            default: '/images/defaultAvatar.png'
         },
         public_id: {
             type: String,

@@ -15,11 +15,18 @@ const AuthNavbar = () => {
         <Logo className="h-18 rounded-lg p-1 sm:h-16" loading="eager" />
       </div>
 
-      <div className="flex items-center  gap-5 sm:gap-8 sm:mr-5">
+      <div className="flex items-center  gap-2 sm:gap-7 sm:mr-5">
+        <Link
+          to="/"
+          className="hidden bg-background  rounded-full text-primary font-semibold hover:text-white/80 hover:opacity-60 duration-300  transition-all hover:bg-primary px-4 py-2 sm:block"
+        >
+          Home
+        </Link>
+
         {isLoginPage && (
           <Link
             to="/register"
-            className="bg-background px-4 py-2 rounded-full text-primary font-semibold hover:text-white/80 hover:opacity-60 duration-300  transition-all hover:bg-primary"
+            className="bg-background rounded-full text-primary font-semibold hover:text-white/80 hover:opacity-60 duration-300  transition-all hover:bg-primary px-4 py-2"
           >
             SignUp
           </Link>
@@ -41,3 +48,5 @@ const AuthNavbar = () => {
 };
 
 export default AuthNavbar;
+
+

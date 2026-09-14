@@ -85,7 +85,7 @@ function MobileNavbar() {
               </div>
             }
           >
-            <div className="bg-primary/80 dark:bg-primary/60 p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal">
+            <div className="bg-primary/80 dark:bg-primary p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal ">
               <span className="block w-full px-3 py-1 text-left">
                 {user?.userName}
                 <p className="text-xs wrap-break-word">{user?.email}</p>

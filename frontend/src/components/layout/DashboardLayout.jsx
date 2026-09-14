@@ -48,7 +48,7 @@ function DashboardLayout() {
         </div>
 
         {/* Page */}
-        <div className="p-4 sm:p-6 lg:p-8">
+        <div className="px-1">
           <Outlet />
         </div>
       </main>

@@ -6,17 +6,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 function App() {
   return (
     <AuthInitializer>
-    {/* <> */}
       <ReactQueryDevtools initialIsOpen={false} />
       <AppRoutes />
-
       <Toaster
         position="top-right"
         toastOptions={{
           duration: 2000,
         }}
       />
-      {/* </> */}
     </AuthInitializer>
   );
 }

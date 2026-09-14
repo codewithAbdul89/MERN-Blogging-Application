@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineSecurity, MdTimer } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaPencil } from "react-icons/fa6";
 
 import Button from "../ui/Button";
@@ -17,7 +17,9 @@ const OtpVerification = ({
   isResending = false,
   initialTime,
   linkNavigate,
+  showBackButton = false,
 }) => {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
 
   const [timeLeft, setTimeLeft] = useState(initialTime);
@@ -217,7 +219,7 @@ const OtpVerification = ({
             cursor-pointer
             hover:underline
             disabled:cursor-not-allowed
-            disabled:opacity-50
+            disabled:opacity-30
           "
         >
           {isResending ? "Sending..." : "Resend OTP"}
@@ -226,7 +228,9 @@ const OtpVerification = ({
 
       {/* error */}
       {(otpError || error) && (
-        <p className="text-center text-sm text-danger py-1">{otpError || error}</p>
+        <p className="text-center text-sm text-danger py-1">
+          {otpError || error}
+        </p>
       )}
 
       {/* Timer */}
@@ -267,6 +271,19 @@ const OtpVerification = ({
             disabled={isResending || isSubmitting}
           />
         </Link>
+      )}
+
+      {showBackButton && (
+        <Button
+          type="button"
+          onClick={() => {
+            localStorage.removeItem("blogId");
+            navigate(-1);
+          }}
+          className="mt-3 flex w-full items-center justify-center gap-2 bg-primary/60 text-white/80 cursor-pointer hover:bg-primary-hover"
+          text="Cancel"
+          disabled={isResending || isSubmitting}
+        />
       )}
     </div>
   );

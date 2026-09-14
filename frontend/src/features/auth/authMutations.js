@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { errorHandler } from "../../utils/errorHandler.js";
 import {
@@ -28,7 +28,7 @@ export const useLogin = () => {
     onSuccess: (response) => {
       sessionStorage.setItem("justLoggedIn", "1");
       localStorage.setItem("hasSession", "1");
-      localStorage.removeItem("email")
+      localStorage.removeItem("email");
       dispatch(setCredentials(response.data));
       showSuccess(response.message);
     },
@@ -92,7 +92,6 @@ export const useResendVerificationEmail = () => {
 };
 
 export const useVerifyRegisterEmail = () => {
-
   return useMutation({
     mutationFn: verifyRegisterEmail,
 
@@ -107,7 +106,7 @@ export const useVerifyRegisterEmail = () => {
 
 export const useLogout = () => {
   const dispatch = useDispatch();
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: logout,
 
@@ -115,6 +114,7 @@ export const useLogout = () => {
 
     onSuccess: (response) => {
       dispatch(logOut());
+      queryClient.clear();
       localStorage.removeItem("hasSession");
       sessionStorage.clear();
     },

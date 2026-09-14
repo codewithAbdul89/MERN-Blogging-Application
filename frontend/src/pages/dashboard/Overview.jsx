@@ -6,18 +6,30 @@ import AnimatedNumber from "../../components/ui/AnimatedNumber";
 import AnimatedText from "../../components/ui/AnimatedText";
 import { useBlogStats } from "../../features/blog/blogQueries";
 import Loader from "../../components/ui/Loader";
+import { errorHandler } from "../../utils/errorHandler";
+import ErrorState from "../../components/ui/ErrorState";
 
 function Overview() {
   const { user } = useSelector((state) => state.auth);
 
-  const { data: response, isPending } = useBlogStats();
+  const { data: response, isPending, isError, error, refetch } = useBlogStats();
 
   if (isPending) {
     return <Loader />;
   }
 
+  if (isError) {
+    return (
+      <ErrorState
+        title="Unable to load dashboard"
+        message={errorHandler(error)}
+        onRetry={refetch}
+      />
+    );
+  }
+
   return (
-    <div className="max-w-full sm:max-w-7xl text-text-primary pb-10">
+    <div className="max-w-full sm:max-w-7xl text-text-primary pb-10 px-2 sm:px-8">
       <h1 className="text-center text-3xl mt-10 font-bold font-heading tracking-wider md:text-5xl">
         Welcome Back,{" "}
         <span className="text-primary py-2 wrap-break-word block md:inline md:p-0">
@@ -31,8 +43,8 @@ function Overview() {
       </h2>
       {/* Quick Actions */}
       <div>
-        <h3 className="mt-7 px-2 mx-1 py-1 text-2xl  font-heading tracking-wider">
-          Quick Actions
+        <h3 className="mt-7 px-2 mx-1 py-1 text-2xl  font-semibold it tracki">
+          Quick Action
         </h3>
         <div className="flex justify-center mt-6 flex-col gap-3 items-center  text-white px-6 md:flex-row md:mt-10 md:gap-19 md:pl-15">
           <Link
@@ -60,7 +72,7 @@ function Overview() {
       {/* Stat Cards */}
 
       <div className="mt-10 grid grid-cols-2 gap-7 justify-items-center md:grid-cols-4 md:mt-15 ">
-        <StatCard value={response?.data?.totalBlogsCount} label="Total Blogs" />
+        <StatCard value={response?.data?.totalBlogsCount} label="Blogs" />
         <StatCard
           value={response?.data?.draftBlogsCount ?? 0}
           label={"Drafts"}
@@ -74,8 +86,6 @@ function Overview() {
           label={"Likes"}
         />
       </div>
-
-      {/* Recent blogs */}
 
       {/* Recent Blogs */}
       {response?.data?.recentBlogs?.length > 0 && (
@@ -126,8 +136,7 @@ function Overview() {
                     {/* Content */}
                     <td className="px-4 py-3 text-left text-text-primary">
                       <div className="max-w-70 truncate md:max-w-125">
-                        {/* {blog.content} */}
-                        <AnimatedText text={blog.content || ""} />
+                        {blog.content}
                       </div>
                     </td>
                   </tr>
@@ -151,7 +160,7 @@ const StatCard = ({ value, label }) => {
         <AnimatedNumber value={value} />
       </span>
 
-      <span className="mt-1 text-sm text-text-secondary font-semibold">
+      <span className="mt-1 text-sm text-text-secondary font-semibold whitespace-nowrap">
         {label}
       </span>
     </div>

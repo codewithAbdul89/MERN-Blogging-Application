@@ -1,4 +1,79 @@
+// import { useRef } from "react";
+// import { createPortal } from "react-dom";
+
+// import useOutsideClick from "../../hooks/useOutsideClick";
+
+// const ConfirmDialog = ({
+//   isOpen: isConfirmDialogOpen,
+//   onClose: onCloseConfirmDialog,
+//   heading,
+//   message,
+//   btnText,
+//   onBtnClick,
+// }) => {
+//   const confirmRef = useRef();
+
+//   useOutsideClick(confirmRef, onCloseConfirmDialog);
+
+//   if (!isConfirmDialogOpen) {
+//     return null;
+//   }
+
+//   return createPortal(
+//     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 px-4">
+//       <div
+//         ref={confirmRef}
+//         className="relative w-full max-w-md rounded-xl bg-surface p-5 shadow-2xl sm:p-6"
+//       >
+//         {/* Close Button */}
+//         <button
+//           type="button"
+//           onClick={onCloseConfirmDialog}
+//           className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-3xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
+//           aria-label="Close modal"
+//         >
+//           ×
+//         </button>
+
+//         {/* Heading */}
+//         <h2 className="pr-8 font-heading text-lg font-semibold text-text-primary sm:text-xl">
+//           {heading}
+//         </h2>
+
+//         {/* Message */}
+//         <p className="mt-3 text-base leading-relaxed text-text-secondary">
+//           {message}
+//         </p>
+
+//         {/* Buttons */}
+//         <div className="mt-6 flex gap-3 sm:flex-row sm:justify-end">
+//           <button
+//             type="button"
+//             onClick={onBtnClick}
+//             className="w-full cursor-pointer rounded-lg bg-danger px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-80 sm:w-auto"
+//           >
+//             {btnText}
+//           </button>
+
+//           <button
+//             type="button"
+//             onClick={onCloseConfirmDialog}
+//             className="w-full cursor-pointer rounded-lg bg-gray-700 shadow px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 sm:w-auto"
+//           >
+//             Cancel
+//           </button>
+//         </div>
+//       </div>
+//     </div>,
+//     document.body,
+//   );
+// };
+
+// export default ConfirmDialog;
+
 import { useRef } from "react";
+import { createPortal } from "react-dom";
+
 import useOutsideClick from "../../hooks/useOutsideClick";
 
 const ConfirmDialog = ({
@@ -7,10 +82,11 @@ const ConfirmDialog = ({
   heading,
   message,
   btnText,
-  btnClassName,
   onBtnClick,
+  usePortal = false,
+  isPending = false,
 }) => {
-  const confirmRef = useRef();
+  const confirmRef = useRef(null);
 
   useOutsideClick(confirmRef, onCloseConfirmDialog);
 
@@ -18,46 +94,117 @@ const ConfirmDialog = ({
     return null;
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+  const dialog = (
+    <div
+      className="
+        fixed inset-0 z-9999
+        flex items-center justify-center
+        bg-black/50 px-4
+      "
+    >
       <div
         ref={confirmRef}
-        className="relative w-full max-w-md rounded-xl bg-white p-5 shadow-xl sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        className="
+          relative w-full max-w-md
+          rounded-xl bg-surface
+          p-5 shadow-2xl
+          sm:p-6
+        "
       >
         {/* Close Button */}
         <button
           type="button"
           onClick={onCloseConfirmDialog}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-3xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
-          aria-label="Close modal"
+          disabled={isPending}
+          className="
+            absolute right-3 top-3
+            flex h-8 w-8
+            items-center justify-center
+            rounded-full
+            text-3xl text-gray-500
+            transition
+            hover:bg-gray-100
+            hover:text-gray-800
+            disabled:cursor-not-allowed
+            disabled:opacity-50
+          "
+          aria-label="Close dialog"
         >
           ×
         </button>
 
         {/* Heading */}
-        <h2 className="pr-8 text-lg font-semibold font-heading text-gray-900 sm:text-xl">
+        <h2
+          className="
+            pr-8
+            font-heading
+            text-lg font-semibold
+            text-text-primary
+            sm:text-xl
+          "
+        >
           {heading}
         </h2>
 
         {/* Message */}
-        <p className="mt-3 text-lg leading-relaxed text-gray-600 sm:text-base">
+        <p
+          className="
+            mt-3
+            text-base
+            leading-relaxed
+            text-text-secondary
+          "
+        >
           {message}
         </p>
 
         {/* Buttons */}
-        <div className="mt-6 flex  gap-3 sm:flex-row sm:justify-end">
+        <div className="mt-6 flex gap-3 sm:justify-end">
+          {/* Confirm */}
           <button
             type="button"
             onClick={onBtnClick}
-            className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium  transition hover:opacity-80 cursor-pointer bg-danger text-white sm:w-auto"
+            disabled={isPending}
+            className="
+              w-full
+              cursor-pointer
+              rounded-lg
+              bg-danger
+              px-4 py-2.5
+              text-sm font-medium
+              text-white
+              transition
+              hover:opacity-80
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+              sm:w-auto
+            "
           >
-            {btnText}
+            {isPending ? "Processing..." : btnText}
           </button>
 
+          {/* Cancel */}
           <button
             type="button"
             onClick={onCloseConfirmDialog}
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-gray-800 cursor-pointer sm:w-auto"
+            disabled={isPending}
+            className="
+              w-full
+              cursor-pointer
+              rounded-lg
+              bg-gray-700
+              px-4 py-2.5
+              text-sm font-medium
+              text-white
+              shadow
+              transition
+              hover:bg-gray-800
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+              sm:w-auto
+            "
           >
             Cancel
           </button>
@@ -65,6 +212,8 @@ const ConfirmDialog = ({
       </div>
     </div>
   );
+
+  return usePortal ? createPortal(dialog, document.body) : dialog;
 };
 
 export default ConfirmDialog;

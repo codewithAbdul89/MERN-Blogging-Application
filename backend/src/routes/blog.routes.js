@@ -1,5 +1,5 @@
 import express from "express";
-import { protectedRoute, authorizeRole } from '../middlewares/auth.middleware.js';
+import { protectedRoute, optionalAuth } from '../middlewares/auth.middleware.js';
 import { imageUploader } from "../middlewares/upload.middleware.js";
 import { createBlogValidator, singleBlogValidator, updateBlogValidator, verifyDeleteBlogOtpVelidation } from "../validators/blog.validator.js";
 import validate from "../middlewares/validate.middleware.js";
@@ -26,7 +26,7 @@ router.post(
 
 router.get(
     '/',
-    protectedRoute,
+    optionalAuth,
     getAllBlogs
 )
 
@@ -103,7 +103,7 @@ router.patch(
 
 //Toogle Bookmarks
 
-router.post(
+router.patch(
     '/:blogId/bookmark',
     protectedRoute,
     toggleBookmark

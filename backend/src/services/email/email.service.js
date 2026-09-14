@@ -114,7 +114,6 @@ export const sendDeleteAccountOtpEmail = async (user, otp) => {
 };
 
 export const sendloginEmailOtp = async (userName, email, otp) => {
-
   const html = loginOtpTemplate({
     userName,
     otp,

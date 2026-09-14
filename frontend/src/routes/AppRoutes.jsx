@@ -22,6 +22,12 @@ import Search from "../pages/blog/Search.jsx";
 import Profile from "../pages/profile/Profile.jsx";
 import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 import Overview from "../pages/dashboard/Overview.jsx";
+import AllBlog from "../pages/blog/AllBlog.jsx";
+import PublishedBlog from "../pages/blog/PublishedBlog.jsx";
+import DraftBlog from "../pages/blog/DraftBlog.jsx";
+import LikedBlog from "../pages/blog/LikedBlog.jsx";
+import BookmarkedBlog from "../pages/blog/BookmarkedBlog.jsx";
+import VerifyDeleteBlogOTP from "../pages/blog/VerifyDeleteBlogOTP.jsx";
 
 function AppRoutes() {
   return (
@@ -68,8 +74,22 @@ function AppRoutes() {
           <Route path="/profile" element={<Profile />} />
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Overview />} />
-            <Route path="/dashboard/blogs" element={<Overview />} />
-            <Route path="/dashboard/blogs/create" element={<Overview />} />
+            <Route path="/dashboard/blogs" element={<AllBlog />} />
+            <Route
+              path="/dashboard/blogs/published"
+              element={<PublishedBlog />}
+            />
+            <Route path="/dashboard/blogs/drafts" element={<DraftBlog />} />
+            <Route path="/dashboard/liked" element={<LikedBlog />} />
+            <Route path="/dashboard/bookmarked" element={<BookmarkedBlog />} />
+            <Route
+              path="/dashboard/verify-email"
+              element={<VerifyDeleteBlogOTP />}
+            />
+            <Route
+              path="/dashboard/blogs/create"
+              element={<Overview />}
+            />
           </Route>
         </Route>
       </Route>

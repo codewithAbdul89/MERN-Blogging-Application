@@ -31,6 +31,41 @@ export const protectedRoute = async (req, res, next) => {
   }
 };
 
+export const optionalAuth = async (req, res, next) => {
+  try {
+    req.user = null;
+
+    const authHeader = req.header("Authorization");
+
+    const token =
+      req.cookies.accessToken ||
+      (authHeader && authHeader.startsWith("Bearer ")
+        ? authHeader.split(" ")[1]
+        : null);
+
+    // No token = guest
+    if (!token) {
+      return next();
+    }
+
+    const decoded = verifyAccessToken(token);
+
+    const user = await User.findById(decoded.id).select("-password");
+
+    // Invalid user/token = treat as guest
+    if (!user) {
+      return next();
+    }
+
+    req.user = user;
+
+    next();
+  } catch (error) {
+    // Invalid/expired token = treat as guest
+    next();
+  }
+};
+
 export const authorizeRole = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {

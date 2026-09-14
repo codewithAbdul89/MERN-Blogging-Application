@@ -39,11 +39,9 @@ export const unpublishBlog = async ({ blogId }) => {
   return response.data;
 };
 
-export const getMyBlogs = async (status) => {
+export const getMyBlogs = async (params) => {
   const response = await api.get(`/blog/my-blogs`, {
-    params: {
-      status,
-    },
+    params,
   });
   return response.data;
 };
@@ -59,7 +57,7 @@ export const sendDeleteBlogOtp = async ({ blogId }) => {
 };
 
 export const verifyDeleteBlogOtp = async ({ otp }) => {
-  const response = await api.post("/blog/verify-delete-blog-otp", { otp });
+  const response = await api.post("/blog/verify-delete-blog-otp", otp);
   return response.data;
 };
 
@@ -80,19 +78,23 @@ export const toggleLike = async ({ blogId }) => {
   return response.data;
 };
 
-export const getLikedBlogs = async () => {
-  const response = await api.get("/blog/liked-blogs");
+export const getLikedBlogs = async (params) => {
+  const response = await api.get(`/blog/liked-blogs`, {
+    params,
+  });
   return response.data;
 };
-
 //Bookmark Service
 
 export const toggleBookmark = async ({ blogId }) => {
+  console.log("Bookmarked ID  : ", blogId);
   const response = await api.patch(`/blog/${blogId}/bookmark`);
   return response.data;
 };
 
-export const getBookmarkedBlogs = async () => {
-  const response = await api.get("/blog/bookmarks");
+export const getBookmarkedBlogs = async (params) => {
+  const response = await api.get("/blog/bookmarks", {
+    params,
+  });
   return response.data;
 };

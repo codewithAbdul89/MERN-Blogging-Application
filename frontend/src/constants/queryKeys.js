@@ -1,4 +1,3 @@
-// src/constants/queryKeys.js
 
 export const QUERY_KEYS = {
   // Home page infinite feed
@@ -12,7 +11,7 @@ export const QUERY_KEYS = {
   // My blogs
   MY_HOME_BLOGS: ["myBlogs"],
 
-  MY_BLOGS: (status) => ["myBlogs", status],
+  MY_BLOGS: (status = "ALL") => ["myBlogs", status],
 
   // User interactions
   LIKED_BLOGS: ["likedBlogs"],

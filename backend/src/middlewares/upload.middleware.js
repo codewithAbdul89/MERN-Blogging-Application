@@ -18,6 +18,7 @@ export const createUploader = ({
         allowedFileNames,
       };
 
+
       if (!allowedMimeTypes.includes(file.mimetype)) {
         return cb(new Error("INVALID_FILE_TYPE"));
       }

@@ -16,7 +16,7 @@ function Logout({ className = "" }) {
   return (
     <>
       <Button
-        className={` px-3 py-1 text-left font-normal flex  items-center gap-2  hover:text-primary ${className} `}
+        className={` px-3 py-1 text-left font-normal flex  items-center gap-2  hover:opacity-50 ${className} `}
         text={
           isPending ? (
             <ButtonLoader text="Logging Out" />
@@ -38,9 +38,9 @@ function Logout({ className = "" }) {
         heading="LogOut"
         message="Are you sure you want to logout?"
         btnText="Logout"
-        btnClassName="bg-danger text-white"
         onBtnClick={async () => {
           try {
+            console.log('REguest recieved');
             await logout();
             navigate("/");
             closeModal();

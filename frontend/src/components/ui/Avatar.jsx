@@ -11,11 +11,15 @@ const Avatar = ({
     lg: "h-12 w-12",
     xl: "h-16 w-16",
   };
+    const imageSrc = src?.startsWith("/")
+    ? `${import.meta.env.VITE_API_BASE_URL.replace("/api", "")}${src}`
+    : src;
+  
 
   return (
     <img
       {...props}
-      src={src}
+     src={imageSrc}
       alt={alt}
       className={`
                 ${sizes[size] || sizes.md}
