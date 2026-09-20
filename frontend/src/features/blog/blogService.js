@@ -1,6 +1,6 @@
 import api from "../../api/axios.js";
 
-export const createBlog = async ({ blogData }) => {
+export const createBlog = async (blogData) => {
   const response = await api.post("/blog", blogData);
   return response.data;
 };
@@ -13,14 +13,20 @@ export const getBlogs = async (params) => {
 };
 
 export const getSearchedBlogs = async (params) => {
-  const response = await api.get("/blog/", {
+  const response = await api.get("/blog/search", {
     params,
   });
+
   return response.data;
 };
 
 export const getSingleBlog = async (slug) => {
   const response = await api.get(`/blog/${slug}`);
+  return response.data;
+};
+
+export const getBlogForEdit = async (blogId) => {
+  const response = await api.get(`/blog/edit/${blogId}`);
   return response.data;
 };
 
@@ -87,7 +93,6 @@ export const getLikedBlogs = async (params) => {
 //Bookmark Service
 
 export const toggleBookmark = async ({ blogId }) => {
-  console.log("Bookmarked ID  : ", blogId);
   const response = await api.patch(`/blog/${blogId}/bookmark`);
   return response.data;
 };

@@ -1,3 +1,4 @@
+import { twMerge } from "tailwind-merge";
 import { CATEGORY_STYLES } from "../../constants/categoryStyles";
 
 function CategoryBadge({ category, className = "" }) {
@@ -5,7 +6,8 @@ function CategoryBadge({ category, className = "" }) {
 
   return (
     <span
-      className={`
+      className={twMerge(
+        `
         inline-flex items-center
         rounded-full
         border
@@ -13,9 +15,9 @@ function CategoryBadge({ category, className = "" }) {
         px-2.5 py-1 md:px-4
         text-xs font-medium
         ${style.bg}
-        text-white
-        ${className}
-      `}
+        text-white`,
+        className,
+      )}
     >
       {category}
     </span>

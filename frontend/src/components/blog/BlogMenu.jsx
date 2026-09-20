@@ -17,17 +17,13 @@ import { useModal } from "../../hooks/useModal";
 import Loader from "../ui/Loader";
 
 function BlogMenu({ blog }) {
-  const { mutateAsync: publishBlog, isPending: isPublishPending } =
-    usePublishBlog();
+  const { mutateAsync: publishBlog, isPending: isPublishPending } = usePublishBlog();
 
-  const { mutateAsync: unpublishBlog, isPending: isUnpublishPending } =
-    useUnpublishBlog();
+  const { mutateAsync: unpublishBlog, isPending: isUnpublishPending } = useUnpublishBlog();
 
-  const { mutateAsync: deleteBlog, isPending: isDeletePending } =
-    useDeleteBlog();
+  const { mutateAsync: deleteBlog, isPending: isDeletePending } = useDeleteBlog();
 
-  const { mutateAsync: sendDeleteBlogOtp, isPending: isSendOtpPending } =
-    useSendDeleteBlogOtp();
+  const { mutateAsync: sendDeleteBlogOtp, isPending: isSendOtpPending } = useSendDeleteBlogOtp();
 
   const { isOpen, openModal, closeModal } = useModal();
 
@@ -48,17 +44,17 @@ function BlogMenu({ blog }) {
     } else {
       localStorage.setItem("blogId", blog?._id) || "";
       await sendDeleteBlogOtp({ blogId: blog._id });
-      navigate("/dashboard/verify-email");
+      navigate("/dashboard/delete-blog", {
+        state: {
+          flow: "delete-blog",
+        },
+      });
     }
 
     closeModal();
   };
 
-  const isPending =
-    isPublishPending ||
-    isUnpublishPending ||
-    isDeletePending ||
-    isSendOtpPending;
+  const isPending = isPublishPending || isUnpublishPending || isDeletePending || isSendOtpPending;
 
   if (isPending) return <Loader />;
 
@@ -67,20 +63,23 @@ function BlogMenu({ blog }) {
       <Dropdown
         icon={HiDotsVertical}
         tooltip="Menu"
-        className="rounded-full bg-black/80 p-2 text-white backdrop-blur-sm"
+        className="rounded-full bg-black/80 p-2 text-xl text-white backdrop-blur-sm"
       >
-        <div className="absolute right-0 top-0 z-10 flex flex-col rounded-lg border border-border bg-surface p-2 text-sm font-medium text-text-primary">
+        <div className="border-border bg-surface text-text-primary absolute top-0 right-0 z-10 flex flex-col rounded-lg border p-2 text-sm font-medium">
           {/* Edit */}
-          <Link
-            to={`/dashboard/blogs/edit/${blog._id}`}
-            className="flex w-32 items-center py-1 text-left whitespace-nowrap"
-          >
-            <span className="w-7 shrink-0">
-              <GoPencil />
-            </span>
+          {!blog?.isUpdated && (
+            <Link
+              to={`/dashboard/blog/edit/${blog._id}`}
+              state={{ blog }}
+              className="flex w-32 items-center py-1 text-left whitespace-nowrap"
+            >
+              <span className="w-7 shrink-0">
+                <GoPencil />
+              </span>
 
-            <span>Edit Blog</span>
-          </Link>
+              <span>Edit Blog</span>
+            </Link>
+          )}
 
           {/* Publish */}
           {blog.status === "DRAFT" && (
@@ -88,7 +87,7 @@ function BlogMenu({ blog }) {
               type="button"
               disabled={isPending}
               onClick={handlePublish}
-              className="flex w-32 items-center py-1 text-left whitespace-nowrap disabled:opacity-50 hover:cursor-pointer"
+              className="flex w-32 items-center py-1 text-left whitespace-nowrap hover:cursor-pointer disabled:opacity-50"
             >
               <span className="w-7 shrink-0">
                 <MdPublish />
@@ -104,7 +103,7 @@ function BlogMenu({ blog }) {
               type="button"
               disabled={isPending}
               onClick={handleUnpublish}
-              className="flex w-32 items-center py-1 text-left whitespace-nowrap disabled:opacity-50 hover:cursor-pointer"
+              className="flex w-32 items-center py-1 text-left whitespace-nowrap hover:cursor-pointer disabled:opacity-50"
             >
               <span className="w-7 shrink-0">
                 <BiSolidArrowToBottom />
@@ -119,7 +118,7 @@ function BlogMenu({ blog }) {
             type="button"
             disabled={isPending}
             onClick={openModal}
-            className="flex w-32 items-center py-1 text-left whitespace-nowrap text-danger disabled:opacity-50 hover:cursor-pointer"
+            className="text-danger flex w-32 items-center py-1 text-left whitespace-nowrap hover:cursor-pointer disabled:opacity-50"
           >
             <span className="w-7 shrink-0">
               <MdDeleteSweep />

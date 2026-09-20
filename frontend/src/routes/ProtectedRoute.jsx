@@ -1,24 +1,23 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 import Loader from "../components/ui/Loader.jsx";
 
 function ProtectedRoute() {
-    const { authStatus } = useSelector(
-        (state) => state.auth
-    );
+  const location = useLocation();
+  const { authStatus } = useSelector((state) => state.auth);
 
-    if (authStatus === "unauthenticated") {
-        return <Navigate to="/login" replace />;
-    }
+  if (authStatus === "unauthenticated") {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  }
 
-    return (
-        <>
-            <Outlet /> 
+  return (
+    <>
+      <Outlet />
 
-            {authStatus === "loading" && <Loader />}
-        </>
-    );
+      {authStatus === "loading" && <Loader />}
+    </>
+  );
 }
 
 export default ProtectedRoute;

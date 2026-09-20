@@ -8,12 +8,9 @@ import {
   getBookmarkedBlogs,
   getSearchedBlogs,
   blogStats,
+  getBlogForEdit,
 } from "../blog/blogService.js";
-import {
-  useInfiniteQuery,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useBlogs = () => {
   const query = useInfiniteQuery({
@@ -67,20 +64,30 @@ export const useMyBlogs = (status) => {
 };
 
 export const useSearchedblogs = (params) => {
-  return useInfiniteQuery({
-    queryKey: QUERY_KEYS.SEARCH_BLOGS,
+  const query = useInfiniteQuery({
+    queryKey: QUERY_KEYS.SEARCH_BLOGS(params),
 
     queryFn: ({ pageParam = 1 }) =>
       getSearchedBlogs({
         page: pageParam,
-        limit: 10,
+        limit: 6,
         ...params,
       }),
 
+    initialPageParam: 1,
+
     getNextPageParam: (lastPage) => {
-      return lastPage.hasMore ? lastPage.page + 1 : undefined;
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
     },
+    enabled: Boolean(params?.categorySlug || params?.textSearch),
   });
+
+  const blogs = query?.data?.pages.flatMap((page) => page.data.blogs) ?? [];
+
+  return {
+    ...query,
+    blogs,
+  };
 };
 
 export const useSingleBlog = (slug) => {
@@ -98,8 +105,17 @@ export const usePrefetchSingleBlog = () => {
     queryClient.prefetchQuery({
       queryKey: QUERY_KEYS.BLOG(slug),
       queryFn: () => getSingleBlog(slug),
+      staleTime: 60 * 1000,
     });
   };
+};
+
+export const useBlogForEdit = (blogId) => {
+  return useQuery({
+    queryKey: ["blog", "edit", blogId],
+    queryFn: () => getBlogForEdit(blogId),
+    enabled: !!blogId,
+  });
 };
 
 export const useLikedBlogs = () => {
@@ -126,7 +142,6 @@ export const useLikedBlogs = () => {
     blogs,
   };
 };
-
 
 export const useBookmarkedBlogs = () => {
   const query = useInfiniteQuery({

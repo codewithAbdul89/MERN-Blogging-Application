@@ -1,9 +1,10 @@
-
 export const QUERY_KEYS = {
   // Home page infinite feed
   HOME_BLOGS: ["homeBlogs"],
 
-  SEARCH_BLOGS: (params) => ["searchBlogs", params],
+  SEARCH_BLOGS: (params = {}) => ["blogs", "search", params],
+
+  SEARCH_BLOGS_ROOT: ["blogs", "search"],
 
   // Single blog
   BLOG: (slug) => ["blog", slug],

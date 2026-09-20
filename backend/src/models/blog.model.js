@@ -78,7 +78,7 @@ const blogSchema = new Schema(
       min: 0,
     },
 
-    contentUpdatedAt: {
+    blogUpdatedAt: {
       type: Date,
       default: null,
     },

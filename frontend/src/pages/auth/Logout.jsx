@@ -40,7 +40,7 @@ function Logout({ className = "" }) {
         btnText="Logout"
         onBtnClick={async () => {
           try {
-            console.log('REguest recieved');
+            console.log('Request recieved');
             await logout();
             navigate("/");
             closeModal();

@@ -1,19 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
-import { getErrorMessage } from "../../utils/errorHandler.js";
-
+import { getAllCategories, getPopulatedCategories } from "./categoryService.js";
 
 export const useCategories = () => {
+  return useQuery({
+    queryKey: QUERY_KEYS.CATEGORIES,
 
-    return useQuery({
+    queryFn: getAllCategories,
+  });
+};
 
-        queryKey: QUERY_KEYS.CATEGORIES,
-
-        queryFn: getAllCategories,
-
-    });
-
+export const usePopularCategory = () => {
+  return useQuery({
+    queryKey: ["popular_categories"],
+    queryFn: getPopulatedCategories,
+  });
 };
 
 // import { useQueryClient } from "@tanstack/react-query";

@@ -21,7 +21,10 @@ const Input = ({
       {label && (
         <label
           htmlFor={id}
-          className={`text-text-secondary font-medium block my-2 px-1 ${labelClassName}`}
+          className={twMerge(
+            `text-text-secondary font-medium block my-2 px-1 ${labelClassName}`,
+            labelClassName,
+          )}
         >
           {label}
         </label>
@@ -49,14 +52,14 @@ const Input = ({
       {passwordIcon && (
         <button
           type="button"
-         className={`text-primary/50 absolute right-2 ${error?"top-[47%]":"top-[65%]"}  -translate-y-1/2 cursor-pointer`}
+          className={`text-primary/50 absolute right-2 ${error ? "top-[47%]" : "top-[65%]"}  -translate-y-1/2 cursor-pointer`}
           onClick={() =>
             setType((prevType) =>
               prevType === "password" ? "text" : "password",
             )
           }
         >
-          {type === "text" ? <FaEyeSlash size={20}/> : <FaEye size={20} />}
+          {type === "text" ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
         </button>
       )}
 

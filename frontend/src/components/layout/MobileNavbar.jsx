@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiMenu, FiMoon, FiSun, FiX } from "react-icons/fi";
 import { IoIosSearch } from "react-icons/io";
 import { Link, NavLink } from "react-router-dom";
@@ -17,6 +17,7 @@ import Logout from "../../pages/auth/Logout";
 import Avatar from "../ui/Avatar";
 import Dropdown from "../ui/Dropdown";
 import { useTheme } from "../../hooks/useTheme";
+import useOutsideClick from "../../hooks/useOutsideClick";
 
 function MobileNavbar() {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -33,13 +34,27 @@ function MobileNavbar() {
     setMobileMenuOpen(false);
   };
 
+  const menuRef = useRef(null);
+
+  useOutsideClick(menuRef, () => {
+    setMobileMenuOpen(false);
+  });
+
+  useEffect(() => {
+    window.addEventListener("scroll", closeMobileMenu);
+
+    return () => {
+      window.removeEventListener("scroll", closeMobileMenu);
+    };
+  }, []);
+
   const { currentTheme } = useTheme();
 
   return (
     <>
       {/* Mobile Navbar Buttons */}
       <div
-        className={`flex md:hidden items-center  ${isAuthenticated ? "gap-2.5" : "gap-5 px-3"} `}
+        className={`flex md:hidden items-center   ${isAuthenticated ? "gap-2.5" : "gap-5 px-3"} `}
       >
         {/* Search */}
         <Link to="/search" onClick={() => setMobileMenuOpen(false)}>
@@ -111,10 +126,12 @@ function MobileNavbar() {
           </Dropdown>
         )}
       </div>
-
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 right-0 z-50 md:hidden bg-primary-light/50 backdrop-blur-2xl border-t  border-white text-text-primary transition-all duration-300 ">
+        <div
+          ref={menuRef}
+          className={`absolute top-full left-0 right-0 z-50 md:hidden  backdrop-blur-2xl border-t  border-white text-text-primary transition-all duration-300 rounded-b-xl bg-primary-light/90  `}
+        >
           {/* Home */}
           <NavLink
             to="/"

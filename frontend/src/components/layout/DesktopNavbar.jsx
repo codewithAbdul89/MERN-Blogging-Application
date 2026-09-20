@@ -22,8 +22,8 @@ function DesktopNavbar() {
     ? user.profilePic.url
     : `http://localhost:5000${user?.profilePic?.url}`;
   return (
-    <div className="hidden md:flex text-text-primary">
-      <ul className="flex items-center justify-between gap-2 sm:gap-5  font-semibold">
+    <div className="hidden md:flex text-text-primary ">
+      <ul className="flex items-center justify-between gap-2 sm:gap-5 font-semibold ">
         {/* common Links */}
         <li>
           <NavLink
@@ -179,7 +179,7 @@ function DesktopNavbar() {
                   </Link>
 
                   <hr />
-                  
+
                   <Logout />
                 </div>
               </Dropdown>

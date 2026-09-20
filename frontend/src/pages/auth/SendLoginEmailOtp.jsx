@@ -32,12 +32,16 @@ function SendLoginEmailOtp() {
     setFocus("email");
   }, [setFocus]);
 
-  const { mutateAsync: emailLogin, isPending } = useEmailLogin();
+  const { mutateAsync: sendEmailLoginOtp, isPending } = useEmailLogin();
 
   const onSubmit = async (data) => {
     try {
-      await emailLogin(data);
-      navigate("/verify-login-otp");
+      await sendEmailLoginOtp(data);
+      navigate("/verify-login-otp", {
+        state: {
+          flow: "verify-login-otp",
+        },
+      });
     } catch (error) {
       console.error("Send Login Email error:", error);
     }
@@ -46,31 +50,28 @@ function SendLoginEmailOtp() {
   return (
     <>
       {isPending && <Loader />}
-      <section className="flex min-h-[calc(100vh-240px)]  w-full items-center justify-center sm:min-h-[calc(100vh-120px)]">
-        <main className="w-[98%] rounded-3xl bg-background px-2.5 py-3.5 dark:bg-[#1b2431] sm:max-w-lg sm:p-4">
+      <section className="flex min-h-[calc(100vh-240px)] w-full items-center justify-center sm:min-h-[calc(100vh-120px)]">
+        <main className="bg-background w-[98%] rounded-3xl px-2.5 py-3.5 sm:max-w-lg sm:p-4 dark:bg-[#1b2431]">
           {/* Starting from here */}
-          <div className="bg-primary-light m-1 px-4 py-5 rounded-2xl shadow-xl ">
+          <div className="bg-primary-light m-1 rounded-2xl px-4 py-5 shadow-xl">
             {/* Icon */}
 
             <div className="mb-4 flex justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <div className="bg-primary/10 flex h-14 w-14 items-center justify-center rounded-full">
                 <MdOutlineEmail size={32} className="text-primary" />
               </div>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-primary  text-4xl font-bold font-heading text-center pt-3">
+            <h1 className="text-primary font-heading pt-3 text-center text-4xl font-bold">
               Login With Email
             </h1>
 
-            <h2 className="mt-1 text-text-secondary text-center">
+            <h2 className="text-text-secondary mt-1 text-center">
               Enter your credentials to access your account.
             </h2>
             {/* Form */}
-            <form
-              className="mt-2 flex flex-col gap-2"
-              onSubmit={handleSubmit(onSubmit)}
-            >
+            <form className="mt-2 flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
               <Input
                 label="Email"
                 id="email"
@@ -84,11 +85,9 @@ function SendLoginEmailOtp() {
 
               <Button
                 type="submit"
-                text={
-                  isPending ? <ButtonLoader text="Sending OTP.." /> : "Send OTP"
-                }
+                text={isPending ? <ButtonLoader text="Sending OTP.." /> : "Send OTP"}
                 disabled={isPending}
-                className="bg-primary w-full text-white/80 mt-2 hover:bg-primary-hover text-lg"
+                className="bg-primary hover:bg-primary-hover mt-2 w-full text-lg text-white/80"
               />
             </form>
             {/* Back Button */}
@@ -96,7 +95,7 @@ function SendLoginEmailOtp() {
               <Button
                 type="button"
                 text={"Back to login page"}
-                className="bg-primary w-full text-white/80 mt-2 hover:bg-primary-hover text-lg"
+                className="bg-primary hover:bg-primary-hover mt-2 w-full text-lg text-white/80"
               />
             </Link>
           </div>

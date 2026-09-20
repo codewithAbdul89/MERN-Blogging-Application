@@ -48,15 +48,15 @@ function AuthInitializer({ children }) {
     return <Loader />;
   }
   // handle authentication initialization failure
-  if (authStatus === "error") {
-    return (
-      <ErrorState
-        title="Unable to initialize authentication"
-        error={getErrorMessage(error)}
-        onRetry={refetch}
-      />
-    );
-  }
+  // if (authStatus === "error") {
+  //   return (
+  //     <ErrorState
+  //       title="Unable to initialize authentication"
+  //       error={getErrorMessage(error)}
+  //       onRetry={refetch}
+  //     />
+  //   );
+  // }
 
   return children;
 }

@@ -1,81 +1,80 @@
 import { CiCalendarDate } from "react-icons/ci";
-import { MdDeleteSweep } from "react-icons/md";
-import { HiDotsVertical } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { MdPublish } from "react-icons/md";
-import { GoPencil } from "react-icons/go";
 import { IoEyeOutline } from "react-icons/io5";
-import { BiSolidArrowToBottom } from "react-icons/bi";
 
-import CategoryBadge from "../ui/CategoryBadge";
-import Dropdown from "../ui/Dropdown";
+import CategoryBadge from "./CategoryBadge";
 import { formatDate, formatRelativeTime } from "../../utils/formatDate";
 import BlogTags from "./BlogTags";
 import Avatar from "../ui/Avatar";
 import BlogActions from "./BlogActions";
 import Tooltip from "../ui/Tooltip";
 import BlogMenu from "./BlogMenu";
+import { usePrefetchSingleBlog } from "../../features/blog/blogQueries";
 
-function BlogCard({
-  blog = "",
-  showBookmark = false,
-  isMenuOpen = false,
-  status = "ALL",
-}) {
+function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status = "ALL" }) {
+  const getPlainText = (html) => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || "";
+  };
+
+  const prefetchSingleBlog = usePrefetchSingleBlog();
   return (
     <div
-      className={` flex h-full flex-col  rounded-xl border border-border bg-surface transition-transform hover:scale-102 duration-200 relative ${blog?.status === "DRAFT" ? "border-red-500 border-2" : ""} `}
+      className={`border-border bg-surface relative flex h-full flex-col rounded-xl border transition-transform duration-200 hover:scale-102 ${blog?.status === "DRAFT" ? "border-2 border-red-500" : ""} `}
     >
       {/* image & menu */}
       <div className="relative">
         {/* Image */}
-        <Link>
+        <Link
+          className="group relative block overflow-hidden rounded-lg"
+          onMouseEnter={() => prefetchSingleBlog(blog?.slug)}
+        >
           <img
-            className="w-full h-64 object-cover rounded-lg"
+            className="h-64 w-full cursor-default object-cover transition-transform duration-500 group-hover:scale-105"
             src={blog?.featuredImage?.url}
-            alt={blog?.title || "Featured image"}
+            alt="Featured image"
           />
+
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-full bg-linear-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </Link>
         {/* Menu  */}
         {isMenuOpen && (
-          <div className="absolute right-3 top-2 z-10">
+          <div className="absolute top-2 right-3 z-10">
             <BlogMenu blog={blog} />
           </div>
         )}
       </div>
       {/* Remaining Part */}
-      <div className="flex flex-1 flex-col px-3 sm:px-4 py-2 gap-2">
+      <div className="flex flex-1 flex-col gap-2 px-3 py-2 sm:px-4 overflow-hidden">
         {/* Category + Date */}
-        <div className="flex items-center justify-between gap-1  shrink-0 md:px-2">
+        <div className="flex shrink-0 items-center justify-between gap-1 md:px-2">
           {/* Category + updated */}
-          <div className="flex item-center gap-3">
+          <div className="item-center flex gap-3">
             <CategoryBadge category={blog?.category?.name || ""} />
           </div>
           {/* Date+readtime */}
           <div className="flex items-center gap-1 text-xs">
             <div className="flex items-center gap-1">
               <CiCalendarDate size={16} className="font-bold" />
-              <span className="whitespace-nowrap text-text-muted">
-                {formatDate(
-                  blog.updatedAt || blog?.publishedAt || blog?.createdAt,
-                )}
+              <span className="text-text-muted whitespace-nowrap">
+                {formatDate(blog?.publishedAt || blog?.createdAt)}
               </span>
             </div>
-            <span className="leading-none text-xl px-1">•</span>
-            <span className="whitespace-nowrap overflow-clip">
-              {blog?.readTime} min read
-            </span>
+            <span className="px-1 text-xl leading-none">•</span>
+            <span className="overflow-clip whitespace-nowrap">{blog?.readTime} min read</span>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="mt-2 hover:text-primary/70 hover:opacity-80 transition-colors  text-2xl  font-heading font-semibold tracking-wide leading-tight line-clamp-2 sm:text-3xl shrink-0 sm:h-20">
+        <h1 className="hover:text-primary/70 font-heading mt-2 line-clamp-2 shrink-0 text-2xl leading-tight font-semibold tracking-wide transition-colors hover:opacity-80 sm:h-20 sm:text-3xl">
           <Link to={`/blog/${blog?.slug}`}>{blog?.title}</Link>
         </h1>
 
         {/* Content */}
+
         <p className="text-text-secondary line-clamp-3 h-18 shrink-0">
-          {blog?.content}
+          {getPlainText(blog.content)}
         </p>
 
         {/* Tags */}
@@ -83,49 +82,41 @@ function BlogCard({
           <BlogTags tags={blog?.tags} />
         </div>
 
-        <hr className="border border-gray-200 shrink-0 mb-1" />
+        <hr className="mb-1 shrink-0 border border-gray-200" />
         {/* Author  */}
-        <div className="flex gap-4 items-center justify-between shrink-0 pr-2 mb-1 sm:pr-8">
-          <div className="flex gap-4 items-center">
-            <Avatar
-              src={blog?.author?.profilePic?.url}
-              alt="profile_avatar"
-              size="lg"
-            />
+        <div className="mb-1 flex shrink-0 items-center justify-between gap-4 pr-2 sm:pr-8">
+          <div className="flex items-center gap-4">
+            <Avatar src={blog?.author?.profilePic?.url} alt="profile_avatar" size="lg" />
 
-            <div
-              className={`flex flex-col ${blog?.contentUpdatedAt ? " gap-px" : "gap-1"}`}
-            >
-              <span className="font-semibold leading-tight text-text-primary">
+            <div className={`flex flex-col ${blog?.blogUpdatedAt ? " gap-px" : "gap-1"}`}>
+              <span className="text-text-primary leading-tight font-semibold">
                 {blog?.author?.userName}
               </span>
 
-              <span className="text-xs text-text-secondary">
-                {formatRelativeTime(blog?.createdAt)}
+              <span className="text-text-secondary text-xs">
+                Published {formatRelativeTime(blog?.publishedAt || blog?.createdAt)}
               </span>
 
-              {blog?.isUpdated && (
+              {blog?.isUpdated && blog?.blogUpdatedAt && (
                 <span className="mt-0.5 flex items-center gap-1 text-xs font-medium text-green-500">
-                  <span className="h-1 w-1 rounded-full bg-green-500" />
-                  Updated {formatRelativeTime(blog?.contentUpdatedAt)}
+                  <span className="hidden h-1 w-1 rounded-full bg-green-500 sm:block" />
+                  Updated {formatRelativeTime(blog?.blogUpdatedAt)}
                 </span>
               )}
             </div>
           </div>
           {blog?.status === "DRAFT" ? (
-            <Link className="font-bold font-heading tracking-wider text-danger text-2xl">
+            <Link className="font-heading text-danger text-2xl font-bold tracking-wider">
               DRAFT
             </Link>
           ) : (
             <Tooltip text="Blog Views">
-              <div className="group flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-text-muted  transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 hover:text-primary">
+              <div className="group border-border bg-surface text-text-muted hover:border-primary/30 hover:bg-primary/5 hover:text-primary flex items-center gap-1.5 rounded-full border px-3 py-1.5 transition-all duration-200">
                 <IoEyeOutline
                   size={18}
                   className="transition-transform duration-200 group-hover:scale-110"
                 />
-                <span className="text-sm font-semibold">
-                  {blog?.blogViews ?? 0}
-                </span>
+                <span className="text-sm font-semibold">{blog?.blogViews ?? 0}</span>
               </div>
             </Tooltip>
           )}

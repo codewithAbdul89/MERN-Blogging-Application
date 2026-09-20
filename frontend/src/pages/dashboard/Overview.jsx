@@ -14,6 +14,12 @@ function Overview() {
 
   const { data: response, isPending, isError, error, refetch } = useBlogStats();
 
+  const getPlainText = (html) => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || "";
+  };
+
   if (isPending) {
     return <Loader />;
   }
@@ -135,9 +141,9 @@ function Overview() {
 
                     {/* Content */}
                     <td className="px-4 py-3 text-left text-text-primary">
-                      <div className="max-w-70 truncate md:max-w-125">
-                        {blog.content}
-                      </div>
+                      <p className="max-w-70 truncate md:max-w-125">
+                        {getPlainText(blog.content)}
+                      </p>
                     </td>
                   </tr>
                 ))}

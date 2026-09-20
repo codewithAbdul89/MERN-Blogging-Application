@@ -16,7 +16,7 @@ function ForgotPassword() {
   const [resetKey, setResetKey] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const [hasSent, setHasSent] = useState(false);
-  const [expireLabel,setExpireLabel]=useState("")
+  const [expireLabel, setExpireLabel] = useState("");
 
   const {
     register,
@@ -48,7 +48,7 @@ function ForgotPassword() {
       // Start/reset timer
       setResetKey((prev) => prev + 1);
 
-      setExpireLabel("Those link will expire with in 5 min.")
+      setExpireLabel("Those link will expire with in 5 min.");
     } catch (error) {
       console.error("Forgot Password error:", error);
     }
@@ -59,29 +59,26 @@ function ForgotPassword() {
       {isPending && <Loader />}
 
       <section className="flex min-h-[calc(100vh-240px)] w-full items-center justify-center sm:min-h-[calc(100vh-120px)]">
-        <main className="w-[98%] rounded-3xl bg-background px-2.5 py-3.5 dark:bg-[#1b2431] sm:max-w-lg sm:p-4">
-          <div className="m-1 rounded-2xl bg-primary-light px-4 py-5 shadow-xl">
+        <main className="bg-background w-[98%] rounded-3xl px-2.5 py-3.5 sm:max-w-lg sm:p-4 dark:bg-[#1b2431]">
+          <div className="bg-primary-light m-1 rounded-2xl px-4 py-5 shadow-xl">
             {/* Icon */}
             <div className="mb-4 flex justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <div className="bg-primary/10 flex h-14 w-14 items-center justify-center rounded-full">
                 <MdOutlineEmail size={32} className="text-primary" />
               </div>
             </div>
 
             {/* Heading */}
-            <h1 className="pt-3 text-center font-heading text-4xl font-bold text-primary">
+            <h1 className="font-heading text-primary pt-3 text-center text-4xl font-bold">
               Forgot Your Password
             </h1>
 
-            <h2 className="mt-1 text-center text-text-secondary">
+            <h2 className="text-text-secondary mt-1 text-center">
               Enter your email and we'll send you a link to reset it.
             </h2>
 
             {/* Form */}
-            <form
-              className="mt-2 flex flex-col gap-2"
-              onSubmit={handleSubmit(onSubmit)}
-            >
+            <form className="mt-2 flex flex-col gap-2" onSubmit={handleSubmit(onSubmit)}>
               <Input
                 label="Email Address"
                 id="email"
@@ -94,17 +91,13 @@ function ForgotPassword() {
               />
 
               {/* Timer */}
-              <Timer
-                initialTime={60}
-                resetKey={resetKey}
-                onTimeChange={setTimeLeft}
-              />
+              <Timer initialTime={60} resetKey={resetKey} onTimeChange={setTimeLeft} />
 
               <p className="text-danger text-center">{expireLabel}</p>
 
               {/* Send / Resend Button */}
               <Button
-                className=" w-full bg-primary text-lg text-white/80 hover:bg-primary-hover"
+                className="bg-primary hover:bg-primary-hover w-full text-lg text-white/80"
                 type="submit"
                 disabled={isPending || timeLeft > 0}
                 text={
@@ -114,8 +107,7 @@ function ForgotPassword() {
                     "Send Reset Link"
                   ) : timeLeft > 0 ? (
                     <>
-                      Resend Link after{" "}
-                      <span className="text-red-500">{timeLeft}s</span>
+                      Resend Link after <span className="text-red-500">{timeLeft}s</span>
                     </>
                   ) : (
                     "Resend Reset Link"
@@ -125,11 +117,11 @@ function ForgotPassword() {
             </form>
 
             {/* Back Button */}
-            <p className="mt-4 text-center text-text-secondary">
+            <p className="text-text-secondary mt-4 text-center">
               Remember your password?
               <Link
                 to="/login"
-                className="ml-1 font-semibold text-primary hover:text-primary-hover hover:underline"
+                className="text-primary hover:text-primary-hover ml-1 font-semibold hover:underline"
               >
                 Login
               </Link>

@@ -8,7 +8,7 @@ function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] bg-background">
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-background">
       {/* Desktop Sidebar */}
       <div className="hidden md:block">
         <DashboardSidebar />
@@ -30,14 +30,30 @@ function DashboardLayout() {
       )}
 
       {/* Main Content */}
-      <main className="min-w-0 flex-1 ">
+      <main className="min-w-0 flex-1 overflow-y-auto">
         {/* Mobile Dashboard Header */}
-        <div className="sticky top-0 z-30 flex h-14 items-center border-b border-border bg-background/95 px-5 backdrop-blur md:hidden">
+        <div
+          className="
+            sticky top-0 z-30
+            flex h-14 items-center
+            border-b border-border
+            bg-background/95
+            px-5
+            backdrop-blur
+            md:hidden
+          "
+        >
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open dashboard menu"
-            className="rounded-lg p-2 text-text-secondary transition hover:bg-surface hover:text-text-primary"
+            className="
+              rounded-lg p-2
+              text-text-secondary
+              transition
+              hover:bg-surface
+              hover:text-text-primary
+            "
           >
             <FiMenu size={22} />
           </button>

@@ -8,7 +8,8 @@ import {
     verifyEmail,
     resetPassword,
     sendLoginEmailOtp,
-    verifyLoginEmailtOtp
+    verifyLoginEmailtOtp,
+    verifyResetToken
 } from '../controllers/auth.controller.js'
 import { signupValidation, loginValidation, changePasswordValidator, EmailValidator, forgotPasswordValidator, resetPasswordValidator, loginAccountOtpVelidaton } from "../validators/auth.validator.js"
 import validate from "../middlewares/validate.middleware.js"
@@ -80,6 +81,11 @@ router.get(
 router.get(
     "/github/callback",
     githubCallback
+);
+
+router.get(
+  "/reset-password/:token",
+  verifyResetToken
 );
 
 router.post(

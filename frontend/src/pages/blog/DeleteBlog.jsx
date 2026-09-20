@@ -14,7 +14,7 @@ import {
 import { createPortal } from "react-dom";
 import Loader from "../../components/ui/Loader";
 
-const VerifyDeleteBlogOTP = () => {
+const DeleteBlog = () => {
   const navigate = useNavigate();
 
   const {
@@ -28,11 +28,9 @@ const VerifyDeleteBlogOTP = () => {
     },
   });
 
-  const { mutateAsync: verifyOtp, isPending: otpVerifyPending } =
-    useVerifyDeleteBlogOtp();
+  const { mutateAsync: verifyOtp, isPending: otpVerifyPending } = useVerifyDeleteBlogOtp();
 
-  const { mutateAsync: deleteBlog, isPending: isDeletePending } =
-    useDeleteBlog();
+  const { mutateAsync: deleteBlog, isPending: isDeletePending } = useDeleteBlog();
 
   const blogId = localStorage.getItem("blogId");
 
@@ -49,8 +47,7 @@ const VerifyDeleteBlogOTP = () => {
 
   // Resend Otp Email
 
-  const { mutateAsync: resendEmail, isPending: isResendEmailPending } =
-    useSendDeleteBlogOtp();
+  const { mutateAsync: resendEmail, isPending: isResendEmailPending } = useSendDeleteBlogOtp();
 
   const handleResend = async () => {
     if (!blogId) showError("Blog Id is required.");
@@ -64,8 +61,8 @@ const VerifyDeleteBlogOTP = () => {
 
   return createPortal(
     <section className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 px-2">
-      <main className="w-[98%] max-w-lg rounded-3xl bg-background px-2.5 py-3.5 dark:bg-[#1b2431] sm:p-4">
-        <div className="m-1 rounded-2xl bg-primary-light px-4 py-5 shadow-xl">
+      <main className="bg-background w-[98%] max-w-lg rounded-3xl px-2.5 py-3.5 sm:p-4 dark:bg-[#1b2431]">
+        <div className="bg-primary-light m-1 rounded-2xl px-4 py-5 shadow-xl">
           <OtpVerification
             title="Enter OTP"
             description="Enter the 6-digit code sent to your email."
@@ -80,14 +77,14 @@ const VerifyDeleteBlogOTP = () => {
             error={errors.otp?.message}
             isSubmitting={otpVerifyPending}
             isResending={isResendEmailPending}
-            initialTime={59}
+            initialTime={120}
             showBackButton
           />
         </div>
       </main>
     </section>,
-    document.body,
+    document.body
   );
 };
 
-export default VerifyDeleteBlogOTP;
+export default DeleteBlog;

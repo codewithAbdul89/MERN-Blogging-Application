@@ -40,6 +40,12 @@ export const forgotPassword = async (passwordData) => {
   return response.data;
 };
 
+export const verifyResetToken = async (token) => {
+  const response = await api.get(`/auth/reset-password/${token}`);
+
+  return response.data;
+};
+
 export const resetPassword = async ({ token, newPassword }) => {
   console.log("token, newPassword : ", token, newPassword);
   const response = await api.post(`/auth/reset-password/${token}`, {
@@ -63,7 +69,7 @@ export const googleLogin = () => {
   window.open(
     `${import.meta.env.VITE_API_BASE_URL}/auth/google`,
     "GoogleLogin",
-    `width=${width},height=${height},left=${left},top=${top}`,
+    `width=${width},height=${height},left=${left},top=${top}`
   );
 };
 
@@ -77,7 +83,7 @@ export const githubLogin = () => {
   window.open(
     `${import.meta.env.VITE_API_BASE_URL}/auth/github`,
     "GithubLogin",
-    `width=${width},height=${height},left=${left},top=${top}`,
+    `width=${width},height=${height},left=${left},top=${top}`
   );
 };
 

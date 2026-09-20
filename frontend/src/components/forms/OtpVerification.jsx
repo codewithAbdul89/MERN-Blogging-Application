@@ -24,11 +24,14 @@ const OtpVerification = ({
 
   const [timeLeft, setTimeLeft] = useState(initialTime);
 
+  const [resendTime, setResendTime] = useState(30);
+
   const [otpError, setOtpError] = useState("");
 
   const inputRefs = useRef([]);
 
   // Countdown timer
+
   useEffect(() => {
     if (timeLeft <= 0) return;
 
@@ -39,14 +42,22 @@ const OtpVerification = ({
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    if (resendTime <= 0) return;
+
+    const resendTimer = setInterval(() => {
+      setResendTime((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(resendTimer);
+  }, [resendTime]);
+
   // Format timer in min and sec
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
 
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds,
-    ).padStart(2, "0")}`;
+    return `${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
   };
 
   // OTP change
@@ -72,11 +83,7 @@ const OtpVerification = ({
     }
 
     // Automatically submit when complete
-    if (
-      digit &&
-      index === OTP_LENGTH - 1 &&
-      newOtp.every((value) => value !== "")
-    ) {
+    if (digit && index === OTP_LENGTH - 1 && newOtp.every((value) => value !== "")) {
       onSubmit?.(newOtp.join(""));
     }
   };
@@ -111,10 +118,7 @@ const OtpVerification = ({
   const handlePaste = (event) => {
     event.preventDefault();
 
-    const pastedData = event.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, OTP_LENGTH);
+    const pastedData = event.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
 
     if (!pastedData) return;
 
@@ -139,7 +143,7 @@ const OtpVerification = ({
   // Resend OTP
 
   const handleResend = async () => {
-    if (timeLeft > 0 || isResending) return;
+    if (resendTime > 0 || isResending) return;
 
     const success = await onResend?.();
 
@@ -154,16 +158,14 @@ const OtpVerification = ({
     <div className="w-full">
       {/* Icon */}
       <div className="mb-4 flex justify-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+        <div className="bg-primary/10 flex h-14 w-14 items-center justify-center rounded-full">
           <MdOutlineSecurity size={32} className="text-primary" />
         </div>
       </div>
       {/* Title */}
-      <h1 className="text-primary text-4xl font-bold font-heading text-center">
-        {title}
-      </h1>
+      <h1 className="text-primary font-heading text-center text-4xl font-bold">{title}</h1>
       {/* Description */}
-      <h2 className="mt-1 text-text-secondary text-center">{description}</h2>
+      <h2 className="text-text-secondary mt-1 text-center">{description}</h2>
 
       {/* OTP Inputs */}
       <div className="mt-6 flex justify-center gap-2 sm:gap-3">
@@ -182,86 +184,52 @@ const OtpVerification = ({
             onChange={(event) => handleChange(event.target.value, index)}
             onKeyDown={(event) => handleKeyDown(event, index)}
             onPaste={handlePaste}
-            className="
-              h-12 w-10
-              rounded-lg
-              border border-border
-              bg-background
-              dark:bg-[#1b2431]
-              text-center
-              text-lg font-semibold
-              text-text-primary
-              outline-none
-              transition
-              focus:border-primary
-              focus:ring-2
-              focus:ring-primary/20
-              sm:h-14 sm:w-12
-            "
+            className="border-border bg-background text-text-primary focus:border-primary focus:ring-primary/20 h-12 w-10 rounded-lg border text-center text-lg font-semibold transition outline-none focus:ring-2 sm:h-14 sm:w-12 dark:bg-[#1b2431]"
           />
         ))}
       </div>
 
       {/* Resend */}
-      <div className="mt-5 flex items-center flex-col justify-center gap-1 text-sm sm:flex-row">
-        <span className="text-text-secondary">
-          Didn't receive the code with in given time?
-        </span>
+      <div className="smflex-row mt-5 flex flex-col items-center justify-center gap-1 text-sm">
+        <span className="text-text-secondary">Didn't receive the code with in given time?</span>
 
         <button
           type="button"
-          disabled={timeLeft > 0 || isResending}
+          disabled={isResending || resendTime > 0}
           onClick={handleResend}
-          className="
-            font-semibold
-            text-primary
-            transition
-            cursor-pointer
-            hover:underline
-            disabled:cursor-not-allowed
-            disabled:opacity-30
-          "
+          className="text-primary cursor-pointer font-semibold transition hover:underline disabled:cursor-not-allowed disabled:opacity-30"
         >
-          {isResending ? "Sending..." : "Resend OTP"}
+          {isResending ? (
+            "Sending..."
+          ) : resendTime > 0 ? (
+            <span>
+              Resend OTP <span className="text-danger text-sm">after {resendTime}s</span>
+            </span>
+          ) : (
+            "Resend OTP"
+          )}
         </button>
       </div>
 
       {/* error */}
       {(otpError || error) && (
-        <p className="text-center text-sm text-danger py-1">
-          {otpError || error}
-        </p>
+        <p className="text-danger py-1 text-center text-sm">{otpError || error}</p>
       )}
 
       {/* Timer */}
-      <div
-        className="
-          mt-3
-          flex
-          items-center
-          justify-center
-          gap-2
-          rounded-lg
-          bg-primary/10
-          px-4
-          py-3
-          text-sm
-        "
-      >
+      <div className="bg-primary/10 mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm">
         <MdTimer size={20} className="text-primary" />
 
         <span className="text-text-primary">Code expires in</span>
 
-        <span className="font-semibold text-primary">
-          {formatTime(timeLeft)}
-        </span>
+        <span className="text-primary font-semibold">{formatTime(timeLeft)}</span>
       </div>
 
       {/* Back Page Button */}
       {linkNavigate && (
         <Link className="mt-3 block" to={linkNavigate} replace>
           <Button
-            className="flex w-full items-center justify-center gap-2 bg-primary/80 text-white/80 cursor-pointer hover:bg-primary-hover"
+            className="bg-primary/80 hover:bg-primary-hover flex w-full cursor-pointer items-center justify-center gap-2 text-white/80"
             text={
               <>
                 <FaPencil />
@@ -280,7 +248,7 @@ const OtpVerification = ({
             localStorage.removeItem("blogId");
             navigate(-1);
           }}
-          className="mt-3 flex w-full items-center justify-center gap-2 bg-primary/60 text-white/80 cursor-pointer hover:bg-primary-hover"
+          className="bg-primary/60 hover:bg-primary-hover mt-3 flex w-full cursor-pointer items-center justify-center gap-2 text-white/80"
           text="Cancel"
           disabled={isResending || isSubmitting}
         />

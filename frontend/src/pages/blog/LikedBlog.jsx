@@ -65,7 +65,7 @@ function LikedBlog() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-8 mt-8 md:mt-10 md:px-4">
               {blogs.map((blog) => (
                 <div key={blog._id} className="animate-on-scroll">
-                  <BlogCard blog={blog}   />
+                  <BlogCard blog={blog} showBookmark />
                 </div>
               ))}
             </div>

@@ -68,15 +68,15 @@ function Home() {
           </p>
 
           <div className="flex justify-center items-center mt-7 gap-8 md:justify-start  md:px-4">
-            <a
+            <Link to="/dashboard/blogs"
               href="#explore_blogs"
               className="w-32 text-center whitespace-nowrap px-3 py-2 rounded-lg bg-primary/70 text-white hover:bg-primary/50 "
             >
-              Explore Blogs
-            </a>
+              My Blogs
+            </Link>
             {isAuthenticated ? (
               <Link
-                to="/blog/create"
+                to="/dashboard/blogs/create"
                 className="w-32 whitespace-nowrap  px-3 text-center py-2 rounded-lg shadow  border border-primary/10 hover:opacity-70 dark:border-primary/70 "
               >
                 Create Blog

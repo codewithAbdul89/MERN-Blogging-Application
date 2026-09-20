@@ -3,6 +3,7 @@ import Blog from "../models/blog.model.js";
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import Bookmark from "../models/bookmark.model.js";
 
 export const toggleLike = asyncHandler(async (req, res) => {
   const { blogId } = req.params;
@@ -123,10 +124,25 @@ export const getLikedBlogs = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limitNumber);
 
-  const blogs = likes.map((like) => ({
-    ...like.blog.toObject(),
-    isLiked: true,
-  }));
+  // Get all blogs bookmarked by the current user
+  const bookmarkedBlogIds = await Bookmark.find({
+    user: req.user._id,
+  }).distinct("blog");
+
+  // Add isLiked and isBookmarked to each blog
+  const blogs = likes
+    .filter((like) => like.blog)
+    .map((like) => {
+      const blog = like.blog.toObject();
+
+      return {
+        ...blog,
+        isLiked: true,
+        isBookmarked: bookmarkedBlogIds.some(
+          (id) => id.toString() === blog._id.toString(),
+        ),
+      };
+    });
 
   const totalBlogs = await Like.countDocuments({
     user: req.user._id,

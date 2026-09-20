@@ -161,12 +161,14 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Verification failed because link does not match.");
   }
 
+  // Check expiration
   if (matchedToken.expiresAt < new Date()) {
     await EmailToken.findByIdAndDelete(matchedToken._id);
-    throw new ApiError(400, "Verification token expired");
+
+    throw new ApiError(400, "Verification token expired.");
   }
 
-  // Verify email in a single database query
+  // Verify email
   const updatedUser = await User.findOneAndUpdate(
     {
       _id: matchedToken.userId,
@@ -183,7 +185,7 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     },
   ).select("-password");
 
-  // If  document was not updated
+  // User wasn't updated
   if (!updatedUser) {
     const user = await User.findById(matchedToken.userId);
 
@@ -192,16 +194,17 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     }
 
     // User is already verified
-    if (user.isVerified) {
+    if (user.isEmailVerified) {
       await EmailToken.findByIdAndDelete(matchedToken._id);
 
-      throw new ApiError(400, "Email is already verified.So login.");
+      throw new ApiError(400, "Email is already verified. Please login.");
     }
   }
 
-  // Remove verification token after successful verification
+  // Remove verification token
   await EmailToken.findByIdAndDelete(matchedToken._id);
 
+  // Send welcome email
   await sendWelcomeEmail(updatedUser);
 
   return res
@@ -232,7 +235,23 @@ export const login = asyncHandler(async (req, res) => {
   }
 
   if (!user.isEmailVerified) {
-    await sendVerificationEmail(user);
+    const { rawToken, hashedToken } = generateEmailToken();
+
+    await EmailToken.deleteMany({
+      userId: user._id,
+      type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+    });
+
+    const expiresAt = new Date(Date.now() + EMAIL_EXPIRY.VERIFY_EMAIL);
+
+    await EmailToken.create({
+      userId: user._id,
+      token: hashedToken,
+      type: EMAIL_TOKEN_TYPES.VERIFY_EMAIL,
+      expiresAt,
+    });
+
+    await sendVerificationEmail(user, rawToken);
     throw new ApiError(
       400,
       "Please verify this email first. Verification email has been sent successfully.",
@@ -397,6 +416,35 @@ export const forgotPassword = asyncHandler(async (req, res) => {
         "If an account with this email exists, a verification email has been sent.Please also check your spam email folder.",
       ),
     );
+});
+
+export const verifyResetToken = asyncHandler(async (req, res) => {
+  const { token } = req.params;
+
+  if (!token) {
+    throw new ApiError(400, "Reset token is required.");
+  }
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  const matchedToken = await EmailToken.findOne({
+    token: hashedToken,
+    type: EMAIL_TOKEN_TYPES.RESET_PASSWORD,
+  });
+
+  if (!matchedToken) {
+    throw new ApiError(400, "Invalid or expired password reset link.");
+  }
+
+  if (matchedToken.expiresAt < new Date()) {
+    await EmailToken.findByIdAndDelete(matchedToken._id);
+
+    throw new ApiError(400, "Reset link has expired.");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Password reset link is valid."));
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
@@ -606,7 +654,7 @@ export const refreshToken = asyncHandler(async (req, res) => {
 
   const user = await User.findById(decoded.id);
 
-  if (!user) throw new ApiError(404, "User not found. Please sign in again.");
+  if (!user) throw new ApiError(404, " Please sign in again.");
   const rememberMe = decoded.rememberMe;
 
   const newRefreshToken = generateRefreshToken(user, rememberMe);
@@ -636,12 +684,15 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   const matchedPassword = await bcrypt.compare(previousPassword, user.password);
 
-  if (!matchedPassword) throw new ApiError(400, "Your previous  password is incorrect.");
+  if (!matchedPassword)
+    throw new ApiError(400, "Your previous  password is incorrect.");
 
   user.password = newPassword;
   await user.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "Password change successfully.Please login again."));
+    .json(
+      new ApiResponse(200, "Password change successfully.Please login again."),
+    );
 });

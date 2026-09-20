@@ -23,14 +23,13 @@ export const createBlogValidator = [
     .withMessage("Invalid blog id"),
 
   body("tags")
-    .optional()
     .isArray({ min: 1, max: 4 })
     .withMessage("tag should be between 1 and 6 is required."),
 
   body("tags.*")
     .trim()
     .isLength({ min: 2, max: 20 })
-    .withMessage("Each tag must be between 2 and 30 characters."),
+    .withMessage("Each tag must be between 2 and 20 characters."),
 ];
 
 export const singleBlogValidator = [
@@ -93,20 +92,6 @@ export const updateBlogValidator = [
     .isIn(["DRAFT", "PUBLISHED", "REMOVED"])
     .withMessage("Status must be either DRAFT, PUBLISHED, or REMOVED"),
 
-  // At least one update field is required
-  body().custom((value) => {
-    if (
-      value.title === undefined &&
-      value.content === undefined &&
-      value.category === undefined &&
-      value.tags === undefined &&
-      value.status === undefined
-    ) {
-      throw new Error("At least one field is required for update.");
-    }
-
-    return true;
-  }),
 ];
 
 export const verifyDeleteBlogOtpVelidation = [

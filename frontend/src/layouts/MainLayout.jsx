@@ -9,7 +9,7 @@ function MainLayout() {
       
       <Navbar />
 
-      <main className="flex-1 px-1">
+      <main className="flex-1 px-1 overflow-hidden">
         <Outlet />
       </main>
 

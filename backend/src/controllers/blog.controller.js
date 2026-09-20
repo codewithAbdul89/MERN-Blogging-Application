@@ -16,7 +16,7 @@ import {
   EMAIL_TOKEN_TYPES,
 } from "../constants/email.constants.js";
 import { sendDeleteBlogOtpEmail } from "../services/email/email.service.js";
-import User from "../Models/user.model.js";
+import User from "../models/user.model.js";
 import { generateEmailOtp } from "../utils/generateEmailToken.js";
 
 export const createBlog = asyncHandler(async (req, res) => {
@@ -35,6 +35,12 @@ export const createBlog = asyncHandler(async (req, res) => {
   );
 
   const slug = slugify(title, req.user._id);
+
+  const alreadyExistBlog = await Blog.findOne({ slug });
+
+  if (alreadyExistBlog) {
+    throw new ApiError(409, "A blog with the same title already exists. ");
+  }
 
   const author = req.user._id;
 
@@ -71,8 +77,11 @@ export const createBlog = asyncHandler(async (req, res) => {
     },
   });
 
+  let message =
+    status === "DRAFT" ? "Blog saved as Draft." : "Blog created successfully!";
+
   return res.status(201).json(
-    new ApiResponse(201, "Blog created successfully!", {
+    new ApiResponse(201, message, {
       blog: createdBlog,
     }),
   );
@@ -89,43 +98,26 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
 
   const pipeline = [
+    // ==========================================
     // Only published blogs
+    // ==========================================
     {
       $match: {
         status: "PUBLISHED",
       },
     },
 
-    // Get total likes
-    {
-      $lookup: {
-        from: "likes",
-        let: {
-          blogId: "$_id",
-        },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: ["$blog", "$$blogId"],
-              },
-            },
-          },
-          {
-            $count: "count",
-          },
-        ],
-        as: "likesData",
-      },
-    },
-
+    // ==========================================
     // Get total comments
+    // ==========================================
     {
       $lookup: {
         from: "comments",
+
         let: {
           blogId: "$_id",
         },
+
         pipeline: [
           {
             $match: {
@@ -134,24 +126,24 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
               },
             },
           },
+
           {
             $count: "count",
           },
         ],
+
         as: "commentsData",
       },
     },
 
-    // Convert lookup results into numbers
+    // ==========================================
+    // Convert comment lookup result
+    // Use Blog.likesCount directly
+    // ==========================================
     {
       $addFields: {
         likesCount: {
-          $ifNull: [
-            {
-              $arrayElemAt: ["$likesData.count", 0],
-            },
-            0,
-          ],
+          $ifNull: ["$likesCount", 0],
         },
 
         commentsCount: {
@@ -165,10 +157,11 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
       },
     },
 
+    // ==========================================
     // Remove temporary arrays
+    // ==========================================
     {
       $project: {
-        likesData: 0,
         commentsData: 0,
       },
     },
@@ -177,7 +170,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Check whether logged-in user liked each blog
   // ==========================================
-
   if (userId) {
     pipeline.push(
       {
@@ -196,6 +188,7 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
                     {
                       $eq: ["$blog", "$$blogId"],
                     },
+
                     {
                       $eq: ["$user", userId],
                     },
@@ -243,7 +236,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Check whether logged-in user bookmarked each blog
   // ==========================================
-
   if (userId) {
     pipeline.push(
       {
@@ -262,6 +254,7 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
                     {
                       $eq: ["$blog", "$$blogId"],
                     },
+
                     {
                       $eq: ["$user", userId],
                     },
@@ -309,7 +302,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Calculate stable discovery score
   // ==========================================
-
   pipeline.push({
     $addFields: {
       score: {
@@ -337,9 +329,11 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
                   {
                     $subtract: [new Date(), "$createdAt"],
                   },
+
                   1000 * 60 * 60 * 24,
                 ],
               },
+
               -0.2,
             ],
           },
@@ -351,7 +345,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Stable sorting
   // ==========================================
-
   pipeline.push({
     $sort: {
       score: -1,
@@ -363,7 +356,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Pagination
   // ==========================================
-
   pipeline.push(
     {
       $skip: skip,
@@ -379,7 +371,6 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
   // ==========================================
   // Populate author and category
   // ==========================================
-
   await Blog.populate(blogs, [
     {
       path: "author",
@@ -409,10 +400,7 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
 export const getSingleBlog = asyncHandler(async (req, res) => {
   const { slug } = req.params;
 
-  const blog = await Blog.findOne({
-    slug,
-    // status: "PUBLISHED"
-  })
+  const blog = await Blog.findOne({ slug })
     .populate("author", "userName profilePic")
     .populate("category", "name slug");
 
@@ -420,54 +408,213 @@ export const getSingleBlog = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Blog not found");
   }
 
-  try {
-    await View.create({
-      user: req.user._id,
-      blog: blog._id,
-    });
+  const [isLiked, isBookmarked] = await Promise.all([
+    req.user
+      ? Like.exists({
+          user: req.user._id,
+          blog: blog._id,
+        })
+      : null,
 
-    await Blog.findByIdAndUpdate(
-      blog._id,
-      {
-        $inc: {
-          blogViews: 1,
-        },
+    req.user
+      ? Bookmark.exists({
+          user: req.user._id,
+          blog: blog._id,
+        })
+      : null,
+  ]);
+
+  try {
+    if (req.user) {
+      await View.create({
+        user: req.user._id,
+        blog: blog._id,
+      });
+    }
+
+    await Blog.findByIdAndUpdate(blog._id, {
+      $inc: {
+        blogViews: 1,
       },
-      {
-        returnDocument: "after",
-      },
-    );
+    });
 
     blog.blogViews += 1;
 
-    await Category.findOneAndUpdate(
-      blog.category || blog.category._id,
-      {
+    if (blog.category?._id) {
+      await Category.findByIdAndUpdate(blog.category._id, {
         $inc: {
           categoryViews: 1,
         },
-      },
-      {
-        returnDocument: "after",
-      },
-    );
+      });
+    }
   } catch (error) {
-    console.log(error);
-
-    if (error.code != 11000) {
+    // Duplicate view is not a fatal error
+    if (error.code !== 11000) {
       throw error;
     }
   }
 
+  return res.status(200).json(
+    new ApiResponse(200, "Blog sent successfully.", {
+      blog: {
+        ...blog.toObject(),
+        isLiked: !!isLiked,
+        isBookmarked: !!isBookmarked,
+      },
+    }),
+  );
+});
+
+export const getBlogForEdit = asyncHandler(async (req, res) => {
+  const { blogId } = req.params;
+
+  const blog = await Blog.findById(blogId).populate("category", "name slug");
+
+  if (!blog) {
+    throw new ApiError(404, "Blog not found");
+  }
+
+  if (blog.author.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not allowed to edit this blog");
+  }
+
   return res
     .status(200)
-    .json(new ApiResponse(200, "Blog sent successfully.", { blog }));
+    .json(new ApiResponse(200, "Blog fetched successfully.", { blog }));
+});
+
+export const getSearchedBlog = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 6, textSearch, categorySlug } = req.query;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  // Build filter object
+  const filter = {
+    status: "PUBLISHED",
+  };
+
+  if (!textSearch && !categorySlug) {
+    return;
+  }
+
+  if (categorySlug) {
+    const category = await Category.findOne({
+      slug: categorySlug,
+    });
+
+    if (!category) {
+      throw new ApiError(404, "Category not found.");
+    }
+
+    filter.category = category._id;
+  }
+
+  // Search by title
+  if (textSearch) {
+    const matchingCategories = await Category.find({
+      $or: [
+        {
+          name: {
+            $regex: textSearch,
+            $options: "i",
+          },
+        },
+        {
+          description: {
+            $regex: textSearch,
+            $options: "i",
+          },
+        },
+      ],
+    }).select("_id");
+
+    const categoryIds = matchingCategories.map((category) => category._id);
+
+    filter.$or = [
+      {
+        title: {
+          $regex: textSearch,
+          $options: "i",
+        },
+      },
+      {
+        content: {
+          $regex: textSearch,
+          $options: "i",
+        },
+      },
+      {
+        tags: {
+          $regex: textSearch,
+          $options: "i",
+        },
+      },
+      {
+        category: {
+          $in: categoryIds,
+        },
+      },
+    ];
+  }
+
+  let blogs = await Blog.find(filter)
+    .populate("author", "userName profilePic")
+    .populate("category", "name slug")
+    .sort({ likesCount: -1 })
+    .skip(skip)
+    .limit(Number(limit))
+    .lean();
+
+  // Add like/bookmark status only for logged-in users
+  if (req.user?._id) {
+    const likes = await Like.find({
+      user: req.user._id,
+    });
+
+    const bookmarks = await Bookmark.find({
+      user: req.user._id,
+    });
+
+    const likedBlogIds = new Set(likes.map((like) => like.blog.toString()));
+
+    const bookmarkedBlogIds = new Set(
+      bookmarks.map((bookmark) => bookmark.blog.toString()),
+    );
+
+    blogs = blogs.map((blog) => ({
+      ...blog,
+
+      isLiked: likedBlogIds.has(blog._id.toString()),
+
+      isBookmarked: bookmarkedBlogIds.has(blog._id.toString()),
+    }));
+  }
+
+  const totalBlogs = await Blog.countDocuments(filter);
+
+  return res.status(200).json(
+    new ApiResponse(200, "Blogs fetched successfully.", {
+      blogs,
+      page: Number(page),
+      totalBlogs,
+      hasMore: pageNumber * limitNumber < totalBlogs,
+    }),
+  );
 });
 
 export const updateBlog = asyncHandler(async (req, res) => {
   const { blogId } = req.params;
 
   const { title, content, category, tags, status } = req.body;
+
+  const featuredImage = req.file;
+
+  if (!title && !content && !category && !tags && !status && !featuredImage) {
+    throw new ApiError(400, "At least one new field is required");
+  }
 
   const blog = await Blog.findById(blogId);
 
@@ -512,11 +659,9 @@ export const updateBlog = asyncHandler(async (req, res) => {
     updateData.status = status;
   }
 
-  const file = req.file;
-
-  if (file) {
+  if (featuredImage) {
     const imageData = await uploadFile(
-      file.buffer,
+      featuredImage.buffer,
       "Blogging Application/featuredImage",
       "image",
     );
@@ -530,8 +675,8 @@ export const updateBlog = asyncHandler(async (req, res) => {
     }
   }
 
-  updateData.isUpdated = true;
-  updateData.contentUpdatedAt = new Date();
+  // updateData.isUpdated = true;
+  // updateData.blogUpdatedAt = new Date();
 
   const updatedBlog = await Blog.findByIdAndUpdate(
     blogId,
@@ -544,11 +689,14 @@ export const updateBlog = asyncHandler(async (req, res) => {
     },
   );
 
+  let message =
+    status === "DRAFT"
+      ? "Blog updated successfully and saved as Draft."
+      : "Blog updated successfully.";
+
   return res
     .status(200)
-    .json(
-      new ApiResponse(200, "Blog Updated successfully.", { blog: updatedBlog }),
-    );
+    .json(new ApiResponse(200, message, { blog: updatedBlog }));
 });
 
 export const publishBlog = asyncHandler(async (req, res) => {

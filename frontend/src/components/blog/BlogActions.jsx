@@ -7,7 +7,7 @@ import { FaBookmark } from "react-icons/fa";
 import { CiBookmark } from "react-icons/ci";
 import { TbPinned } from "react-icons/tb";
 import { TbPinnedFilled } from "react-icons/tb";
-import { WiDirectionUpRight } from "react-icons/wi";
+import { HiOutlineArrowUpRight } from "react-icons/hi2";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { showError } from "../../utils/toast";
@@ -28,6 +28,7 @@ function BlogActions({
   status = "",
   slug = "",
   blogId = "",
+  showReadLink = true,
 }) {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -134,9 +135,13 @@ function BlogActions({
         >
           <Tooltip text={isBookmarked ? "Unsaved" : "Saved"}>
             {isBookmarked ? (
-              <FaBookmark className="text-text-primary/90" size={27} />
+              <FaBookmark className="text-text-primary/80" size={27} />
             ) : (
-              <CiBookmark className=" text-text-primary" size={27} />
+              <CiBookmark
+                className=" text-text-primary "
+                size={27}
+                strokeWidth={0.8}
+              />
             )}
           </Tooltip>
         </button>
@@ -158,15 +163,18 @@ function BlogActions({
         </button>
       )}
 
-      <Link
-        to={`/blog${slug}`}
-        className="px-3 py-2 rounded-lg bg-primary/70 hover:bg-primary/50 text-white/90  group flex items-center text-center duration-500 transition-all md:px-4"
-      >
-        View More
-        <span className="hidden group-hover:opacity-100 opacity-0 group-hover:inline">
-          <WiDirectionUpRight size={20} />
-        </span>
-      </Link>
+      {showReadLink && (
+        <Link
+          to={`/blog/${slug}`}
+          className=" group relative inline-flex items-center overflow-hidden rounded-full bg-primary/90 py-2 pl-4 pr-4 text-sm font-medium text-white shadow-sm transition-all duration-300 ease-out hover:bg-primary hover:pr-9 hover:shadow-md"
+        >
+          <span>Read More</span>
+          <HiOutlineArrowUpRight
+            size={16}
+            className=" absolute right-3 -translate-x-10 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 "
+          />
+        </Link>
+      )}
     </div>
   );
 }

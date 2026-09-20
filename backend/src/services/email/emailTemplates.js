@@ -102,7 +102,7 @@ export const loginOtpTemplate = ({ userName, otp }) => `<!DOCTYPE html>
 
             <p style="font-size:15px;color:#555;">
                 This OTP will expire in
-                <strong>5 minutes</strong>.
+                <strong>2 minutes</strong>.
             </p>
 
             <p style="font-size:14px;color:#777;line-height:1.6;">
@@ -134,151 +134,6 @@ export const loginOtpTemplate = ({ userName, otp }) => `<!DOCTYPE html>
 </body>
 </html>
 `;
-
-// export const verificationEmailTemplate = ({
-//   userName,
-//   verificationLink,
-// }) => `<!DOCTYPE html>
-
-// <html>
-
-// <head>
-
-// <meta charset="UTF-8">
-
-// <meta
-//     name="viewport"
-//     content="width=device-width, initial-scale=1.0"
-// >
-
-// <title>Email Verification</title>
-
-// <style>
-
-//     * {
-//         box-sizing: border-box;
-//     }
-
-//     body {
-//         margin: 0;
-//         padding: 40px 20px;
-//         background: ${lightColor};
-//         font-family: Arial, sans-serif;
-//     }
-
-//     .email-container {
-//         width: 100%;
-//         max-width: 600px;
-//         margin: 0 auto;
-//         background: white;
-//         border-radius: 12px;
-//         overflow: hidden;
-//         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-//     }
-
-//     .header {
-//         background: ${brandColor};
-//         padding: 30px 20px;
-//         text-align: center;
-//     }
-
-//     .content {
-//         padding: 35px;
-//     }
-
-//     .button {
-//         background: ${brandColor};
-//         color: white;
-//         padding: 15px 30px;
-//         text-decoration: none;
-//         border-radius: 8px;
-//         display: inline-block;
-//         font-weight: bold;
-//     }
-
-//     @media only screen and (max-width: 600px) {
-
-//         body {
-//             padding: 15px 0;
-//         }
-
-//         .email-container {
-//             width: 100%;
-//             max-width: 100%;
-//             border-radius: 0;
-//         }
-
-//         .header {
-//             padding: 25px 15px;
-//         }
-
-//         .content {
-//             padding: 25px 20px;
-//         }
-
-//         .button {
-//             display: block;
-//             width: 100%;
-//             text-align: center;
-//         }
-
-//     }
-
-// </style>
-
-// </head>
-
-// <body>
-
-// <div class="email-container">
-
-//     <div class="header">
-
-//         <h1 style="color:white;margin:0;">
-//             Blogging Application
-//         </h1>
-
-//     </div>
-
-//     <div class="content">
-
-//         <h2 style="margin-top:0;color:#222;">
-//             Hello ${userName} 👋🏻
-//         </h2>
-
-//         <p style="font-size:16px;line-height:1.7;color:#555;">
-//             Thank you for joining our Blogging Application.
-//             Please verify your email address to activate your account.
-//         </p>
-
-//         <div style="text-align:center;margin:40px 0;">
-
-//             <a
-//                 href="${verificationLink}"
-//                 class="button"
-//             >
-//                 Verify Email
-//             </a>
-
-//         </div>
-
-//         <p style="color:#777;">
-//             This verification link will expire in
-//             <b>24 hours</b>.
-//         </p>
-
-//         <p style="color:#999;font-size:13px;">
-//             If you didn't create this account, you can safely ignore this email.
-//         </p>
-
-//     </div>
-
-// </div>
-
-// </body>
-
-// </html>
-// `;
 
 export const verificationEmailTemplate = ({
   userName,
@@ -571,7 +426,7 @@ export const resetPasswordTemplate = ({ userName, resetLink }) => `
 
         <p>
             This link expires in
-            <b>15 minutes</b>.
+            <b>5 minutes</b>.
         </p>
 
         <p style="color:#777;">

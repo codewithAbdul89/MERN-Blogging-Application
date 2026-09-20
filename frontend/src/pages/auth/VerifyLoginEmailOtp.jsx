@@ -66,7 +66,7 @@ const VerifyLoginEmailOtp = () => {
             error={errors.otp?.message}
             isSubmitting={otpVerifyPending}
             isResending={resendEmailPending}
-            initialTime={60}
+            initialTime={120}
             linkNavigate={"/email-login"}
           />
         </div>
