@@ -874,3 +874,271 @@ export const deleteAccountOtpTemplate = ({ userName, otp }) => `
 
 </html>
 `;
+
+export const contactEmailTemplate = ({
+  userName,
+  userEmail,
+  subject,
+  message,
+}) => `<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>New Contact Message</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        background: ${lightColor};
+        font-family: Arial, sans-serif;
+    }
+
+    .email-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+        background: ${brandColor};
+        padding: 30px 20px;
+        text-align: center;
+    }
+
+    .content {
+        padding: 35px;
+    }
+
+    .intro {
+        margin: 0 0 25px;
+        color: #555555;
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    .info-box {
+        margin: 25px 0;
+        padding: 20px;
+        background: #f7f9fc;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .info-table td {
+        vertical-align: top;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .info-table tr:not(:last-child) td {
+        padding-bottom: 14px;
+    }
+
+    .label-cell {
+        width: 105px;
+        padding-right: 20px !important;
+        color: #777777;
+        font-size: 13px !important;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .value-cell {
+        color: #222222;
+        word-break: break-word;
+    }
+
+    .message-box {
+        margin-top: 25px;
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+    }
+
+    .message-label {
+        margin: 0;
+        color: #777777;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .message {
+        margin: 12px 0 0;
+        color: #555555;
+        font-size: 16px;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .footer {
+        padding: 20px 35px;
+        background: #f7f9fc;
+        text-align: center;
+        color: #999999;
+        font-size: 13px;
+        line-height: 1.5;
+    }
+
+    @media only screen and (max-width: 600px) {
+
+        body {
+            padding: 15px 0;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 0;
+        }
+
+        .header {
+            padding: 25px 15px;
+        }
+
+        .content {
+            padding: 25px 20px;
+        }
+
+        .footer {
+            padding: 20px;
+        }
+
+        .label-cell {
+            width: 85px;
+            padding-right: 15px !important;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="email-container">
+
+    <div class="header">
+
+        <h1 style="color:#ffffff;margin:0;">
+            New Contact Message
+        </h1>
+
+    </div>
+
+    <div class="content">
+
+        <h2 style="margin:0 0 10px;color:#222;">
+            New message received
+        </h2>
+
+        <p class="intro">
+            Someone has contacted you through  Blogging Application.
+        </p>
+
+        <div class="info-box">
+
+            <table
+                class="info-table"
+                role="presentation"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+            >
+
+                <tr>
+
+                    <td class="label-cell">
+                        Name:
+                    </td>
+
+                    <td class="value-cell">
+                        ${userName}
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="label-cell">
+                        Email:
+                    </td>
+
+                    <td class="value-cell">
+                        ${userEmail}
+                    </td>
+
+                </tr>
+
+                <tr>
+
+                    <td class="label-cell">
+                        Subject:
+                    </td>
+
+                    <td class="value-cell">
+                        ${subject}
+                    </td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+        <div class="message-box">
+
+            <p class="message-label">
+                Message
+            </p>
+
+            <p class="message">
+                ${message}
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+
+        Sent via the contact form on your Blogging Application.
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
+`;

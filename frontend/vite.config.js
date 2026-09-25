@@ -8,17 +8,17 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  server: {
+  // server: {
 
-    host: true, // 👈 this exposes the server to your local network
+  //   host: true, // 👈 this exposes the server to your local network
 
-    port: 5173, // optional: change if you want,
+  //   port: 5173, // optional: change if you want,
 
-    // TODO: Remove the watch and server from here
+  //   // TODO: Remove the watch and server from here
 
-    watch: {
-      usePolling: true,
-    },
+  //   watch: {
+  //     usePolling: true,
+  //   },
 
-  },
+  // },
 })  

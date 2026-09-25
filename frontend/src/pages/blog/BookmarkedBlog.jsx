@@ -71,7 +71,9 @@ function LikedBlog() {
             </div>
           )}
 
-          <div ref={loadMoreRef} className="h-10" />
+           {blogs.length > 0 && hasNextPage && (
+            <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
+          )}
 
           {/* Loading next page */}
           {isFetchingNextPage && (

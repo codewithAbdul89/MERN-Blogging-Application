@@ -32,7 +32,7 @@ export const useCreateBlog = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       showSuccess(data.message);
@@ -60,7 +60,7 @@ export const useUpdateBlog = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       queryClient.invalidateQueries({
@@ -90,7 +90,7 @@ export const usePublishBlog = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       showSuccess(data.message);
@@ -116,7 +116,7 @@ export const useUnpublishBlog = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       showSuccess(data.message);
@@ -140,12 +140,12 @@ export const useTogglePin = () => {
       });
 
       const previousMyBlogs = queryClient.getQueriesData({
-        queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+        queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
       });
 
       queryClient.setQueriesData(
         {
-          queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+          queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
         },
         (oldData) => {
           if (!oldData) return oldData;
@@ -338,7 +338,7 @@ export const useDeleteBlog = () => {
       });
 
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       if (variables.slug) {
@@ -377,6 +377,10 @@ export const useToggleLike = () => {
         queryKey: QUERY_KEYS.SEARCH_BLOGS_ROOT,
       });
 
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.USERS_PROFILE_ROOT,
+      });
+
       if (slug) {
         await queryClient.cancelQueries({
           queryKey: QUERY_KEYS.BLOG(slug),
@@ -388,7 +392,7 @@ export const useToggleLike = () => {
       });
 
       const previousMyBlogs = queryClient.getQueriesData({
-        queryKey: QUERY_KEYS.MY_HOME_BLOGS,
+        queryKey: QUERY_KEYS.MY_BLOGS_ROOT,
       });
 
       const previousLikedBlogs = queryClient.getQueriesData({
@@ -401,6 +405,10 @@ export const useToggleLike = () => {
 
       const previousSearchBlogs = queryClient.getQueriesData({
         queryKey: QUERY_KEYS.SEARCH_BLOGS_ROOT,
+      });
+
+      const previousUserProfileBlogs = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.USERS_PROFILE_ROOT,
       });
 
       const singleBlog = queryClient.getQueryData(QUERY_KEYS.BLOG(slug));
@@ -418,7 +426,8 @@ export const useToggleLike = () => {
       likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.BOOKMARKED_BLOGS, blogId);
       // update the searched blogs
       likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.SEARCH_BLOGS_ROOT, blogId);
-
+      // update previous user Profiles blogs
+      likeBlogInInfiniteQuery(queryClient, QUERY_KEYS.USERS_PROFILE_ROOT, blogId);
       if (singleBlog) {
         queryClient.setQueryData(QUERY_KEYS.BLOG(slug), (oldData) => {
           if (!oldData?.data?.blog) return oldData;
@@ -444,6 +453,7 @@ export const useToggleLike = () => {
         previousMyBlogs,
         previousBookmarkedBlogs,
         previousSearchBlogs,
+        previousUserProfileBlogs,
       };
     },
 
@@ -469,6 +479,10 @@ export const useToggleLike = () => {
       context?.previousSearchBlogs?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
+      // set previous user Profiles blogs
+      context?.previousUserProfileBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
       // set single blog
       if (context?.singleBlog) {
         queryClient.setQueryData(QUERY_KEYS.BLOG(variables.slug), context.singleBlog);
@@ -479,7 +493,7 @@ export const useToggleLike = () => {
 
     onSettled: (data, error, variables, context) => {
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.blogStats,
+        queryKey: QUERY_KEYS.BLOG_STATS,
       });
 
       queryClient.invalidateQueries({
@@ -520,6 +534,14 @@ export const useToggleBookmark = () => {
         queryKey: QUERY_KEYS.BOOKMARKED_BLOGS,
       });
 
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.SEARCH_BLOGS_ROOT,
+      });
+
+      await queryClient.cancelQueries({
+        queryKey: QUERY_KEYS.USERS_PROFILE_ROOT,
+      });
+
       if (slug) {
         await queryClient.cancelQueries({
           queryKey: QUERY_KEYS.BLOG(slug),
@@ -542,6 +564,10 @@ export const useToggleBookmark = () => {
         queryKey: QUERY_KEYS.SEARCH_BLOGS_ROOT,
       });
 
+      const previousUserBookmarks = queryClient.getQueriesData({
+        queryKey: QUERY_KEYS.USERS_PROFILE_ROOT,
+      });
+
       const singleBlog = queryClient.getQueryData(QUERY_KEYS.BLOG(slug));
 
       // Update all blog lists
@@ -555,6 +581,8 @@ export const useToggleBookmark = () => {
       bookmarkInfinteQuery(queryClient, QUERY_KEYS.LIKED_BLOGS, blogId);
       // update the search blogs
       bookmarkInfinteQuery(queryClient, QUERY_KEYS.SEARCH_BLOGS_ROOT, blogId);
+      // set previous users bookmarks
+      bookmarkInfinteQuery(queryClient, QUERY_KEYS.USERS_PROFILE_ROOT, blogId);
 
       if (singleBlog) {
         queryClient.setQueryData(QUERY_KEYS.BLOG(slug), (oldData) => {
@@ -580,6 +608,7 @@ export const useToggleBookmark = () => {
         previousBookmarked,
         previousLikedBlogs,
         previousSearchBlogs,
+        previousUserBookmarks,
       };
     },
 
@@ -597,6 +626,10 @@ export const useToggleBookmark = () => {
       });
 
       context?.previousLikedBlogs?.forEach(([key, data]) => {
+        queryClient.setQueryData(key, data);
+      });
+
+      context?.previousUserBookmarks?.forEach(([key, data]) => {
         queryClient.setQueryData(key, data);
       });
 

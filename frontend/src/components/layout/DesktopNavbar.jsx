@@ -18,19 +18,15 @@ function DesktopNavbar() {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { user } = useSelector((state) => state.auth);
 
-  const imageUrl = user?.profilePic?.url?.startsWith("http")
-    ? user.profilePic.url
-    : `http://localhost:5000${user?.profilePic?.url}`;
   return (
-    <div className="hidden md:flex text-text-primary ">
-      <ul className="flex items-center justify-between gap-2 sm:gap-5 font-semibold ">
+    <div className="text-text-primary hidden md:flex">
+      <ul className="flex items-center justify-between gap-2 font-semibold sm:gap-5">
         {/* common Links */}
         <li>
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full
-     transition-all duration-200 ${isActive ? "text-white/90 ring-[1.8px] ring-white bg-primary/70" : ""}`
+              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
             }
           >
             {({ isActive }) => (
@@ -38,10 +34,9 @@ function DesktopNavbar() {
                 <IoIosHome
                   className={`transition-all duration-200 ${
                     isActive
-                      ? "opacity-100 w-4"
-                      : "opacity-0 w-0 group-hover:opacity-100 group-hover:w-4"
-                  }
-        `}
+                      ? "w-4 opacity-100"
+                      : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100"
+                  } `}
                 />
                 Home
               </>
@@ -53,8 +48,7 @@ function DesktopNavbar() {
           <NavLink
             to="/category"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full
-     transition-all duration-200 ${isActive ? "text-white/90 ring-[1.8px] ring-white bg-primary/70" : ""}`
+              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
             }
           >
             {({ isActive }) => (
@@ -62,10 +56,9 @@ function DesktopNavbar() {
                 <BiCategory
                   className={`transition-all duration-200 ${
                     isActive
-                      ? "opacity-100 w-4"
-                      : "opacity-0 w-0 group-hover:opacity-100 group-hover:w-4"
-                  }
-        `}
+                      ? "w-4 opacity-100"
+                      : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100"
+                  } `}
                 />
                 Category
               </>
@@ -77,8 +70,7 @@ function DesktopNavbar() {
           <NavLink
             to="/search"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full
-     transition-all duration-200 ${isActive ? "text-white/90 ring-[1.8px] ring-white bg-primary/70" : ""}`
+              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
             }
           >
             {({ isActive }) => (
@@ -86,10 +78,9 @@ function DesktopNavbar() {
                 <IoIosSearch
                   className={`transition-all duration-200 ${
                     isActive
-                      ? "opacity-100 w-4"
-                      : "opacity-0 w-0 group-hover:opacity-100 group-hover:w-4"
-                  }
-        `}
+                      ? "w-4 opacity-100"
+                      : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100"
+                  } `}
                 />
                 Search
               </>
@@ -101,8 +92,7 @@ function DesktopNavbar() {
           <NavLink
             to="/contact"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full
-     transition-all duration-200 ${isActive ? "text-white/90 ring-[1.8px] ring-white bg-primary/70" : ""}`
+              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
             }
           >
             {({ isActive }) => (
@@ -110,10 +100,9 @@ function DesktopNavbar() {
                 <LuContact
                   className={`transition-all duration-200 ${
                     isActive
-                      ? "opacity-100 w-4"
-                      : "opacity-0 w-0 group-hover:opacity-100 group-hover:w-4"
-                  }
-        `}
+                      ? "w-4 opacity-100"
+                      : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100"
+                  } `}
                 />
                 Contact
               </>
@@ -128,7 +117,7 @@ function DesktopNavbar() {
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200 ${isActive ? "text-white/90 ring-[1.8px] ring-white bg-primary/70" : ""}`
+                  `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
                 }
               >
                 {({ isActive }) => (
@@ -136,10 +125,9 @@ function DesktopNavbar() {
                     <MdOutlineSpaceDashboard
                       className={`transition-all duration-200 ${
                         isActive
-                          ? "opacity-100 w-4"
-                          : "opacity-0 w-0 group-hover:opacity-100 group-hover:w-4"
-                      }
-        `}
+                          ? "w-4 opacity-100"
+                          : "w-0 opacity-0 group-hover:w-4 group-hover:opacity-100"
+                      } `}
                     />
                     Dashboard
                   </>
@@ -150,15 +138,18 @@ function DesktopNavbar() {
             <li>
               <Dropdown
                 trigger={
-                  <div className="flex justify-center items-center px-1 py-1.5 gap-2  transition-colors duration-200 ">
-                    <Avatar src={imageUrl} size="sm" />
-                    <span className="text-sm">
-                      {user?.userName.split(" ")[0]}
-                    </span>
+                  <div className="flex items-center justify-center gap-2 px-1 py-1.5 transition-colors duration-200">
+                    <Avatar
+                      src={user?.profilePic?.url}
+                      userName={user?.userName}
+                      className="text-xl"
+                      size="sm"
+                    />
+                    <span className="text-sm">{user?.userName.split(" ")[0]}</span>
                   </div>
                 }
               >
-                <div className="bg-primary/90  p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal">
+                <div className="bg-primary/90 rounded-lg border border-gray-200 p-1 font-normal text-white/90 shadow-lg">
                   <span className="block w-full px-3 py-1 text-left">
                     {user?.userName}
                     <p className="text-xs wrap-break-word">{user?.email}</p>
@@ -167,15 +158,18 @@ function DesktopNavbar() {
 
                   <Link
                     to="/profile"
-                    className="px-3 py-1 text-left font-normal flex items-center gap-2 hover:opacity-50 transition-colors duration-200"
+                    className="flex items-center gap-2 px-3 py-1 text-left font-normal transition-colors duration-200 hover:opacity-50"
                   >
                     <RxAvatar />
                     Profile
                   </Link>
 
-                  <Link className="pl-3 py-1 text-left font-normal flex items-center gap-2 whitespace-nowrap hover:opacity-50 transition-colors duration-200">
+                  <Link
+                    className="flex items-center gap-2 py-1 pl-3 text-left font-normal whitespace-nowrap transition-colors duration-200 hover:opacity-50"
+                    to="/user/update-profile#avatar"
+                  >
                     <CiImageOn />
-                    Update Image
+                    Update Avater
                   </Link>
 
                   <hr />
@@ -191,27 +185,27 @@ function DesktopNavbar() {
             <li>
               <Link
                 to="/login"
-                className="group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200"
+                className="group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200"
               >
-                <IoIosLock className="transition-all duration-200 opacity-0 w-0 group-hover:opacity-100 group-hover:w-4" />
+                <IoIosLock className="w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100" />
                 Login
               </Link>
             </li>
 
             <li>
               <Link
-                to="/sigup"
-                className="group flex items-center justify-center gap-1 px-3 py-1.5 rounded-full transition-all duration-200"
+                to="/register"
+                className="group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200"
               >
-                <CiLogin className="transition-all duration-200 opacity-0 w-0 group-hover:opacity-100 group-hover:w-4" />
+                <CiLogin className="w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100" />
                 Register
               </Link>
             </li>
           </>
         )}
         {/* Theme Toggle */}
-        <li className="flex justify-center items-center">
-          <ThemeToggle className="text-[25px] text-text-primary" />
+        <li className="flex items-center justify-center">
+          <ThemeToggle className="text-text-primary text-[25px]" />
         </li>
       </ul>
     </div>

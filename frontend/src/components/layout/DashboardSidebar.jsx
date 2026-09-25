@@ -167,9 +167,9 @@ function DashboardSidebar({ mobile = false, onClose }) {
             </p>
 
             <div className="space-y-1">
-              <NavLink to="/profile" className={navLinkClass} onClick={handleNavigation}>
+              <NavLink to="/user/update-profile" className={navLinkClass} onClick={handleNavigation}>
                 <FiUser size={18} />
-                <span>Profile</span>
+                <span>Update Profile</span>
               </NavLink>
 
               <NavLink to="/change-password" className={navLinkClass} onClick={handleNavigation}>

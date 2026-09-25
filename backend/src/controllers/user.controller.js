@@ -28,7 +28,7 @@ export const getUser = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { userName, contact, town, city, provience, country, gender, cnic } =
+  const { userName, contact, town, city, province, country, gender, cnic } =
     req.body;
 
   const updateData = {};
@@ -45,7 +45,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const address = {};
   if (town) address.town = town;
   if (city) address.city = city;
-  if (provience) address.provience = provience;
+  if (province) address.province = province;
   if (country) address.country = country;
 
   if (Object.keys(address).length > 0) {
@@ -135,7 +135,7 @@ export const removeProfilePicture = asyncHandler(async (req, res) => {
     {
       $set: {
         profilePic: {
-          url: "/images/default.jpeg",
+          url: "",
           public_id: null,
         },
       },
@@ -266,4 +266,29 @@ export const deleteAccount = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, "Account deleted successfully."));
+});
+
+export const updateBio = asyncHandler(async (req, res) => {
+  const { bio } = req.body;
+
+  if (!bio) {
+    throw new ApiError(400, "Bio is required.");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
+    req?.user?._id,
+    {
+      $set: {
+        bio,
+      },
+    },
+    {
+      runValidators: true,
+      returnDocument: "after",
+    },
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "Bio Updated Successfully.", { updatedUser }));
 });

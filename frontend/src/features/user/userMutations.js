@@ -6,6 +6,7 @@ import {
   deleteAccount,
   removeProfilePicture,
   sendDeleteAccountOtp,
+  updateBio,
   updateProfile,
   updateProfilePicture,
   verifyDeleteAccountOtp,
@@ -14,20 +15,9 @@ import { logOut } from "../auth/authSlice.js";
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
 import { showSuccess } from "../../utils/toast.js";
 
-export const useUpdateProfile = () => {
-  return useMutation({
-    mutationFn: updateProfile,
-
-    onError: errorHandler,
-
-    onSuccess: (data) => {
-      data.message;
-    },
-  });
-};
-
 export const useUpdateProfilePicture = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: updateProfilePicture,
 
@@ -38,19 +28,79 @@ export const useUpdateProfilePicture = () => {
         queryKey: QUERY_KEYS.CURRENT_USER,
       });
 
-      showSuccess(data.message);
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.BLOGS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMENTS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.REPLIES_ROOT,
+      });
+
+      showSuccess(data?.message || "Profile picture updated successfully.");
     },
   });
 };
 
 export const useRemoveProfilePicture = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: removeProfilePicture,
 
     onError: errorHandler,
 
     onSuccess: (data) => {
-      data.message;
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.CURRENT_USER,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.BLOGS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMENTS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.REPLIES_ROOT,
+      });
+
+      showSuccess(data?.message || "Profile picture removed successfully.");
+    },
+  });
+};
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateProfile,
+
+    onError: errorHandler,
+
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.CURRENT_USER,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.BLOGS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.COMMENTS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.REPLIES_ROOT,
+      });
+
+      showSuccess(data?.message || "Profile updated successfully.");
     },
   });
 };
@@ -62,7 +112,7 @@ export const useSendDeleteAccountOtp = () => {
     onError: errorHandler,
 
     onSuccess: (data) => {
-      showSuccess(data.message);
+      showSuccess(data?.message);
     },
   });
 };
@@ -98,5 +148,31 @@ export const useDeleteAccount = () => {
 
       showSuccess(data.message);
     },
+  });
+};
+
+export const useUpdateBio = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateBio,
+
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.CURRENT_USER,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.BLOGS_ROOT,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.PROFILE_ROOT,
+      });
+
+      showSuccess(data?.message || "Bio updated successfully.");
+    },
+
+    onError: errorHandler,
   });
 };

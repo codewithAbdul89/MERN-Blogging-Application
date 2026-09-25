@@ -18,6 +18,7 @@ import {
 import { sendDeleteBlogOtpEmail } from "../services/email/email.service.js";
 import User from "../models/user.model.js";
 import { generateEmailOtp } from "../utils/generateEmailToken.js";
+import mongoose from "mongoose";
 
 export const createBlog = asyncHandler(async (req, res) => {
   const { title, tags, content, category, status = "DRAFT" } = req.body;
@@ -478,6 +479,10 @@ export const getBlogForEdit = asyncHandler(async (req, res) => {
     throw new ApiError(403, "You are not allowed to edit this blog");
   }
 
+  if (blog?.isUpdated) {
+    throw new ApiError(400, "This blog is already updated.");
+  }
+
   return res
     .status(200)
     .json(new ApiResponse(200, "Blog fetched successfully.", { blog }));
@@ -675,8 +680,8 @@ export const updateBlog = asyncHandler(async (req, res) => {
     }
   }
 
-  // updateData.isUpdated = true;
-  // updateData.blogUpdatedAt = new Date();
+  updateData.isUpdated = true;
+  updateData.blogUpdatedAt = new Date();
 
   const updatedBlog = await Blog.findByIdAndUpdate(
     blogId,
@@ -1018,26 +1023,45 @@ export const deleteBlog = asyncHandler(async (req, res) => {
 });
 
 export const blogStats = asyncHandler(async (req, res) => {
-  const totalLikesCount = await Like.countDocuments({
-    user: req.user?._id,
-  });
+  const userId = req.user._id;
 
-  const totalBlogsCount = await Blog.countDocuments({
-    author: req.user?._id,
-  });
+  const [likesResult, totalBlogsCount, publishedBlogsCount, draftBlogsCount] =
+    await Promise.all([
+      Blog.aggregate([
+        {
+          $match: {
+            author: new mongoose.Types.ObjectId(userId),
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalLikesCount: {
+              $sum: { $ifNull: ["$likesCount", 0] },
+            },
+          },
+        },
+      ]),
 
-  const publishedBlogsCount = await Blog.countDocuments({
-    author: req.user?._id,
-    status: "PUBLISHED",
-  });
+      Blog.countDocuments({
+        author: userId,
+      }),
 
-  const draftBlogsCount = await Blog.countDocuments({
-    author: req.user?._id,
-    status: "DRAFT",
-  });
+      Blog.countDocuments({
+        author: userId,
+        status: "PUBLISHED",
+      }),
+
+      Blog.countDocuments({
+        author: userId,
+        status: "DRAFT",
+      }),
+    ]);
+
+  const totalLikesCount = likesResult[0]?.totalLikesCount ?? 0;
 
   let recentBlogs = await Blog.find({
-    author: req.user?._id,
+    author: userId,
   })
     .sort({
       createdAt: -1,
@@ -1045,13 +1069,11 @@ export const blogStats = asyncHandler(async (req, res) => {
     .limit(3)
     .lean();
 
-  recentBlogs = recentBlogs.map((blog) => {
-    return {
-      title: blog.title,
-      status: blog.status,
-      content: blog.content,
-    };
-  });
+  recentBlogs = recentBlogs.map((blog) => ({
+    title: blog.title,
+    status: blog.status,
+    content: blog.content,
+  }));
 
   return res.status(200).json(
     new ApiResponse(200, "Stats fetched successfully.", {
@@ -1060,6 +1082,93 @@ export const blogStats = asyncHandler(async (req, res) => {
       draftBlogsCount,
       totalBlogsCount,
       recentBlogs,
+    }),
+  );
+});
+
+export const getUserProfile = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 6, userId } = req.query;
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
+  const skip = (pageNumber - 1) * limitNumber;
+
+  const blogs = await Blog.find({
+    author: userId,
+  })
+    .populate("author", "userName profilePic.url")
+    .populate("category", "name")
+    .sort({
+      isPinned: -1,
+      updatedAt: -1,
+    })
+    .skip(skip)
+    .limit(limitNumber);
+  // Check which blogs are liked by the logged-in user
+  const blogsWithLikeStatus = await Promise.all(
+    blogs.map(async (blog) => {
+      const isLiked = await Like.exists({
+        user: userId,
+        blog: blog._id,
+      });
+      const isBookmarked = await Bookmark.exists({
+        user: userId,
+        blog: blog._id,
+      });
+
+      return {
+        ...blog.toObject(),
+        isLiked: !!isLiked,
+        isBookmarked: !!isBookmarked,
+      };
+    }),
+  );
+
+  const [likesResult, totalBlogs, publishedBlogs] = await Promise.all([
+    Blog.aggregate([
+      {
+        $match: {
+          author: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalLikesCount: {
+            $sum: { $ifNull: ["$likesCount", 0] },
+          },
+        },
+      },
+    ]),
+
+    Blog.countDocuments({
+      author: userId,
+    }),
+
+    Blog.countDocuments({
+      author: userId,
+      status: "PUBLISHED",
+    }),
+  ]);
+
+  const totalLikes = likesResult[0]?.totalLikesCount ?? 1000;
+
+  const userData = await User.findOne({ _id: userId }).select(
+    "userName bio profilePic.url address role",
+  );
+
+  return res.status(200).json(
+    new ApiResponse(200, "Blogs fetched successfully", {
+      blogs: blogsWithLikeStatus,
+      page: pageNumber,
+      userStats: {
+        totalBlogs,
+        publishedBlogs,
+        totalLikes,
+      },
+      userData,
+      hasMore: pageNumber * limitNumber < totalBlogs,
     }),
   );
 });

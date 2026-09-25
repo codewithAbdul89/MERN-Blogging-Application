@@ -1,39 +1,62 @@
-const Select = ({
-  value,
-  onChange,
+function Select({
   options = [],
   placeholder = "Select an option",
+  error,
   className = "",
   ...props
-}) => {
+}) {
   return (
-    <select
-      value={value}
-      onChange={onChange}
-      className={`
-        w-full
-        rounded-lg
-        border border-border
-        bg-background
-        px-3 py-2
-        text-sm
-        text-text-primary
-        outline-none
-        transition-colors
-        focus:border-primary
-        ${className}
-      `}
-      {...props}
-    >
-      <option value="">{placeholder}</option>
+    <div className="w-full">
+      <select
+        className={`
+          h-12
+          w-full
+          rounded-lg
+          border
+          bg-background
+          px-4
+          text-text-primary
+          outline-none
+          transition
 
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
+          focus:border-primary
+          focus:ring-2
+          focus:ring-primary/20
+
+          disabled:cursor-not-allowed
+          disabled:opacity-60
+
+          ${
+            error
+              ? "border-danger"
+              : "border-border"
+          }
+
+          ${className}
+        `}
+        {...props}
+      >
+        <option value="">
+          {placeholder}
         </option>
-      ))}
-    </select>
+
+        {options.map((option) => (
+          <option
+            key={option.value}
+            value={option.value}
+          >
+            {option.label}
+          </option>
+        ))}
+      </select>
+
+      {error && (
+        <p className="mt-1 text-sm text-danger">
+          {error}
+        </p>
+      )}
+    </div>
   );
-};
+}
 
 export default Select;

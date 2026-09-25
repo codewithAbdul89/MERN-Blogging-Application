@@ -2,14 +2,10 @@ import { useRef, useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 
 import useOutsideClick from "../../hooks/useOutsideClick.js";
-import Tooltip from "./Tooltip";
-const Dropdown = ({
-  trigger,
-  children,
-  icon: Icon,
-  tooltip,
-  className = "",
-}) => {
+
+import Tooltip from "../ui/Tooltip.jsx";
+
+const Dropdown = ({ trigger, children, icon: Icon, tooltip, className = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const dropdownRef = useRef(null);
@@ -35,16 +31,10 @@ const Dropdown = ({
           {trigger}
 
           {Icon ? (
-            <Icon
-              className={`transition-transform duration-500 ${
-                isOpen ? "rotate-90" : ""
-              }`}
-            />
+            <Icon className={`transition-transform duration-500 ${isOpen ? "rotate-90" : ""}`} />
           ) : (
             <FiChevronDown
-              className={`transition-transform duration-500 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-500 ${isOpen ? "rotate-180" : ""}`}
             />
           )}
         </button>

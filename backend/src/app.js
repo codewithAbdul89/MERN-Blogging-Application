@@ -8,6 +8,7 @@ import userRouter from "./Routes/user.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
+import contactRouter from "./routes/contact.routes.js";
 
 const app = express();
 
@@ -23,14 +24,13 @@ app.use(
   }),
 );
 
-app.use(express.static("public"));
-
 // Routes
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/comment", commentRouter);
+app.use("/api/contact", contactRouter);
 
 // Test route
 app.get("/", (req, res) => {

@@ -46,7 +46,7 @@ function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status 
         )}
       </div>
       {/* Remaining Part */}
-      <div className="flex flex-1 flex-col gap-2 px-3 py-2 sm:px-4 overflow-hidden">
+      <div className="flex flex-1 flex-col gap-2 overflow-hidden px-3 py-2 sm:px-4">
         {/* Category + Date */}
         <div className="flex shrink-0 items-center justify-between gap-1 md:px-2">
           {/* Category + updated */}
@@ -86,12 +86,22 @@ function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status 
         {/* Author  */}
         <div className="mb-1 flex shrink-0 items-center justify-between gap-4 pr-2 sm:pr-8">
           <div className="flex items-center gap-4">
-            <Avatar src={blog?.author?.profilePic?.url} alt="profile_avatar" size="lg" />
+            <Link to={`/userProfile/${blog?.author?.userName}/${blog?.author?._id} `}>
+              <Avatar
+                src={blog?.author?.profilePic?.url}
+                userName={blog?.author?.userName}
+                className="text-2xl"
+                size="lg"
+              />
+            </Link>
 
             <div className={`flex flex-col ${blog?.blogUpdatedAt ? " gap-px" : "gap-1"}`}>
-              <span className="text-text-primary leading-tight font-semibold">
+              <Link
+                to={`/userProfile/${blog?.author?.userName}/${blog?.author?._id} `}
+                className="text-text-primary leading-tight font-semibold hover:opacity-80"
+              >
                 {blog?.author?.userName}
-              </span>
+              </Link>
 
               <span className="text-text-secondary text-xs">
                 Published {formatRelativeTime(blog?.publishedAt || blog?.createdAt)}

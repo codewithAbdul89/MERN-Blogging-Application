@@ -20,7 +20,7 @@ import Home from "../pages/Home.jsx";
 import Contact from "../pages/profile/Contact.jsx";
 import Category from "../pages/blog/Category.jsx";
 import Search from "../pages/blog/Search.jsx";
-import Profile from "../pages/profile/Profile.jsx";
+import UpdateProfile from "../pages/profile/UpdateProfile.jsx";
 import DashboardLayout from "../components/layout/DashboardLayout.jsx";
 import Overview from "../pages/dashboard/Overview.jsx";
 import AllBlog from "../pages/blog/AllBlog.jsx";
@@ -33,6 +33,9 @@ import DeleteBlog from "../pages/blog/DeleteBlog.jsx";
 import CreateBlog from "../pages/blog/CreateBlog.jsx";
 import SingleBlog from "../pages/blog/SingleBlog.jsx";
 import DeleteAccount from "../pages/blog/DeleteAccount.jsx";
+import Profile from "../pages/profile/Profile.jsx";
+import UserProfile from "../pages/profile/UserProfile.jsx";
+import ProfileCompleteRoute from "./ProfileCompleteRoute.jsx";
 
 function AppRoutes() {
   return (
@@ -75,8 +78,10 @@ function AppRoutes() {
         </Route>
         {/* Blogs Routes */}
         <Route element={<MainLayout />}>
+          <Route path="/user/update-profile" element={<UpdateProfile />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/blog/:slug" element={<SingleBlog />} />
+          <Route path="/userProfile/:userName/:userId" element={<UserProfile />} />
           {/* DashBoard Layout */}
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Overview />} />
@@ -93,9 +98,12 @@ function AppRoutes() {
             <Route element={<FlowRoute flow="delete-account" />}>
               <Route path="/dashboard/delete-account" element={<DeleteAccount />} />
             </Route>
-
-            <Route path="/dashboard/blogs/create" element={<CreateBlog />} />
-            <Route path="/dashboard/blog/edit/:blogId" element={<UpdateBlog />} />
+            <Route element={<ProfileCompleteRoute />}>
+              <Route path="/dashboard/blogs/create" element={<CreateBlog />} />
+            </Route>
+            <Route element={<FlowRoute flow="single-blog" />}>
+              <Route path="/dashboard/blog/edit/:blogId" element={<UpdateBlog />} />
+            </Route>
           </Route>
         </Route>
       </Route>

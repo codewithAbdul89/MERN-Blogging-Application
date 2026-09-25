@@ -39,15 +39,15 @@ function DraftBlog() {
     );
   }
   return (
-    <div className="bg-backgroxund max-w-7xl text-text-primary sm:mt-10">
+    <div className="bg-backgroxund text-text-primary max-w-7xl sm:mt-10">
       <main>
         <section className="mt-8 mb-4 px-2 md:px-4">
-          <h1 className="text-4xl text-primary font-heading px-4 mb-3 font-semibold md:px-8 ">
+          <h1 className="text-primary font-heading mb-3 px-4 text-4xl font-semibold md:px-8">
             Draft Blogs
           </h1>
 
           {isPending ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-8 mt-8 md:mt-10 md:px-4">
+            <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-10 md:px-4">
               {Array.from({ length: 4 }).map((_, index) => (
                 <BlogCardSkeleton key={index} />
               ))}
@@ -62,7 +62,7 @@ function DraftBlog() {
               />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-10 gap-x-8 mt-8 md:mt-10 md:px-4">
+            <div className="mt-8 grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2 md:mt-10 md:px-4">
               {blogs.map((blog) => (
                 <div key={blog._id} className="animate-on-scroll">
                   <BlogCard blog={blog} isMenuOpen status="DRAFT" />
@@ -71,12 +71,12 @@ function DraftBlog() {
             </div>
           )}
 
-          <div ref={loadMoreRef} className="h-10" />
+          {blogs.length > 0 && hasNextPage && (
+            <div ref={loadMoreRef} className="h-10" aria-hidden="true" />
+          )}
 
           {/* Loading next page */}
-          {isFetchingNextPage && (
-            <div className="py-6 text-center">Loading more blogs...</div>
-          )}
+          {isFetchingNextPage && <div className="py-6 text-center">Loading more blogs...</div>}
         </section>
       </main>
     </div>

@@ -70,7 +70,7 @@ function BlogMenu({ blog }) {
           {!blog?.isUpdated && (
             <Link
               to={`/dashboard/blog/edit/${blog._id}`}
-              state={{ blog }}
+              state={{ flow: "single-blog" }}
               className="flex w-32 items-center py-1 text-left whitespace-nowrap"
             >
               <span className="w-7 shrink-0">

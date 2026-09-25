@@ -9,6 +9,7 @@ import {
   getSearchedBlogs,
   blogStats,
   getBlogForEdit,
+  getUserProfile,
 } from "../blog/blogService.js";
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -170,7 +171,28 @@ export const useBookmarkedBlogs = () => {
 
 export const useBlogStats = () => {
   return useQuery({
-    queryKey: QUERY_KEYS.blogStats,
+    queryKey: QUERY_KEYS.BLOG_STATS,
     queryFn: blogStats,
+  });
+};
+
+export const useGetUserProfile = (userId) => {
+  return useInfiniteQuery({
+    queryKey: QUERY_KEYS.USER_PROFILE(userId),
+
+    queryFn: ({ pageParam = 1 }) =>
+      getUserProfile({
+        page: pageParam,
+        limit: 6,
+        userId,
+      }),
+
+    initialPageParam: 1,
+
+    getNextPageParam: (lastPage) => {
+      return lastPage.data.hasMore ? lastPage.data.page + 1 : undefined;
+    },
+
+    enabled: Boolean(userId),
   });
 };

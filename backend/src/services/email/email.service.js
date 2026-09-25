@@ -9,11 +9,13 @@ import {
   resetPasswordTemplate,
   welcomeEmailTemplate,
   loginOtpTemplate,
+  contactEmailTemplate,
 } from "./emailTemplates.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { sendEmail } from "./sendEmail.js";
 import EmailToken from "../../models/emailToken.model.js";
+import { EMAIL_TOKEN_TYPES } from "../../constants/email.constants.js";
 
 export const sendWelcomeEmail = async (user) => {
   const html = welcomeEmailTemplate({ userName: user.userName });
@@ -127,5 +129,30 @@ export const sendloginEmailOtp = async (userName, email, otp) => {
     });
   } catch (error) {
     throw new ApiError(500, "Failed to send login email OTP.");
+  }
+};
+
+export const sendContactEmail = async ({
+  userName,
+  userEmail,
+  subject,
+  message,
+}) => {
+  const html = contactEmailTemplate({
+    userName,
+    userEmail,
+    subject,
+    message,
+  });
+
+  try {
+    await sendEmail({
+      to: process.env.EMAIL_USER,
+      replyTo: userEmail,
+      subject: `Contact Message from ${userName} <${userEmail}> — ${subject}`,
+      html,
+    });
+  } catch (error) {
+    throw new ApiError(500, "Failed to send contact email.");
   }
 };

@@ -12,11 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { showError } from "../../utils/toast";
 import Tooltip from "../ui/Tooltip";
-import {
-  useToggleBookmark,
-  useToggleLike,
-  useTogglePin,
-} from "../../features/blog/blogMutations";
+import { useToggleBookmark, useToggleLike, useTogglePin } from "../../features/blog/blogMutations";
 
 function BlogActions({
   isshowingBookmark = false,
@@ -34,8 +30,7 @@ function BlogActions({
 
   const { mutateAsync: toggleLike, pending: isLikePending } = useToggleLike();
 
-  const { mutateAsync: toggleBookmark, pending: isBookmarkPending } =
-    useToggleBookmark();
+  const { mutateAsync: toggleBookmark, pending: isBookmarkPending } = useToggleBookmark();
 
   const { mutateAsync: togglePin } = useTogglePin();
 
@@ -56,14 +51,14 @@ function BlogActions({
   };
 
   return (
-    <div className="flex items-center justify-between  sm:px-2 mt-1">
+    <div className="mt-1 flex items-center justify-between sm:px-2">
       {/* Like */}
 
       <button
         type="button"
         disabled={isLikePending}
         onClick={handleLike}
-        className="flex items-center gap-2 cursor-pointer"
+        className="flex cursor-pointer items-center gap-2"
       >
         <Tooltip text={isLiked ? "Unlike" : "Like"}>
           <motion.div
@@ -119,10 +114,10 @@ function BlogActions({
 
       {/* Comments */}
       <Tooltip text="Comments">
-        <div className="flex items-center gap-2">
+        <Link to={`/blog/${slug}#comments`} className="flex items-center gap-2">
           <FaRegCommentDots className="text-text-secondary" size={27} />
           <span>{commentsCount}</span>
-        </div>
+        </Link>
       </Tooltip>
       {/* Bookmark */}
 
@@ -131,17 +126,13 @@ function BlogActions({
           type="button"
           disabled={isBookmarkPending}
           onClick={handleBookmark}
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex cursor-pointer items-center gap-2"
         >
           <Tooltip text={isBookmarked ? "Unsaved" : "Saved"}>
             {isBookmarked ? (
               <FaBookmark className="text-text-primary/80" size={27} />
             ) : (
-              <CiBookmark
-                className=" text-text-primary "
-                size={27}
-                strokeWidth={0.8}
-              />
+              <CiBookmark className="text-text-primary" size={27} strokeWidth={0.8} />
             )}
           </Tooltip>
         </button>
@@ -151,13 +142,13 @@ function BlogActions({
         <button
           type="button"
           onClick={() => togglePin({ blogId })}
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex cursor-pointer items-center gap-2"
         >
           <Tooltip text={isPinned ? "UnPin" : "Pin"}>
             {isPinned ? (
               <TbPinnedFilled className="text-text-primary" size={28} />
             ) : (
-              <TbPinned className=" text-text-primary" size={28} />
+              <TbPinned className="text-text-primary" size={28} />
             )}
           </Tooltip>
         </button>
@@ -166,12 +157,12 @@ function BlogActions({
       {showReadLink && (
         <Link
           to={`/blog/${slug}`}
-          className=" group relative inline-flex items-center overflow-hidden rounded-full bg-primary/90 py-2 pl-4 pr-4 text-sm font-medium text-white shadow-sm transition-all duration-300 ease-out hover:bg-primary hover:pr-9 hover:shadow-md"
+          className="group bg-primary/90 hover:bg-primary relative inline-flex items-center overflow-hidden rounded-full py-2 pr-4 pl-4 text-sm font-medium text-white shadow-sm transition-all duration-300 ease-out hover:pr-9 hover:shadow-md"
         >
           <span>Read More</span>
           <HiOutlineArrowUpRight
             size={16}
-            className=" absolute right-3 -translate-x-10 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 "
+            className="absolute right-3 -translate-x-10 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100"
           />
         </Link>
       )}

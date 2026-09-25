@@ -77,6 +77,13 @@ export const blogStats = async () => {
   return response.data;
 };
 
+export const getUserProfile = async (params) => {
+  const response = await api.get("/blog/userprofile", {
+    params,
+  });
+  return response.data;
+};
+
 //Like Services
 
 export const toggleLike = async ({ blogId }) => {

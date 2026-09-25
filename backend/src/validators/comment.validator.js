@@ -17,9 +17,9 @@ export const createCommentValidaotr = [
         .bail()
         .isLength({
             min: 1,
-            max: 1000
+            max: 500
         })
-        .withMessage("Comment must be between 1 and 1000 characters.")
+        .withMessage("Comment must be between 1 and 500 characters.")
 
 ];
 

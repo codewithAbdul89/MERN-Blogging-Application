@@ -24,7 +24,7 @@ export const createBlogValidator = [
 
   body("tags")
     .isArray({ min: 1, max: 4 })
-    .withMessage("tag should be between 1 and 6 is required."),
+    .withMessage("Tags should be between 1  and 4."),
 
   body("tags.*")
     .trim()
@@ -91,7 +91,6 @@ export const updateBlogValidator = [
     .bail()
     .isIn(["DRAFT", "PUBLISHED", "REMOVED"])
     .withMessage("Status must be either DRAFT, PUBLISHED, or REMOVED"),
-
 ];
 
 export const verifyDeleteBlogOtpVelidation = [

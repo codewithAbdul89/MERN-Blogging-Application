@@ -412,39 +412,16 @@ const BlogForm = () => {
             </div>
 
             {/* Main Area */}
-            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-              {/* Content */}
-              <section className="order-3 min-w-0 lg:order-0 lg:col-start-1">
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-text-primary text-sm font-semibold">Content</label>
-                </div>
-
-                <div className="shrink-0">
-                  <RichTextEditor
-                    value={content}
-                    onChange={(value) =>
-                      setValue("content", value, {
-                        shouldValidate: true,
-                        shouldDirty: true,
-                      })
-                    }
-                  />
-                </div>
-
-                {errors.content && (
-                  <p className="text-danger mt-1.5 text-xs">{errors.content.message}</p>
-                )}
-              </section>
-
+            <div className="mt-8 flex flex-col gap-6">
               {/* Right Sidebar */}
-              <aside className="order-1 flex h-fit flex-col gap-5 sm:gap-10 lg:order-0 lg:col-start-2">
+              <div className="flex w-full flex-col items-start gap-4 sm:flex-row">
                 {/* Featured Image */}
                 <div
                   ref={featuredImageRef}
                   tabIndex={0}
                   onClick={() => featuredImageRef.current?.focus()}
                   onPaste={handlePasteImage}
-                  className="border-border bg-surface rounded-2xl border p-4 shadow-sm transition-shadow duration-200 focus-within:shadow-md sm:p-5"
+                  className="border-border bg-surface focus-within:border-primary focus-within:ring-primary/20 flex w-full flex-col rounded-2xl border p-4 shadow-sm transition-shadow duration-200 outline-none focus-within:ring-2 sm:flex-1 sm:p-5"
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
@@ -463,8 +440,8 @@ const BlogForm = () => {
                     )}
                   </div>
 
-                  {/* Image */}
-                  <div className="group border-border bg-background relative mt-4 aspect-square w-full overflow-hidden rounded-xl border">
+                  {/* Image Preview / Upload */}
+                  <div className="group border-border bg-background relative mt-4 aspect-[4/3] w-full overflow-hidden rounded-xl border">
                     {newImagePreview || existingImage ? (
                       <>
                         <img
@@ -473,7 +450,7 @@ const BlogForm = () => {
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
 
-                        {/* Gradient */}
+                        {/* Bottom Gradient */}
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/50 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
                         {/* Remove */}
@@ -486,7 +463,7 @@ const BlogForm = () => {
                           ×
                         </button>
 
-                        {/* Replace */}
+                        {/* Replace Image Overlay */}
                         <label
                           htmlFor="featuredImage"
                           className="hover:bg-primary absolute bottom-3 left-1/2 -translate-x-1/2 cursor-pointer rounded-full bg-black/70 px-4 py-2 text-xs font-semibold text-white opacity-0 shadow-md backdrop-blur-sm transition-all duration-300 group-hover:opacity-100"
@@ -499,6 +476,7 @@ const BlogForm = () => {
                         htmlFor="featuredImage"
                         className="hover:bg-primary/5 flex h-full cursor-pointer flex-col items-center justify-center px-4 text-center transition-colors duration-200"
                       >
+                        {/* Upload Icon */}
                         <span className="bg-primary/10 text-primary mb-3 flex h-12 w-12 items-center justify-center rounded-full text-xl transition-transform duration-200 group-hover:scale-110">
                           ↑
                         </span>
@@ -512,6 +490,10 @@ const BlogForm = () => {
                         <span className="bg-background text-text-muted mt-3 rounded-full px-3 py-1 text-[10px]">
                           Click to browse
                         </span>
+
+                        <span className="text-text-muted mt-1 text-[10px]">
+                          or press Ctrl + V to paste
+                        </span>
                       </label>
                     )}
                   </div>
@@ -519,7 +501,10 @@ const BlogForm = () => {
                   {/* Filename */}
                   {newFeaturedImage && (
                     <div className="bg-background mt-3 flex items-center gap-2 rounded-lg px-3 py-2">
-                      <span className="text-text-secondary min-w-0 flex-1 truncate text-xs">
+                      <span
+                        className="text-text-secondary min-w-0 flex-1 truncate text-xs"
+                        title={newFeaturedImage.name}
+                      >
                         {newFeaturedImage.name}
                       </span>
 
@@ -552,13 +537,17 @@ const BlogForm = () => {
                 </div>
 
                 {/* Category */}
-                <div className="border-border bg-surface h-fit rounded-2xl border p-4 shadow-sm sm:p-5">
-                  <h2 className="text-text-primary text-sm font-semibold">Category</h2>
+                <div className="border-border bg-surface flex w-full flex-col rounded-2xl border p-4 shadow-sm sm:flex-1 sm:p-5">
+                  {/* Header */}
+                  <div>
+                    <h2 className="text-text-primary text-sm font-semibold">Category</h2>
 
-                  <p className="text-text-muted mt-1 text-xs leading-5">
-                    Choose a category for your blog.
-                  </p>
+                    <p className="text-text-muted mt-1 text-xs leading-5">
+                      Choose a category for your blog.
+                    </p>
+                  </div>
 
+                  {/* Category Select */}
                   <div className="mt-4">
                     <Select
                       {...register("category")}
@@ -573,12 +562,53 @@ const BlogForm = () => {
                   {errors.category && (
                     <p className="text-danger mt-1.5 text-xs">{errors.category.message}</p>
                   )}
+
+                  {/* Helpful Information */}
+                  <div className="border-border bg-background mt-5 rounded-xl border p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-lg">
+                        ✓
+                      </div>
+
+                      <div>
+                        <p className="text-text-primary text-xs font-semibold">
+                          Choose the right category
+                        </p>
+
+                        <p className="text-text-muted mt-1 text-xs leading-5">
+                          Select the category that best matches the main topic of your blog.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </aside>
+              </div>
+              {/* Content */}
+              <section className="rounded-2xl">
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-text-primary text-sm font-semibold">Content</label>
+                </div>
+
+                <div className="shrink-0">
+                  <RichTextEditor
+                    value={content}
+                    onChange={(value) =>
+                      setValue("content", value, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      })
+                    }
+                  />
+                </div>
+
+                {errors.content && (
+                  <p className="text-danger mt-1.5 text-xs">{errors.content.message}</p>
+                )}
+              </section>
             </div>
 
             {/* Bottom Actions */}
-            <div className="border-border bg-background/90 bottom-0 z-20 mt-8 border-t py-4 backdrop-blur-md">
+            <div className="border-border sticky bg-background/90 bottom-0 z-20 mt-8 border-t py-4 backdrop-blur-md">
               <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"

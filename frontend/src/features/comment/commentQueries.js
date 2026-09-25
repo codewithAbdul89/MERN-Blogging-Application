@@ -1,59 +1,53 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
-import {
-    getComments,
-    getReplies
-} from "./commentService.js";
-
+import { getComments, getReplies } from "./commentService.js";
 
 export const useComments = (blogId) => {
+  const query = useInfiniteQuery({
+    queryKey: QUERY_KEYS.COMMENTS(blogId),
 
-    return useInfiniteQuery({
+    queryFn: ({ pageParam = 1 }) =>
+      getComments({
+        blogId,
+        page: pageParam,
+        limit: 6,
+      }),
 
-        queryKey: QUERY_KEYS.COMMENTS(blogId),
+    initialPageParam: 1,
 
-        queryFn: ({ pageParam = 1 }) =>
-            getComments({
-                blogId,
-                page: pageParam
-            }),
+    enabled: Boolean(blogId),
 
-        enabled: !!blogId,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.data?.hasMore ? lastPage.data.page + 1 : undefined;
+    },
+  });
 
-        getNextPageParam: (lastPage) => {
+  const comments = query?.data?.pages.flatMap((page) => page?.data?.comments ?? []) ?? [];
 
-            return lastPage.hasMore ?
-                lastPage.page + 1
-                : undefined;
-        }
-
-    })
-
+  return {
+    ...query,
+    comments,
+  };
 };
 
-export const useReplies = (parentCommentId) => {
+export const useReplies = (commentId) => {
+  return useInfiniteQuery({
+    queryKey: QUERY_KEYS.REPLIES(commentId),
 
-    return useInfiniteQuery({
+    queryFn: ({ pageParam = 1 }) =>
+      getReplies({
+        parentCommentId: commentId,
+        page: pageParam,
+        limit: 4,
+      }),
 
-        queryKey: QUERY_KEYS.REPLIES(parentCommentId),
+    initialPageParam: 1,
 
-        queryFn: ({ pageParam = 1 }) =>
-            getReplies({
-                parentCommentId,
-                page: pageParam
-            }),
+    getNextPageParam: (lastPage) => {
+      return lastPage?.data?.hasMore ? lastPage.data.page + 1 : undefined;
+    },
 
-        enabled: !!parentCommentId,
-
-        getNextPageParam: (lastPage) => {
-
-            return lastPage.hasMore
-                ? lastPage.page + 1
-                : undefined;
-
-        }
-
-    });
-
+    enabled: Boolean(commentId),
+  });
 };

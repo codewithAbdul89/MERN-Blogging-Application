@@ -4,7 +4,9 @@ function BlogTags({ tags = [], showAllTags = false }) {
   const remainingCount = tags.length - visibleTags.length;
 
   return (
-    <ul className={`flex gap-2 ${showAllTags ? "flex-wrap" : "flex-nowrap overflow-clip"}`}>
+    <ul
+      className={`flex  gap-2 ${showAllTags ? "flex-wrap" : "flex-wrap md:flex-nowrap overflow-clip"}`}
+    >
       {visibleTags.map((tag) => (
         <li
           key={tag}

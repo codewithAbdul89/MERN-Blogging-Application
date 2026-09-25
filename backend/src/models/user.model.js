@@ -1,99 +1,101 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
-const userSchema = new Schema({
+const userSchema = new Schema(
+  {
     userName: {
-        required: true,
-        type: String,
-        trim: true,
-        minlength: 3
+      required: true,
+      type: String,
+      trim: true,
+      minlength: 3,
     },
 
     email: {
-        type: String,
-        required: true,
-        unique: true,
-        index: true,
-        lowercase: true
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+      lowercase: true,
     },
 
     password: {
-        type: String,
-        select:false,
-        required: function () {
-            return this.authProviders.includes("local");
-        }
+      type: String,
+      select: false,
+      required: function () {
+        return this.authProviders.includes("local");
+      },
     },
 
     authProviders: {
-        type: [{
-            type: String,
-            enum: ["local", "google", "github"]
-        }],
-        default: ["local"]
+      type: [
+        {
+          type: String,
+          enum: ["local", "google", "github"],
+        },
+      ],
+      default: ["local"],
     },
 
     profilePic: {
-        url: {
-            type: String,
-            default: '/images/defaultAvatar.png'
-        },
-        public_id: {
-            type: String,
-            default: null
-        }
+      url: {
+        type: String,
+        default: "",
+      },
+      public_id: {
+        type: String,
+        default: null,
+      },
     },
 
     contact: {
-        type: String,
-        default: "",
-        trim: true
+      type: String,
+      default: "",
+      trim: true,
     },
 
     address: {
-        town: String,
-        city: String,
-        provience: String,
-        country: String
+      town: String,
+      city: String,
+      province: String,
+      country: String,
     },
 
     gender: {
-        type: String,
+      type: String,
     },
 
     cnic: {
-        type: String,
+      type: String,
     },
 
     role: {
-        type: String,
-        enum: [
-            "USER",
-            "ADMIN"
-        ],
-        default: "USER"
+      type: String,
+      enum: ["USER", "ADMIN"],
+      default: "USER",
     },
 
     isEmailVerified: {
-        type: Boolean,
-        default: false
-    }
+      type: Boolean,
+      default: false,
+    },
 
-},
-    {
-        timestamps: true
-    }
-)
-
+    bio: {
+      type: String,
+      minlength: 1,
+      maxLength: 300,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
 userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
 
-    if (!this.isModified("password")) {
-        return;
-    }
-
-    this.password = await bcrypt.hash(this.password, 10);
-
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

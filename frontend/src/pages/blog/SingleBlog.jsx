@@ -1,8 +1,8 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { CiCalendarDate } from "react-icons/ci";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { IoTimeOutline, IoEyeOutline } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMaximize2, FiMinimize, FiMinimize2 } from "react-icons/fi";
 
 import CategoryBadge from "../../components/blog/CategoryBadge";
@@ -14,29 +14,52 @@ import { formatDate, formatRelativeTime } from "../../utils/formatDate";
 import { useSingleBlog } from "../../features/blog/blogQueries";
 import Loader from "../../components/ui/Loader";
 import ErrorState from "../../components/ui/ErrorState";
-import Tooltip from "../../components/ui/Tooltip";
+import Comment from "../comment/Comment.jsx";
+import Replies from "../comment/Replies.jsx";
+import { errorHandler } from "../../utils/errorHandler.js";
+import CommentSection from "../comment/CommentSection.jsx";
 
 function SingleBlog() {
   const { slug } = useParams();
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isCover, setIsCover] = useState(false);
   const [isContain, setIsContain] = useState(false);
 
-  const { data, isPending, refetch, isError } = useSingleBlog(slug);
+  const { data, isPending, refetch, isError, error } = useSingleBlog(slug);
 
   const blog = data?.data?.blog;
+
+  useEffect(() => {
+    if (location.hash !== "#comments" || isPending || !blog) {
+      return;
+    }
+
+    const scrollToComments = () => {
+      const commentsSection = document.getElementById("comments");
+
+      if (commentsSection) {
+        commentsSection.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    };
+
+    requestAnimationFrame(scrollToComments);
+  }, [location.hash, isPending, blog]);
+
+  const publishedDate = blog?.publishedAt || blog?.updatedAt || blog?.createdAt;
 
   if (isPending) {
     return <Loader />;
   }
 
   if (isError || !blog) {
-    return <ErrorState message="Blog not found." onRetry={refetch} />;
+    errorHandler(error);
+    return <ErrorState message={errorHandler(error)} onRetry={refetch} />;
   }
-
-  const publishedDate = blog?.publishedAt || blog?.updatedAt || blog?.createdAt;
 
   return (
     <article className="bg-background text-text-primary w-full">
@@ -94,11 +117,25 @@ function SingleBlog() {
 
           {/* Author */}
           <div className="border-border mt-7 flex items-center gap-3 border-t pt-6 sm:mt-8 sm:pt-7">
-            <Avatar src={blog?.author?.profilePic?.url} alt="profile_avatar" size="lg" />
-
+            <Link
+              to={`/userProfile/${blog?.author?.userName}/${blog?.author?._id} `}
+              className="hover:opacity-80"
+            >
+              <Avatar
+                src={blog?.author?.profilePic?.url}
+                userName={blog?.author?.userName}
+                className="text-2xl"
+                size="lg"
+              />
+            </Link>
             <div className="min-w-0">
               <p className="text-text-primary truncate text-sm font-semibold sm:text-base">
-                {blog?.author?.userName}
+                <Link
+                  to={`/userProfile/${blog?.author?.userName}/${blog?.author?._id} `}
+                  className="hover:opacity-80"
+                >
+                  {blog?.author?.userName}
+                </Link>
               </p>
 
               <div className="text-text-secondary mt-0.5 flex flex-wrap items-center gap-x-2 text-xs">
@@ -189,8 +226,13 @@ function SingleBlog() {
       </div>
 
       {/* Comments */}
-      <section className="border-border mx-auto w-full max-w-6xl border-t px-4 py-10 sm:px-6 lg:px-8">
-        {/* CommentSection goes here */}
+      <section
+        id="comments"
+        className="border-border mx-auto w-full max-w-6xl scroll-mt-24 border-t px-4 py-10 sm:px-10"
+      >
+        <h2 className="text-primary font-heading mb-8 text-3xl tracking-wide">Comments</h2>
+
+        <CommentSection blogId={blog?._id} />
       </section>
     </article>
   );

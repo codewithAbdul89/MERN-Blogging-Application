@@ -1,36 +1,72 @@
 export const QUERY_KEYS = {
-  // Home page infinite feed
-  HOME_BLOGS: ["homeBlogs"],
+  // CURRENT USER
 
-  SEARCH_BLOGS: (params = {}) => ["blogs", "search", params],
+  CURRENT_USER: ["currentUser"],
+
+  // BLOGS ROOT
+
+  BLOGS_ROOT: ["blogs"],
+
+  // HOME BLOGS Infinite home feed
+
+  HOME_BLOGS: ["blogs", "home"],
+
+  // SINGLE BLOG
+
+  BLOG: (slug) => ["blogs", "single", slug],
+  SINGLE_BLOG_ROOT: () => ["blogs", "single"],
+
+  // MY BLOGS
+
+  MY_BLOGS_ROOT: ["blogs", "mine"],
+
+  MY_BLOGS: (status = "ALL") => ["blogs", "mine", status],
+
+  // LIKED BLOGS
+
+  LIKED_BLOGS: ["blogs", "liked"],
+
+  // BOOKMARKED BLOGS
+
+  BOOKMARKED_BLOGS: ["blogs", "bookmarked"],
+
+  // SEARCH BLOGS
 
   SEARCH_BLOGS_ROOT: ["blogs", "search"],
 
-  // Single blog
-  BLOG: (slug) => ["blog", slug],
+  SEARCH_BLOGS: (params = {}) => ["blogs", "search", params],
 
-  // My blogs
-  MY_HOME_BLOGS: ["myBlogs"],
+  // BLOG STATS
 
-  MY_BLOGS: (status = "ALL") => ["myBlogs", status],
+  BLOG_STATS: ["BLOG_STATS"],
 
-  // User interactions
-  LIKED_BLOGS: ["likedBlogs"],
+  // COMMENTS
 
-  BOOKMARKED_BLOGS: ["bookmarkedBlogs"],
+  COMMENTS_ROOT: ["comments"],
 
-  blogStats: ["blogStats"],
-
-  // Comments
   COMMENTS: (blogId) => ["comments", blogId],
-  //REPLIES
+
+  // REPLIES
+
+  REPLIES_ROOT: ["replies"],
 
   REPLIES: (parentCommentId) => ["replies", parentCommentId],
 
-  // Categories
+  // CATEGORIES
+
   CATEGORIES: ["categories"],
 
-  // User
+  // USERS
 
-  CURRENT_USER: ["currentUser"],
+  USERS_PROFILE_ROOT: ["users", "profile"],
+
+  USER_PROFILE: (userId) => ["users", "profile", userId],
+
+  // loctions
+
+  countries: ["location", "countries"],
+
+  states: (countryCode) => ["location", "states", countryCode],
+
+  cities: (countryCode, stateCode) => ["location", "cities", countryCode, stateCode],
 };

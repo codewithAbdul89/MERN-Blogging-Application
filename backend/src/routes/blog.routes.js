@@ -26,6 +26,7 @@ import {
   blogStats,
   getBlogForEdit,
   getSearchedBlog,
+  getUserProfile,
 } from "../controllers/blog.controller.js";
 import { handleUploadErrors } from "../middlewares/fileValidation.middleware.js";
 import { getLikedBlogs, toggleLike } from "../controllers/like.controller.js";
@@ -40,14 +41,17 @@ import {
   getComments,
 } from "../controllers/comment.controller.js";
 import otpLimiter from "../middlewares/rateLimit.middleware.js";
+import { normalizeBlogTags } from "../utils/normalizeBlogTags .js";
 
 const router = express.Router();
+
 
 router.post(
   "/",
   protectedRoute,
   imageUploader.single("featuredImage"),
   handleUploadErrors,
+  normalizeBlogTags,
   createBlogValidator,
   validate,
   createBlog,
@@ -67,11 +71,14 @@ router.get("/bookmarks", protectedRoute, getBookmarkedBlogs);
 
 router.get("/my-blogs/stats", protectedRoute, blogStats);
 
+router.get("/userprofile", protectedRoute, getUserProfile);
+
 router.patch(
   "/:blogId",
   protectedRoute,
   imageUploader.single("featuredImage"),
   handleUploadErrors,
+  normalizeBlogTags,
   updateBlogValidator,
   validate,
   updateBlog,

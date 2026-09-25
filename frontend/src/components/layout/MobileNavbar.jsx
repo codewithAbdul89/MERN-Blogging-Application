@@ -24,10 +24,6 @@ function MobileNavbar() {
 
   const { user } = useSelector((state) => state.auth);
 
-  const imageUrl = user?.profilePic?.url?.startsWith("http")
-    ? user.profilePic.url
-    : `http://localhost:5000${user?.profilePic?.url}`;
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const closeMobileMenu = () => {
@@ -53,9 +49,7 @@ function MobileNavbar() {
   return (
     <>
       {/* Mobile Navbar Buttons */}
-      <div
-        className={`flex md:hidden items-center   ${isAuthenticated ? "gap-2.5" : "gap-5 px-3"} `}
-      >
+      <div className={`flex items-center md:hidden ${isAuthenticated ? "gap-2.5" : "gap-5 px-3"} `}>
         {/* Search */}
         <Link to="/search" onClick={() => setMobileMenuOpen(false)}>
           <IoIosSearch size={22} />
@@ -64,24 +58,20 @@ function MobileNavbar() {
         <Button
           type="button"
           onClick={() => setMobileMenuOpen((prev) => !prev)}
-          className="p-2 relative"
+          className="relative p-2"
           text={
             <span className="relative block h-6.25 w-6.25">
               <FiMenu
                 size={22}
                 className={`absolute inset-0 transition-all duration-200 ${
-                  mobileMenuOpen
-                    ? "rotate-90 opacity-0"
-                    : "rotate-0 opacity-100"
+                  mobileMenuOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
                 }`}
               />
 
               <FiX
                 size={22}
                 className={`absolute inset-0 transition-all duration-200 ${
-                  mobileMenuOpen
-                    ? "rotate-0 opacity-100"
-                    : "-rotate-90 opacity-0"
+                  mobileMenuOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
                 }`}
               />
             </span>
@@ -92,15 +82,20 @@ function MobileNavbar() {
           <Dropdown
             trigger={
               <div
-                className="flex justify-center items-center  py-1.5 gap-1  transition-colors duration-200 z-1000"
+                className="z-1000 flex items-center justify-center gap-1 py-1.5 transition-colors duration-200"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Avatar src={imageUrl} size="sm" />
+                <Avatar
+                  src={user?.profilePic?.url}
+                  userName={user?.userName}
+                  className="text-xl"
+                  size="sm"
+                />
                 <span className="text-sm">{user?.userName?.split(" ")[0]}</span>
               </div>
             }
           >
-            <div className="bg-primary/80 dark:bg-primary p-1 rounded-lg border border-gray-200  shadow-lg text-white/90 font-normal ">
+            <div className="bg-primary rounded-lg border border-gray-200 p-1 font-normal text-white/90 shadow-lg">
               <span className="block w-full px-3 py-1 text-left">
                 {user?.userName}
                 <p className="text-xs wrap-break-word">{user?.email}</p>
@@ -109,15 +104,18 @@ function MobileNavbar() {
 
               <Link
                 to="/profile"
-                className="px-3 py-1 text-left font-normal flex items-center gap-2 hover:text-primary transition-colors duration-200"
+                className="hover:text-primary flex items-center gap-2 px-3 py-1 text-left font-normal transition-colors duration-200"
               >
                 <RxAvatar />
                 Profile
               </Link>
 
-              <Link className="pl-3 py-1 text-left font-normal flex items-center gap-2 whitespace-nowrap hover:text-primary transition-colors duration-200">
+              <Link
+                to="/user/update-profile#avatar"
+                className="hover:text-primary flex items-center gap-2 py-1 pl-3 text-left font-normal whitespace-nowrap transition-colors duration-200"
+              >
                 <CiImageOn />
-                Update Image
+                Update Avatar
               </Link>
 
               <hr />
@@ -130,14 +128,14 @@ function MobileNavbar() {
       {mobileMenuOpen && (
         <div
           ref={menuRef}
-          className={`absolute top-full left-0 right-0 z-50 md:hidden  backdrop-blur-2xl border-t  border-white text-text-primary transition-all duration-300 rounded-b-xl bg-primary-light/90  `}
+          className={`text-text-primary bg-primary-light/90 absolute top-full right-0 left-0 z-50 rounded-b-xl border-t border-white backdrop-blur-2xl transition-all duration-300 md:hidden`}
         >
           {/* Home */}
           <NavLink
             to="/"
             onClick={closeMobileMenu}
             className={({ isActive }) =>
-              `${isActive ? " bg-primary/30 text-white/90" : ""} px-5 py-1 transition-all duration-200 flex  items-center  gap-2 text-lg `
+              `${isActive ? " bg-primary/30 text-white/90" : ""} flex items-center gap-2 px-5 py-1 text-lg transition-all duration-200`
             }
           >
             <IoIosHome size={22} />
@@ -148,7 +146,7 @@ function MobileNavbar() {
             to="/category"
             onClick={closeMobileMenu}
             className={({ isActive }) =>
-              `${isActive ? " bg-primary/30 text-white/90" : ""} px-5 py-1 transition-all duration-200 flex  items-center  gap-2 text-lg `
+              `${isActive ? " bg-primary/30 text-white/90" : ""} flex items-center gap-2 px-5 py-1 text-lg transition-all duration-200`
             }
           >
             <BiCategory size={22} />
@@ -159,7 +157,7 @@ function MobileNavbar() {
             to="/contact"
             onClick={closeMobileMenu}
             className={({ isActive }) =>
-              `${isActive ? " bg-primary/30 text-white/90" : ""} px-5 py-1 transition-all duration-200 flex  items-center  gap-2 text-lg `
+              `${isActive ? " bg-primary/30 text-white/90" : ""} flex items-center gap-2 px-5 py-1 text-lg transition-all duration-200`
             }
           >
             <LuContact size={22} />
@@ -170,7 +168,7 @@ function MobileNavbar() {
             to="/search"
             onClick={closeMobileMenu}
             className={({ isActive }) =>
-              `${isActive ? " bg-primary/30 text-white/90" : ""} px-5 py-1 transition-all duration-200 flex  items-center  gap-2 text-lg `
+              `${isActive ? " bg-primary/30 text-white/90" : ""} flex items-center gap-2 px-5 py-1 text-lg transition-all duration-200`
             }
           >
             <IoIosSearch size={22} />
@@ -185,7 +183,7 @@ function MobileNavbar() {
                 to="/dashboard"
                 onClick={closeMobileMenu}
                 className={({ isActive }) =>
-                  `${isActive ? " bg-primary/30 text-white/90" : ""} px-5 py-1 transition-all duration-200 flex  items-center  gap-2 text-lg  `
+                  `${isActive ? " bg-primary/30 text-white/90" : ""} flex items-center gap-2 px-5 py-1 text-lg transition-all duration-200`
                 }
               >
                 <MdOutlineSpaceDashboard size={22} />
@@ -198,16 +196,16 @@ function MobileNavbar() {
               <Link
                 to="/login"
                 onClick={closeMobileMenu}
-                className={`px-5 py-1  flex  items-center  gap-2 text-lg  `}
+                className={`flex items-center gap-2 px-5 py-1 text-lg`}
               >
                 <IoIosLock size={22} />
                 Login
               </Link>
 
               <Link
-                to="/login"
+                to="/register"
                 onClick={closeMobileMenu}
-                className={`px-4.5 py-1  flex  items-center  gap-2 text-lg  `}
+                className={`flex items-center gap-2 px-4.5 py-1 text-lg`}
               >
                 <CiLogin size={22} />
                 Register
@@ -219,7 +217,7 @@ function MobileNavbar() {
           {/* Theme Toggle */}
 
           <ThemeToggle
-            className="px-4.5 py-2  flex  items-center  gap-2 text-lg w-full"
+            className="flex w-full items-center gap-2 px-4.5 py-2 text-lg"
             onclickfun={closeMobileMenu}
             children={
               currentTheme === "dark" ? (
