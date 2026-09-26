@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import { QUERY_KEYS } from "../../constants/queryKeys.js";
 
 import {
@@ -102,8 +103,12 @@ export const useSingleBlog = (slug) => {
 export const usePrefetchSingleBlog = () => {
   const queryClient = useQueryClient();
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   return (slug) => {
-    queryClient.prefetchQuery({
+    if (!slug || !isAuthenticated) return;
+
+    return queryClient.prefetchQuery({
       queryKey: QUERY_KEYS.BLOG(slug),
       queryFn: () => getSingleBlog(slug),
       staleTime: 60 * 1000,
