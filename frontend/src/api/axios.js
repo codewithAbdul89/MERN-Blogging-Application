@@ -3,6 +3,8 @@ import { axiosContext } from "./axiosContext.js";
 import { updateAccessToken, logOut } from "../features/auth/authSlice.js";
 import { refreshToken } from "../features/auth/authService.js";
 
+console.log("VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
@@ -24,7 +26,7 @@ api.interceptors.request.use(
 
   (error) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 api.interceptors.response.use(
@@ -40,7 +42,7 @@ api.interceptors.response.use(
     ) {
       try {
         originalRequest._retry = true;
-        
+
         const response = await refreshToken();
 
         const newAccessToken = response.data.accessToken;
@@ -48,7 +50,7 @@ api.interceptors.response.use(
         axiosContext.dispatch(
           updateAccessToken({
             accessToken: newAccessToken,
-          }),
+          })
         );
 
         //  Retry with new token by setting the Authorization header of the original request
@@ -62,7 +64,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;
