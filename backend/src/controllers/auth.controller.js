@@ -349,7 +349,7 @@ export const verifyLoginEmailtOtp = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
 
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+  res.cookie("refreshToken", refreshToken, refreshTokenOptions(true));
 
   return res.status(200).json(
     new ApiResponse(
@@ -547,7 +547,7 @@ export const googleCallback = asyncHandler(async (req, res) => {
     provider: "google",
   });
 
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+  res.cookie("refreshToken", refreshToken, refreshTokenOptions(true));
 
   return res.redirect(`${process.env.FRONTEND_URL}/oauth/success`);
 });
@@ -628,7 +628,7 @@ export const githubCallback = asyncHandler(async (req, res) => {
     provider: "github",
   });
 
-  res.cookie("refreshToken", refreshToken, refreshTokenOptions);
+ res.cookie("refreshToken", refreshToken, refreshTokenOptions(true));
 
   return res.redirect(`${process.env.FRONTEND_URL}/oauth/success`);
 });
