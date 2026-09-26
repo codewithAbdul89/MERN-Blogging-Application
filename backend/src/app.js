@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
-import authRouter from "./Routes/auth.routes.js";
-import blogRouter from "./Routes/blog.routes.js";
-import userRouter from "./Routes/user.routes.js";
+import authRouter from "./routes/auth.routes.js";
+import blogRouter from "./routes/blog.routes.js";
+import userRouter from "./routes/user.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import commentRouter from "./routes/comment.routes.js";
 import errorHandler from "./middlewares/error.middleware.js";
@@ -24,7 +24,7 @@ app.use(
   }),
 );
 
-// Routes
+// routes
 app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/blog", blogRouter);
