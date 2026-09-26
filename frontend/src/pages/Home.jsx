@@ -69,14 +69,14 @@ function Home() {
             {isAuthenticated ? (
               <Link
                 to="/dashboard/blogs/create"
-                className="border-primary/10 dark:border-primary/70 w-32 rounded-lg border px-3 py-2 text-center whitespace-nowrap shadow hover:opacity-70"
+                className="text-text-primary/70 dark:border-primary/70 w-32 rounded-lg border border-gray-300 px-3 py-2 text-center font-semibold whitespace-nowrap shadow hover:opacity-70"
               >
                 Create Blog
               </Link>
             ) : (
               <Link
                 to="/login"
-                className="text-text-primary/70 border-primary/10 dark:border-primary/70 w-32 rounded-lg border px-3 py-2 text-center font-semibold whitespace-nowrap shadow hover:opacity-70"
+                className="text-text-primary/70 dark:border-primary/70 w-32 rounded-lg border border-gray-300 px-3 py-2 text-center font-semibold whitespace-nowrap shadow hover:opacity-70"
               >
                 Login
               </Link>
