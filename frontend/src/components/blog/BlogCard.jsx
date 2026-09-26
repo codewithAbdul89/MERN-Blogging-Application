@@ -10,6 +10,7 @@ import BlogActions from "./BlogActions";
 import Tooltip from "../ui/Tooltip";
 import BlogMenu from "./BlogMenu";
 import { usePrefetchSingleBlog } from "../../features/blog/blogQueries";
+import { useSelector } from "react-redux";
 
 function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status = "ALL" }) {
   const getPlainText = (html) => {
@@ -18,6 +19,7 @@ function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status 
     return div.textContent || "";
   };
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const prefetchSingleBlog = usePrefetchSingleBlog();
   return (
     <div
@@ -28,7 +30,11 @@ function BlogCard({ blog = "", showBookmark = false, isMenuOpen = false, status 
         {/* Image */}
         <Link
           className="group relative block overflow-hidden rounded-lg"
-          onMouseEnter={() => prefetchSingleBlog(blog?.slug)}
+          onMouseEnter={() => {
+            if (authStatus === "authenticated") {
+              prefetchSingleBlog(blog?.slug);
+            }
+          }}
         >
           <img
             className="h-64 w-full cursor-default object-cover transition-transform duration-500 group-hover:scale-105"
