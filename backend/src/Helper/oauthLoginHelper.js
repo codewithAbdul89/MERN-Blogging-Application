@@ -1,5 +1,5 @@
 import User from "../models/user.model.js";
-import { generateRefreshToken } from "../Services/auth.service.js";
+import { generateRefreshToken } from "../services/auth.service.js";
 
 const oauthLoginHelper = async ({ email, userName, picture, provider }) => {
   let user = await User.findOne({ email });

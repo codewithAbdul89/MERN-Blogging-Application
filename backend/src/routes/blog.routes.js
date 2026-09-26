@@ -41,10 +41,9 @@ import {
   getComments,
 } from "../controllers/comment.controller.js";
 import otpLimiter from "../middlewares/rateLimit.middleware.js";
-import { normalizeBlogTags } from "../utils/normalizeBlogTags .js";
+import { normalizeBlogTags } from "../utils/normalizeBlogTags.js";
 
 const router = express.Router();
-
 
 router.post(
   "/",

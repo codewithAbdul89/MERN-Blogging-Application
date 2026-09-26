@@ -9,8 +9,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from "../Services/auth.service.js";
-import { refreshTokenOptions } from "../Services/cookie.options.js";
+} from "../services/auth.service.js";
+import { refreshTokenOptions } from "../services/cookie.options.js";
 import oauthLoginHelper from "../Helper/oauthLoginHelper.js";
 import {
   sendloginEmailOtp,

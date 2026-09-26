@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import User from "../models/user.model.js";
@@ -6,7 +5,7 @@ import Blog from "../models/blog.model.js";
 import Comment from "../models/comment.model.js";
 import Like from "../models/like.model.js";
 import Bookmark from "../models/bookmark.model.js";
-import { uploadFile, deleteFile } from "../Services/file.service.js";
+import { uploadFile, deleteFile } from "../services/file.service.js";
 import asyncHandler from "express-async-handler";
 import View from "../models/blogView.model.js";
 import EmailToken from "../models/emailToken.model.js";

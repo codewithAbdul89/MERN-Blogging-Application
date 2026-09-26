@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import crypto from "crypto";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { uploadFile, deleteFile } from "../Services/file.service.js";
+import { uploadFile, deleteFile } from "../services/file.service.js";
 import Blog from "../models/blog.model.js";
 import Comment from "../models/comment.model.js";
 import Like from "../models/like.model.js";

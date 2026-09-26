@@ -1,5 +1,5 @@
 import ApiError from "../utils/ApiError.js";
-import { verifyAccessToken } from "../Services/auth.service.js";
+import { verifyAccessToken } from "../services/auth.service.js";
 import User from "../models/user.model.js";
 
 export const protectedRoute = async (req, res, next) => {
