@@ -6,7 +6,9 @@ export const getErrorMessage = (error) => {
 
   const status = error?.response?.status;
 
-  return status ? `${message} (${status})` : message;
+  return message
+
+  // return status ? `${message} (${status})` : message;
 };
 
 export const errorHandler = (error) => {
