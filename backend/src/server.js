@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
+    console.log("🔥 LATEST CODE - DEPLOY TEST 001");
     console.log("🚀 Starting server...");
     console.log("PORT:", PORT);
     console.log("MONGO_URI exists:", Boolean(process.env.MONGO_URI));
@@ -19,8 +20,7 @@ const startServer = async () => {
       console.log(`🚀 Production server running on port ${PORT}.`);
     });
   } catch (error) {
-    console.error("❌ Critical server bootstrap failed:");
-    console.error(error);
+    console.error("❌ Critical server bootstrap failed:", error);
     process.exit(1);
   }
 };
