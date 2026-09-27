@@ -9,6 +9,8 @@ import ButtonLoader from "../../components/ui/ButtonLoader.jsx";
 import { useEffect, useState } from "react";
 import { useCreateComment } from "../../features/comment/commentMutations.js";
 import { createCommentSchema } from "../../features/comment/commentValidation.js";
+import { showError } from "../../utils/toast.js";
+import { useSelector } from "react-redux";
 
 function useCommentsVisibility() {
   const [isVisible, setIsVisible] = useState(false);
@@ -74,6 +76,8 @@ function CommentSection({ blogId }) {
   const { comments, isPending, isError, hasNextPage, isFetchingNextPage, fetchNextPage } =
     useComments(blogId);
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const isCommentsVisible = useCommentsVisibility();
   const footerOverlap = useFooterOverlap();
 
@@ -110,6 +114,10 @@ function CommentSection({ blogId }) {
   });
 
   const onCommentSubmit = async (data) => {
+    if (!isAuthenticated) {
+      return showError("Please login to your account first.");
+    }
+
     try {
       const commentData = {
         content: data.content,
