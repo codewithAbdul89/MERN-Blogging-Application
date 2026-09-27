@@ -43,19 +43,10 @@ function AuthInitializer({ children }) {
     }
   }, [data, isError, error, dispatch]);
 
-  // Authentication is still being determined
-  if (isPending || authStatus === "loading") {
-    return <Loader />;
-  }
-  // handle authentication initialization failure
-  // if (authStatus === "error") {
-  //   return (
-  //     <ErrorState
-  //       title="Unable to initialize authentication"
-  //       error={getErrorMessage(error)}
-  //       onRetry={refetch}
-  //     />
-  //   );
+   // Authentication is still being determined
+   
+  // if (isPending || authStatus === "loading") {
+  //   return <Loader />;
   // }
 
   return children;

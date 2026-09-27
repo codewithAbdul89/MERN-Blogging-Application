@@ -96,38 +96,33 @@ export const getComments = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Blog does not exist.");
   }
 
-  const isAdmin = req.user.role === "ADMIN";
-
-  const isBlogAuthor = blog.author.toString() === req.user._id.toString();
+  const isLoggedIn = Boolean(req?.user?._id);
+  const isAdmin = req?.user?.role === "ADMIN";
+  const isBlogAuthor =
+    isLoggedIn && blog.author.toString() === req.user._id.toString();
 
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 6;
   const skip = (page - 1) * limit;
 
   const blogObjectId = new mongoose.Types.ObjectId(blogId);
-  const userObjectId = new mongoose.Types.ObjectId(req.user._id);
+  const userObjectId = isLoggedIn
+    ? new mongoose.Types.ObjectId(req.user._id)
+    : null;
 
   let parentCommentFilter = {
     blog: blogObjectId,
     parentComment: null,
   };
-
+  // "if the requester is NOT an admin AND NOT the blog's author, then apply a restriction." show only visible and if the user logged and has hidden comment show me also his hidden comment
   if (!(isAdmin || isBlogAuthor)) {
-    parentCommentFilter.$or = [
-      {
-        status: "VISIBLE",
-      },
-      {
-        status: "HIDDEN",
-        author: userObjectId,
-      },
-    ];
+    parentCommentFilter.$or = isLoggedIn
+      ? [{ status: "VISIBLE" }, { status: "HIDDEN", author: userObjectId }]
+      : [{ status: "VISIBLE" }];
   }
 
   const parentComments = await Comment.aggregate([
-    {
-      $match: parentCommentFilter,
-    },
+    { $match: parentCommentFilter },
 
     {
       $addFields: {
@@ -135,15 +130,12 @@ export const getComments = asyncHandler(async (req, res) => {
           $cond: [
             { $eq: ["$isPinned", true] },
             1,
-            {
-              $cond: [
-                {
-                  $eq: ["$author", new mongoose.Types.ObjectId(req.user._id)],
-                },
-                2,
-                3,
-              ],
-            },
+            // if user logged in show user comments first else random comment
+            isLoggedIn
+              ? {
+                  $cond: [{ $eq: ["$author", userObjectId] }, 2, 3],
+                }
+              : 3,
           ],
         },
       },
@@ -156,29 +148,16 @@ export const getComments = asyncHandler(async (req, res) => {
       },
     },
 
-    {
-      $skip: skip,
-    },
-
-    {
-      $limit: limit,
-    },
+    { $skip: skip },
+    { $limit: limit },
   ]);
 
   await Comment.populate(parentComments, [
-    {
-      path: "author",
-      select: "userName profilePic.url",
-    },
-    {
-      path: "blog",
-      select: "author",
-    },
+    { path: "author", select: "userName profilePic.url" },
+    { path: "blog", select: "author" },
   ]);
 
-
   const totalParentComments = await Comment.countDocuments(parentCommentFilter);
-
   const hasMore = skip + parentComments.length < totalParentComments;
 
   return res.status(200).json(
@@ -206,31 +185,28 @@ export const getReplies = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Blog does not exist.");
   }
 
-  const isAdmin = req.user.role === "ADMIN";
-
-  const isBlogAuthor = blog.author.toString() === req.user._id.toString();
+  const isLoggedIn = Boolean(req?.user?._id);
+  const isAdmin = req?.user?.role === "ADMIN";
+  const isBlogAuthor =
+    isLoggedIn && blog.author.toString() === req.user._id.toString();
 
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 4;
   const skip = (page - 1) * limit;
 
   const parentCommentObjectId = new mongoose.Types.ObjectId(parentCommentId);
-  const userObjectId = new mongoose.Types.ObjectId(req.user._id);
+  const userObjectId = isLoggedIn
+    ? new mongoose.Types.ObjectId(req.user._id)
+    : null;
 
   let replyFilter = {
     parentComment: parentCommentObjectId,
   };
 
   if (!(isAdmin || isBlogAuthor)) {
-    replyFilter.$or = [
-      {
-        status: "VISIBLE",
-      },
-      {
-        status: "HIDDEN",
-        author: userObjectId,
-      },
-    ];
+    replyFilter.$or = isLoggedIn
+      ? [{ status: "VISIBLE" }, { status: "HIDDEN", author: userObjectId }]
+      : [{ status: "VISIBLE" }];
   }
 
   const replies = await Comment.aggregate([
@@ -240,7 +216,7 @@ export const getReplies = asyncHandler(async (req, res) => {
 
     // Priority:
     // 1 = pinned
-    // 2 = current user's reply
+    // 2 = current user's reply (only when logged in)
     // 3 = other users' replies
     {
       $addFields: {
@@ -248,15 +224,11 @@ export const getReplies = asyncHandler(async (req, res) => {
           $cond: [
             { $eq: ["$isPinned", true] },
             1,
-            {
-              $cond: [
-                {
-                  $eq: ["$author", new mongoose.Types.ObjectId(req.user._id)],
-                },
-                2,
-                3,
-              ],
-            },
+            isLoggedIn
+              ? {
+                  $cond: [{ $eq: ["$author", userObjectId] }, 2, 3],
+                }
+              : 3,
           ],
         },
       },

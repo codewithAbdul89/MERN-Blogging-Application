@@ -46,6 +46,7 @@ function AppRoutes() {
         {/* Tip  ? allow to render the commonet without parms part */}
         <Route path="/category/:categorySlug?" element={<Category />} />
         <Route path="/search/:textSearch?" element={<Search />} />
+        <Route path="/blog/:slug" element={<SingleBlog />} />
         <Route path="/contact" element={<Contact />} />
       </Route>
 
@@ -80,7 +81,6 @@ function AppRoutes() {
         <Route element={<MainLayout />}>
           <Route path="/user/update-profile" element={<UpdateProfile />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/blog/:slug" element={<SingleBlog />} />
           <Route path="/userProfile/:userName/:userId" element={<UserProfile />} />
           {/* DashBoard Layout */}
           <Route element={<DashboardLayout />}>

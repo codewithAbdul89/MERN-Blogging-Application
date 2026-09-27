@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.get("/:parentCommentId/replies", protectedRoute, getReplies);
+router.get("/:parentCommentId/replies", getReplies);
 
 router.patch("/:commentId/pin", protectedRoute, pinComment);
 

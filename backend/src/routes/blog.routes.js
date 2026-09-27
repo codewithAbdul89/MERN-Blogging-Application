@@ -116,7 +116,7 @@ router.post(
   createComment,
 );
 
-router.get("/:blogId/comment", protectedRoute, getComments);
+router.get("/:blogId/comment", getComments);
 
 router.post(
   "/send-delete-blog-otp/:blogId",
@@ -133,13 +133,7 @@ router.post(
   verifyDeleteBlogOtp,
 );
 
-router.get(
-  "/:slug",
-  protectedRoute,
-  singleBlogValidator,
-  validate,
-  getSingleBlog,
-);
+router.get("/:slug", singleBlogValidator, validate, getSingleBlog);
 
 const blogRouter = router;
 export default blogRouter;

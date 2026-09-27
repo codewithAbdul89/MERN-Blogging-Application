@@ -103,10 +103,8 @@ export const useSingleBlog = (slug) => {
 export const usePrefetchSingleBlog = () => {
   const queryClient = useQueryClient();
 
-  const { isAuthenticated } = useSelector((state) => state.auth);
-
   return (slug) => {
-    if (!slug || !isAuthenticated) return;
+    if (!slug) return;
 
     return queryClient.prefetchQuery({
       queryKey: QUERY_KEYS.BLOG(slug),
