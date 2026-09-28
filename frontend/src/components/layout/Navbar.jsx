@@ -42,7 +42,7 @@ function Navbar() {
       >
         {/* Logo */}
         <Logo
-          className={`rounded-lg p-px ${isScrolled ? "h-14" : "h-18"} sm:h-15`}
+          className={`rounded-lg p-px ${isScrolled ? "h-13" : "h-12"} sm:h-14`}
           loading="eager"
         />
 
