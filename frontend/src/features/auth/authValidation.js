@@ -1,11 +1,7 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Invalid email address"),
+  email: z.string().trim().min(1, "Email is required.").email("Invalid email address"),
 
   password: z
     .string()
@@ -33,11 +29,7 @@ export const registerSchema = loginSchema
   });
 
 export const emailSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required.")
-    .email("Invalid email address"),
+  email: z.string().trim().min(1, "Email is required.").email("Invalid email address"),
 });
 
 export const OtpSchema = z.object({
@@ -50,26 +42,36 @@ export const OtpSchema = z.object({
 
 export const changePasswordSchema = z
   .object({
-    previousPassword: z
-      .string()
-      .trim()
-      .min(1, "Previous password is required."),
+    previousPassword: z.string().trim().min(1, "Previous password is required."),
 
     newPassword: z
       .string()
       .trim()
       .min(6, "New password must be at least 6 characters.")
       .max(12, "New password cannot exceed 12 characters."),
-      
-    confirmPassword: z
-    .string()
-    .trim()
-    .min(1, "Please confirm your password."),
+
+    confirmPassword: z.string().trim().min(1, "Please confirm your password."),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
+
+export const setPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .trim()
+      .min(6, "New password must be at least 6 characters.")
+      .max(12, "New password cannot exceed 12 characters."),
+
+    confirmPassword: z.string().trim().min(1, "Please confirm your password."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
 export const resetPasswordSchema = z
   .object({
     newPassword: z

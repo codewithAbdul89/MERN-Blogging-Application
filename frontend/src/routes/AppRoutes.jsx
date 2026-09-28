@@ -36,6 +36,7 @@ import DeleteAccount from "../pages/blog/DeleteAccount.jsx";
 import Profile from "../pages/profile/Profile.jsx";
 import UserProfile from "../pages/profile/UserProfile.jsx";
 import ProfileCompleteRoute from "./ProfileCompleteRoute.jsx";
+import SetPassword from "../pages/auth/SetPassword.jsx";
 
 function AppRoutes() {
   return (
@@ -76,6 +77,7 @@ function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AuthLayout />}>
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/set-password" element={<SetPassword />} />
         </Route>
         {/* Blogs Routes */}
         <Route element={<MainLayout />}>

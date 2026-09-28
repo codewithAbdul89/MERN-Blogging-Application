@@ -20,6 +20,11 @@ export const changePassword = async (passwordData) => {
   return response.data;
 };
 
+export const setPassword = async (newPassword) => {
+  const response = await api.patch("/auth/set-password", newPassword);
+  return response.data;
+};
+
 export const refreshToken = async () => {
   const response = await api.post("/auth/refresh-token");
   return response.data;

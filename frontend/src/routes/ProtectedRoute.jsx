@@ -8,7 +8,17 @@ function ProtectedRoute() {
   const { authStatus } = useSelector((state) => state.auth);
 
   if (authStatus === "unauthenticated") {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    if (location.pathname === "/set-password" ||location.pathname === "/change-password" ) {
+      return <Navigate to="/" replace />;
+    }
+
+    return (
+      <Navigate
+        to="/login"
+        state={{ from: location.pathname }}
+        replace
+      />
+    );
   }
 
   return (

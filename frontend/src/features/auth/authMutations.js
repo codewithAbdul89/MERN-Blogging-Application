@@ -12,6 +12,7 @@ import {
   resetPassword,
   verifyRegisterEmail,
   verifyEmailOtp,
+  setPassword,
 } from "./authService.js";
 import { useDispatch } from "react-redux";
 import { logOut, setCredentials } from "./authSlice.js";
@@ -124,6 +125,18 @@ export const useLogout = () => {
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: changePassword,
+
+    onError: errorHandler,
+
+    onSuccess: (response) => {
+      showSuccess(response.message);
+    },
+  });
+};
+
+export const useSetPassword = () => {
+  return useMutation({
+    mutationFn: setPassword,
 
     onError: errorHandler,
 

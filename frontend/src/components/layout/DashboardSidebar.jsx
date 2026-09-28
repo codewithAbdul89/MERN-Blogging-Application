@@ -17,6 +17,7 @@ import { useState } from "react";
 import ConfirmDialog from "../ui/ConfirmDialog";
 import { useModal } from "../../hooks/useModal";
 import { useSendDeleteAccountOtp } from "../../features/user/userMutations";
+import { useSelector } from "react-redux";
 
 function DashboardSidebar({ mobile = false, onClose }) {
   const [blogsOpen, setBlogsOpen] = useState(true);
@@ -24,6 +25,8 @@ function DashboardSidebar({ mobile = false, onClose }) {
   const { isOpen, closeModal, openModal } = useModal();
 
   const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
 
   const { mutateAsync: sendDeleteAccountOtp, isPending } = useSendDeleteAccountOtp();
 
@@ -167,15 +170,26 @@ function DashboardSidebar({ mobile = false, onClose }) {
             </p>
 
             <div className="space-y-1">
-              <NavLink to="/user/update-profile" className={navLinkClass} onClick={handleNavigation}>
+              <NavLink
+                to="/user/update-profile"
+                className={navLinkClass}
+                onClick={handleNavigation}
+              >
                 <FiUser size={18} />
                 <span>Update Profile</span>
               </NavLink>
 
-              <NavLink to="/change-password" className={navLinkClass} onClick={handleNavigation}>
-                <FiLock size={18} />
-                <span>Change Password</span>
-              </NavLink>
+              {user?.authProviders.includes("local") ? (
+                <NavLink to="/change-password" className={navLinkClass} onClick={handleNavigation}>
+                  <FiLock size={18} />
+                  <span>Change Password</span>
+                </NavLink>
+              ) : (
+                <NavLink to="/set-password" className={navLinkClass} onClick={handleNavigation}>
+                  <FiLock size={18} />
+                  <span>Set Password</span>
+                </NavLink>
+              )}
 
               <button
                 to="/dashboard/delete-account"
@@ -216,6 +230,7 @@ function DashboardSidebar({ mobile = false, onClose }) {
                 flow: "delete-account",
               },
             });
+            closeModal();
           } catch (error) {
             console.error("Delete account otp send error:", error);
           }

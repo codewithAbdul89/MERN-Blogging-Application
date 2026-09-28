@@ -5,12 +5,6 @@ import OtpVerification from "../../components/forms/OtpVerification";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { OtpSchema } from "../../features/auth/authValidation";
-import { showError } from "../../utils/toast";
-import {
-  useDeleteBlog,
-  useSendDeleteBlogOtp,
-  useVerifyDeleteBlogOtp,
-} from "../../features/blog/blogMutations";
 import { createPortal } from "react-dom";
 import Loader from "../../components/ui/Loader";
 import {

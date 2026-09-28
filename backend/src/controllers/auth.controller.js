@@ -628,7 +628,7 @@ export const githubCallback = asyncHandler(async (req, res) => {
     provider: "github",
   });
 
- res.cookie("refreshToken", refreshToken, refreshTokenOptions(true));
+  res.cookie("refreshToken", refreshToken, refreshTokenOptions(true));
 
   return res.redirect(`${process.env.FRONTEND_URL}/oauth/success`);
 });
@@ -694,5 +694,37 @@ export const changePassword = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(200, "Password change successfully.Please login again."),
+    );
+});
+
+export const setPassword = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (user?.authProviders.includes("local")) {
+    throw new ApiError(
+      400,
+      "Password already set. Use 'Change Password' instead.",
+    );
+  }
+
+  const { newPassword } = req.body;
+
+  if (!newPassword) {
+    throw new ApiError(400, "Password is required.");
+  }
+
+  user.password = newPassword;
+  if (!user.authProviders.includes("local")) {
+    user.authProviders.push("local");
+  }
+  await user.save();
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        "Password set successfully. You can now log in with email + password too.",
+      ),
     );
 });
