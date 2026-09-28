@@ -37,6 +37,8 @@ app.get("/", (req, res) => {
   res.send("Backend is running.....");
 });
 
+app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
+
 // Error handler LAST
 app.use(errorHandler);
 
