@@ -64,12 +64,12 @@ function UserProfile() {
 
   return (
     <div className="bg-background text-text-primary">
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <main className="px-4 py-8 sm:px-6 lg:px-8">
         {/* Profile header  */}
 
         <section className="border-border bg-surface overflow-hidden rounded-2xl border shadow-sm">
           {/* Cover */}
-          <div className="relative h-36 sm:h-40">
+          <div className="relative h-36 sm:h-45">
             <img
               src={cardImageSrc}
               alt="Profile cover"
@@ -80,7 +80,7 @@ function UserProfile() {
           {/* Profile content */}
           <div className="relative px-5 pb-4 sm:px-8">
             {/* Profile picture */}
-            <div className="-mt-16 flex justify-center sm:-mt-24 sm:justify-start">
+            <div className="-mt-16 flex justify-center sm:-mt-26  sm:justify-start">
               <div className="border-surface bg-surface h-50 w-50 overflow-hidden rounded-full border-[5px] shadow-xl">
                 <Avatar
                   src={user?.profilePic?.url}
