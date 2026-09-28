@@ -82,7 +82,7 @@ const AuthNavbar = () => {
             to="/register"
             className="bg-primary shadow-primary/20 hover:bg-primary/90 hover:shadow-primary/25 focus-visible:ring-primary/50 focus-visible:ring-offset-background flex h-9 items-center rounded-full px-4 text-sm font-medium text-white shadow-sm transition-all duration-300 ease-out hover:shadow-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-[0.97]"
           >
-            Create account
+            Register
           </Link>
         )}
 

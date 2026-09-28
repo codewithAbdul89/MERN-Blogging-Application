@@ -26,7 +26,9 @@ function DesktopNavbar() {
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
+              `group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white ${
+                isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""
+              }`
             }
           >
             {({ isActive }) => (
@@ -48,7 +50,9 @@ function DesktopNavbar() {
           <NavLink
             to="/category"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
+              `group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white ${
+                isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""
+              }`
             }
           >
             {({ isActive }) => (
@@ -70,7 +74,9 @@ function DesktopNavbar() {
           <NavLink
             to="/search"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
+              `group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white ${
+                isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""
+              }`
             }
           >
             {({ isActive }) => (
@@ -92,7 +98,9 @@ function DesktopNavbar() {
           <NavLink
             to="/contact"
             className={({ isActive }) =>
-              `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
+              `group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white ${
+                isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""
+              }`
             }
           >
             {({ isActive }) => (
@@ -117,7 +125,9 @@ function DesktopNavbar() {
               <NavLink
                 to="/dashboard"
                 className={({ isActive }) =>
-                  `group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 ${isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""}`
+                  `group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white ${
+                    isActive ? "bg-primary/70 text-white/90 ring-[1.8px] ring-white" : ""
+                  }`
                 }
               >
                 {({ isActive }) => (
@@ -185,7 +195,7 @@ function DesktopNavbar() {
             <li>
               <Link
                 to="/login"
-                className="group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200"
+                className={`group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white`}
               >
                 <IoIosLock className="w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100" />
                 Login
@@ -195,7 +205,7 @@ function DesktopNavbar() {
             <li>
               <Link
                 to="/register"
-                className="group flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200"
+                className={`group focus-visible:ring-primary flex items-center justify-center gap-1 rounded-full px-3 py-1.5 transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-offset-white`}
               >
                 <CiLogin className="w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100" />
                 Register
