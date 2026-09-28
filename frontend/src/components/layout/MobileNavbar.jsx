@@ -47,7 +47,7 @@ function MobileNavbar() {
   const { currentTheme } = useTheme();
 
   return (
-    <>
+    <div ref={menuRef}>
       {/* Mobile Navbar Buttons */}
       <div className={`flex items-center md:hidden ${isAuthenticated ? "gap-2.5" : "gap-5 px-3"} `}>
         {/* Search */}
@@ -127,7 +127,6 @@ function MobileNavbar() {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div
-          ref={menuRef}
           className={`text-text-primary bg-primary-light/90 absolute top-full right-0 left-0 z-50 rounded-b-xl border-t border-white backdrop-blur-2xl transition-all duration-300 md:hidden`}
         >
           {/* Home */}
@@ -235,7 +234,7 @@ function MobileNavbar() {
           />
         </div>
       )}
-    </>
+    </div>
   );
 }
 

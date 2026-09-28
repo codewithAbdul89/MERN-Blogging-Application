@@ -80,7 +80,7 @@ function UserProfile() {
           {/* Profile content */}
           <div className="relative px-5 pb-4 sm:px-8">
             {/* Profile picture */}
-            <div className="-mt-16 flex justify-center sm:-mt-26  sm:justify-start">
+            <div className="-mt-16 flex justify-center sm:-mt-26 sm:justify-start">
               <div className="border-surface bg-surface h-50 w-50 overflow-hidden rounded-full border-[5px] shadow-xl">
                 <Avatar
                   src={user?.profilePic?.url}
@@ -91,7 +91,7 @@ function UserProfile() {
             </div>
 
             {/* User information */}
-            <div className="mt-5 text-center sm:mt-4 sm:text-left">
+            <div className="mt-5 text-center sm:mt-1 sm:text-left">
               <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                 <h1 className="text-text-primary text-2xl font-bold tracking-tight sm:text-3xl">
                   {user?.userName || "User"}

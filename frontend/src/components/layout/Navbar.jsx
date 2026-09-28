@@ -27,7 +27,7 @@ function Navbar() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [isDashboard]);
+  }, [isDashboard,location]);
 
   return (
     <header
