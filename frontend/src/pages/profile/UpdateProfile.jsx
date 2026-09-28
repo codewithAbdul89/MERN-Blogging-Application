@@ -110,7 +110,7 @@ function UpdateProfile() {
       return showError("Please make some changes to your bio first.");
     }
     await updateBio({
-      bio: data.bio,
+      bio: data?.bio,
     });
   };
 
@@ -324,7 +324,7 @@ function UpdateProfile() {
     const response = await updateProfile(profileData);
 
     dispatch(setUser(response.data.user));
-    const from = location.state?.from;
+    const from = location?.state?.from;
 
     navigate(from || "/dashboard", {
       replace: true,
@@ -544,7 +544,7 @@ function UpdateProfile() {
               text={
                 isBioUpdatePending ? (
                   <ButtonLoader text="Updating" />
-                ) : user.bio ? (
+                ) : user?.bio ? (
                   "Update Bio"
                 ) : (
                   "Add Bio"

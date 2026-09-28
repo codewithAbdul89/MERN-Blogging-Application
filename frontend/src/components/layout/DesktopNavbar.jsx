@@ -20,7 +20,7 @@ function DesktopNavbar() {
 
   return (
     <div className="text-text-primary hidden md:flex">
-      <ul className="flex items-center justify-between gap-2 font-semibold sm:gap-4">
+      <ul className="flex items-center justify-between gap-4 font-semibold mr-3">
         {/* common Links */}
         <li>
           <NavLink
