@@ -37,6 +37,7 @@ const Avatar = ({
   return (
     <img
       {...props}
+      alt="Avatar"
       src={src}
       loading="eager"
       className={`${sizes[size] || sizes.md} rounded-full object-cover ${className}`}
