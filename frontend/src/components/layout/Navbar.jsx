@@ -31,20 +31,17 @@ function Navbar() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ease-out ${isScrolled ? " pt-1 sm:pt-3" : ""} `}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ease-out ${isScrolled ? " pt-2 sm:pt-3" : ""} `}
     >
       <nav
         className={`relative mx-auto flex items-center justify-between px-2 py-1 transition-all duration-500 ease-out sm:px-7 ${
           isScrolled
-            ? `max-w-6xl rounded-2xl border border-white/20 bg-white/10 px-3 shadow-lg backdrop-blur-xl sm:rounded-full`
+            ? `max-w-6xl rounded-3xl border border-white/20 bg-white/10 px-3 shadow-lg backdrop-blur-xl sm:rounded-full`
             : `bg-primary-light rounded-b-lg border-transparent shadow-none`
         } `}
       >
         {/* Logo */}
-        <Logo
-          className={`rounded-lg p-px ${isScrolled ? "h-13" : "h-12"} sm:h-14`}
-          loading="eager"
-        />
+        <Logo className={`h-13 rounded-lg p-px sm:h-14`} loading="eager" />
 
         {/* Desktop */}
         <DesktopNavbar />
