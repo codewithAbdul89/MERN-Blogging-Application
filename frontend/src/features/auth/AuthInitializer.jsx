@@ -43,11 +43,12 @@ function AuthInitializer({ children }) {
     }
   }, [data, isError, error, dispatch]);
 
-   // Authentication is still being determined
-   
-  // if (isPending || authStatus === "loading") {
-  //   return <Loader />;
-  // }
+  // Authentication is still being determined
+
+  if (isPending || authStatus === "loading") {
+    return true;
+      // return <Loader />;
+  }
 
   return children;
 }
